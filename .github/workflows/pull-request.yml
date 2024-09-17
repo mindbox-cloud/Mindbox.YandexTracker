@@ -1,0 +1,31 @@
+name: Pull Request
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+        
+      - name: Ensure Version Bump
+        uses: mindbox-cloud/github-actions/ensure-bump@master
+        with:
+          abstractionsPath: 'Mindbox.LibraryTemplate.Abstractions'
+          
+      - name: Run translation checker
+        uses: mindbox-cloud/github-actions/localization/translation-checker@master
+
+      - name: Install dependencies
+        run: |
+          dotnet nuget add source --username USERNAME --password ${{ secrets.GH_FULL_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/mindbox-cloud/index.json"
+          dotnet restore          
+
+      - name: Build
+        run: dotnet build ./Mindbox.LibraryTemplate.sln --configuration Release --no-restore /warnaserror
+
+      - name: Test
+        run: dotnet test --no-restore

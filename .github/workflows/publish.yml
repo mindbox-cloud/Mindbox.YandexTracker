@@ -1,0 +1,32 @@
+name: Main Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Run translation checker
+        uses: mindbox-cloud/github-actions/localization/translation-checker@master
+
+      - name: Install dependencies
+        run: |
+          dotnet nuget add source --username USERNAME --password ${{ secrets.GH_FULL_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/mindbox-cloud/index.json"
+          dotnet restore          
+      - name: Build
+        run: dotnet build ./Mindbox.LibraryTemplate.sln --configuration Release --no-restore /warnaserror
+
+      - name: Test
+        run: dotnet test --no-restore
+
+      - name: Pack
+        run: dotnet pack ./Mindbox.LibraryTemplate.sln -c Release -p:BuildNumber=${{ github.run_number }}
+
+      - name: Publish
+        run: dotnet nuget push **/*.nupkg -k ${{secrets.GH_FULL_TOKEN}} -s github -t 600 --skip-duplicate

@@ -1,26 +1,28 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
 public sealed class Issue
 {
-	public required string Title { get; set; }
-	public required string Body { get; set; }
-	public required string Url { get; set; }
-	public IssueState State { get; set; }
-	public IssueType? Type { get; set; }
-	public IssueEstimate? Estimate { get; set; }
-	public DateTime CreationDateTimeUtc { get; set; }
-	public DateTime? ClosingDateTimeUtc { get; set; }
-#pragma warning disable CA1819 // Properties should not return arrays
-	public required Account Assignee { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-#pragma warning disable CA1819 // Properties should not return arrays
-	public required string[] RawLabels { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-	public bool IsCustom { get; set; }
-	public bool IsOvertime { get; set; }
-	public bool IsPullRequest { get; set; }
-	public DateTime LastUpdateDateTimeUtc { get; set; }
-	public int Number { get; set; }
+	public DateTime? LastCommentUpdatedAt { get; set; }
+	public string Summary { get; set; } = default!;
+	public string? Parent { get; set; }
+	public Collection<string> Alliases { get; set; } = [];
+	public Account? UpdatedBy { get; set; }
+	public string? Description { get; set; }
+	public Collection<string> Sprints { get; set; } = [];
+	public IssueType Type { get; set; }
+	public Priority Priority { get; set; }
+	public DateTime CreatedAt { get; set; }
+	public Collection<Account> Followers { get; set; } = [];
+	public required Account CreatedBy { get; set; }
+	public int Votes { get; set; }
+	public Account? Assignee { get; set; }
+	public string? Project { get; set; }
+	public required string Queue { get; set; }
+	public DateTime? UpdatedAt { get; set; }
+	public IssueStatus Status { get; set; }
+	public IssueStatus? PreviousStatus { get; set; }
+	public bool IsFavorite { get; set; }
 }

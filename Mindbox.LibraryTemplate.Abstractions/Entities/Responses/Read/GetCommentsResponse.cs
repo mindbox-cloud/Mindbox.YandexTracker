@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -13,7 +14,7 @@ public class GetCommentsResponse
 	public required string Text { get; set; }
 
 	[DataMember(Name = "attachments")]
-	public required FieldInfo Attachment { get; set; }
+	public Collection<FieldInfo> Attachment { get; set; } = [];
 
 	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; set; }
@@ -23,7 +24,7 @@ public class GetCommentsResponse
 
 	[DataMember(Name = "type")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public CommentType CommentType { get; set; }
+	public CommentType Type { get; set; }
 
 	[DataMember(Name = "transport")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]

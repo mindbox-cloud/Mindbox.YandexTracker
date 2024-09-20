@@ -22,4 +22,13 @@ public interface IGitlabClient
 	Task<Issue> CreateIssueAsync(CreateIssueRequest dto);
 
 	Task<IReadOnlyCollection<Component>> GetComponentsAsync();
+
+	Task<IReadOnlyCollection<Comment>> GetCommentsAsync(
+		string issue,
+		Expand? expand = null);
+
+	Task<Comment> CreateCommentAsync(
+		CreateCommentRequest request,
+		string issue,
+		bool? isAddToFollowers = null);
 }

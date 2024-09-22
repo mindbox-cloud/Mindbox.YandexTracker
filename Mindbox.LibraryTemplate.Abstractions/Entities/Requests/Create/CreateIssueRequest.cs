@@ -12,33 +12,33 @@ public class CreateIssueRequest
 	[DataMember(Name = "queue")]
 	public required FieldInfo Queue { get; set; }
 
-	[DataMember(Name = "followers")]
+	[DataMember(EmitDefaultValue = false, Name = "followers")]
 	public Collection<FieldInfo>? Followers { get; set; }
 
-	[DataMember(Name = "type")]
+	[DataMember(EmitDefaultValue = false, Name = "type")]
 	public IssueType? Type { get; set; }
 
-	[DataMember(Name = "description")]
+	[DataMember(EmitDefaultValue = false, Name = "description")]
 	public string? Description { get; set; }
 
-	[DataMember(Name = "parent")]
+	[DataMember(EmitDefaultValue = false, Name = "parent")]
 	public string? Parent { get; set; }
 
-	[DataMember(Name = "author")]
+	[DataMember(EmitDefaultValue = false, Name = "author")]
 	public string? Author { get; set; }
 
-	[DataMember(Name = "unique")]
+	[DataMember(EmitDefaultValue = false, Name = "unique")]
 	public string? Unique { get; set; }
 
-	[DataMember(Name = "attachmentIds")]
+	[DataMember(EmitDefaultValue = false, Name = "attachmentIds")]
 	public Collection<string>? AttachemntsIds { get; set; }
 
-	[DataMember(Name = "sprint")]
+	[DataMember(EmitDefaultValue = false, Name = "sprint")]
 	public Collection<string>? Sprints { get; set; }
 
-	[DataMember(Name = "priority")]
+	[DataMember(EmitDefaultValue = false, Name = "priority")]
 	public Priority? Priority { get; set; }
 
-	[DataMember(Name = "assignee")]
+	[DataMember(EmitDefaultValue = false, Name = "assignee")]
 	public string? Assignee { get; set; }
 }

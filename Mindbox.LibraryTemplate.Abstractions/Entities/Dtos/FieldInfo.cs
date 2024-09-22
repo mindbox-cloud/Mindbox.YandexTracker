@@ -8,7 +8,7 @@ public sealed class FieldInfo
 	[DataMember(Name = "id")]
 	public int Id { get; set; }
 
-	[DataMember(Name = "key")]
+	[DataMember(EmitDefaultValue = false, Name = "key")]
 	public string? Key { get; set; }
 
 	[DataMember(Name = "display")]

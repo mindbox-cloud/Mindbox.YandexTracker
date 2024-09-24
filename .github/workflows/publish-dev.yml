@@ -18,13 +18,13 @@ jobs:
           dotnet restore          
 
       - name: Build
-        run: dotnet build ./Mindbox.LibraryTemplate.sln --configuration Release --no-restore /warnaserror
+        run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore /warnaserror
 
       - name: Test
         run: dotnet test --no-restore
 
       - name: Pack
-        run: dotnet pack ./Mindbox.LibraryTemplate.sln -c Release -p:BuildNumber=${{ github.run_number }} -p:VersionTag="-dev"
+        run: dotnet pack ./Mindbox.YandexTracker.sln -c Release -p:BuildNumber=${{ github.run_number }} -p:VersionTag="-dev"
 
       - name: Publish
         run: dotnet nuget push **/*.nupkg -k ${{secrets.GH_FULL_TOKEN}} -s github -t 600 --skip-duplicate

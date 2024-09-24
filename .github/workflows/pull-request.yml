@@ -14,7 +14,7 @@ jobs:
       - name: Ensure Version Bump
         uses: mindbox-cloud/github-actions/ensure-bump@master
         with:
-          abstractionsPath: 'Mindbox.LibraryTemplate.Abstractions'
+          abstractionsPath: 'Mindbox.YandexTracker.Abstractions'
           
       - name: Run translation checker
         uses: mindbox-cloud/github-actions/localization/translation-checker@master
@@ -25,7 +25,7 @@ jobs:
           dotnet restore          
 
       - name: Build
-        run: dotnet build ./Mindbox.LibraryTemplate.sln --configuration Release --no-restore /warnaserror
+        run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore /warnaserror
 
       - name: Test
         run: dotnet test --no-restore

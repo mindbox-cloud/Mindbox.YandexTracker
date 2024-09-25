@@ -8,9 +8,7 @@ namespace Mindbox.YandexTracker;
 [Flags]
 public enum QueueExpandData
 {
-#pragma warning disable CA1008
-	Unspecified = 0x0,
-#pragma warning restore CA1008
+	None = 0,
 	Projects = 0x0001,
 	Components = 0x0002,
 	Versions = 0x0004,

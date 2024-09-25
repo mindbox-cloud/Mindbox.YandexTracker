@@ -8,9 +8,7 @@ namespace Mindbox.YandexTracker;
 [Flags]
 public enum IssueExpandData
 {
-#pragma warning disable CA1008
-	Unspecified = 0x0000,
-#pragma warning restore CA1008
+	None = 0,
 	Transitions = 0x0001,
 	Attacments = 0x0002
 }

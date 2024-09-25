@@ -39,15 +39,15 @@ public class ProjectFieldsDto
 	[DataMember(EmitDefaultValue = false, Name = "followers")]
 	public Collection<int>? Followers { get; set; }
 
-	/// <summary>
+	/// <remarks>
 	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format
-	/// </summary>
+	/// </remarks>
 	[DataMember(EmitDefaultValue = false, Name = "start")]
 	public DateTime? Start { get; set; }
 
-	/// <summary>
+	/// <remarks>
 	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format
-	/// </summary>
+	/// </remarks>
 	[DataMember(EmitDefaultValue = false, Name = "end")]
 	public DateTime? End { get; set; }
 

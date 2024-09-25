@@ -27,7 +27,7 @@ public class ProjectInfo
 	public int ShortId { get; set; }
 
 	[DataMember(Name = "entityType")]
-	public EntityType EntityType { get; set; }
+	public ProjectEntityType EntityType { get; set; }
 
 	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; set; }

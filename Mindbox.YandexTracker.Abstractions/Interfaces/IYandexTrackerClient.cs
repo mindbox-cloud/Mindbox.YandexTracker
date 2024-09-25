@@ -8,57 +8,57 @@ public interface IYandexTrackerClient
 {
 	Task<Queue> GetQueueAsync(
 		string queue,
-		CancellationToken token,
-		QueueExpandData? expand = null);
+		QueueExpandData? expand = null,
+		CancellationToken token = default);
 
 	Task<IReadOnlyCollection<Queue>> GetQueuesAsync(
-		CancellationToken token,
-		QueuesExpandData? expand = null);
+		QueuesExpandData? expand = null,
+		CancellationToken token = default);
 
 	Task<Issue> GetIssueAsync(
 		string issue,
-		CancellationToken token,
-		IssueExpandData? expand = null);
+		IssueExpandData? expand = null,
+		CancellationToken token = default);
 
 	Task<IReadOnlyCollection<Issue>> GetIssuesAsync(
 		GetIssuesRequest request,
-		CancellationToken token,
-		IssueExpandData? expand = null);
+		IssueExpandData? expand = null,
+		CancellationToken token = default);
 
-	Task<Issue> CreateIssueAsync(CreateIssueRequest request, CancellationToken token);
+	Task<Issue> CreateIssueAsync(CreateIssueRequest request, CancellationToken token = default);
 
-	Task<IReadOnlyCollection<Component>> GetComponentsAsync(CancellationToken token);
+	Task<IReadOnlyCollection<Component>> GetComponentsAsync(CancellationToken token = default);
 
 	Task<IReadOnlyCollection<Comment>> GetCommentsAsync(
 		string issue,
-		CancellationToken token,
-		CommentExpandData? expand = null);
+		CommentExpandData? expand = null,
+		CancellationToken token = default);
 
 	Task<Comment> CreateCommentAsync(
 		CreateCommentRequest request,
 		string issue,
-		CancellationToken token,
-		bool? isAddToFollowers = null);
+		bool? isAddToFollowers = null,
+		CancellationToken token = default);
 
-	Task<IReadOnlyCollection<Attachment>> GetAttachmentsAsync(string issue, CancellationToken token);
+	Task<IReadOnlyCollection<Attachment>> GetAttachmentsAsync(string issue, CancellationToken token = default);
 
 	Task<Attachment> CreateAttachmentAsync(
 		byte[] file,
 		string issue,
-		CancellationToken token,
-		string? newFileName = null);
+		string? newFileName = null,
+		CancellationToken token = default);
 
-	Task<IReadOnlyCollection<string>> GetTagsAsync(string queue, CancellationToken token);
+	Task<IReadOnlyCollection<string>> GetTagsAsync(string queue, CancellationToken token = default);
 
 	Task<Project> CreateProjectAsync(
 		CreateProjectRequest request,
-		EntityType entityType,
-		CancellationToken token);
+		ProjectEntityType entityType,
+		CancellationToken token = default);
 
 	Task<IReadOnlyCollection<Project>> GetProjectsAsync(
 		GetProjectsRequest request,
-		EntityType entityType,
-		CancellationToken token);
+		ProjectEntityType entityType,
+		CancellationToken token = default);
 
-	Task<IReadOnlyCollection<IssueField>> GetIssueFieldsAsync(string field, CancellationToken token);
+	Task<IReadOnlyCollection<IssueField>> GetIssueFieldsAsync(string field, CancellationToken token = default);
 }

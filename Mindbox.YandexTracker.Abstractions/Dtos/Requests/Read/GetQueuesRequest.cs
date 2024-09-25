@@ -70,34 +70,3 @@ public class QueueFieldsDto
 	[DataMember(EmitDefaultValue = false, Name = "quarter")]
 	public object? Quarter { get; set; }
 }
-
-/// <summary>
-/// Дополнительные поля, которые будут включены в ответ. Возможен множественный выбор.
-/// </summary>
-[Flags]
-public enum QueueExpandData
-{
-	Projects = 1,
-	Components = 2,
-	Versions = 4,
-	Types = 8,
-	Team = 16,
-	Workflows = 32,
-	Fields = 64,
-	IssueTypesConfig = 128,
-	All = Projects | Components | Versions | Types | Team | Workflows | Fields | IssueTypesConfig
-}
-
-/// <summary>
-/// Дополнительные поля, которые будут включены в ответ. Возможен множественный выбор.
-/// </summary>
-[Flags]
-public enum QueuesExpandData
-{
-	Projects = 1,
-	Components = 2,
-	Versions = 4,
-	Types = 8,
-	Team = 16,
-	Workflows = 32
-}

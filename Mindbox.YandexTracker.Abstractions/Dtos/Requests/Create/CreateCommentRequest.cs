@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
@@ -18,16 +17,4 @@ public class CreateCommentRequest
 
 	[DataMember(EmitDefaultValue = false, Name = "maillistSummonees")]
 	public Collection<string>? MaillistSummonees { get; set; }
-}
-
-/// <summary>
-/// Дополнительные поля, которые будут включены в ответ. Возможен множественный выбор.
-/// </summary>
-
-[Flags]
-public enum CommentExpandData
-{
-	Attachments = 1,
-	Html = 2,
-	All
 }

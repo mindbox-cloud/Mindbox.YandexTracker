@@ -83,13 +83,3 @@ public class IssueFilter
 	[DataMember(EmitDefaultValue = false, Name = "favorite")]
 	public bool? IsFavorite { get; set; }
 }
-
-/// <summary>
-/// Дополнительные поля, которые будут включены в ответ. Возможен множественный выбор.
-/// </summary>
-[Flags]
-public enum IssueExpandData
-{
-	Transitions = 1,
-	Attacments
-}

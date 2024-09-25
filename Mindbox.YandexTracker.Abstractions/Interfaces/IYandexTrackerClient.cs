@@ -7,58 +7,60 @@ namespace Mindbox.YandexTracker;
 public interface IYandexTrackerClient
 {
 	Task<Queue> GetQueueAsync(
-		string queue,
+		string queueKey,
 		QueueExpandData? expand = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<Queue>> GetQueuesAsync(
+	Task<IReadOnlyList<Queue>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
 	Task<Issue> GetIssueAsync(
-		string issue,
+		string issueKey,
 		IssueExpandData? expand = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<Issue>> GetIssuesAsync(
+	Task<IReadOnlyList<Issue>> GetIssuesAsync(
 		GetIssuesRequest request,
-		IssueExpandData? expand = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<Issue> CreateIssueAsync(CreateIssueRequest request, CancellationToken token = default);
+	Task<Issue> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<Component>> GetComponentsAsync(CancellationToken token = default);
+	Task<IReadOnlyList<Component>> GetComponentsAsync(CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<Comment>> GetCommentsAsync(
-		string issue,
+	Task<IReadOnlyList<Comment>> GetCommentsAsync(
+		string issueKey,
 		CommentExpandData? expand = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
 	Task<Comment> CreateCommentAsync(
+		string issueKey,
 		CreateCommentRequest request,
-		string issue,
-		bool? isAddToFollowers = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<Attachment>> GetAttachmentsAsync(string issue, CancellationToken token = default);
+	Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default);
 
 	Task<Attachment> CreateAttachmentAsync(
+		string issueKey,
 		byte[] file,
-		string issue,
 		string? newFileName = null,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<string>> GetTagsAsync(string queue, CancellationToken token = default);
+	Task<IReadOnlyList<string>> GetTagsAsync(string queueKey, CancellationToken cancellationToken = default);
 
 	Task<Project> CreateProjectAsync(
+		ProjectEntityType entityType,
 		CreateProjectRequest request,
-		ProjectEntityType entityType,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<Project>> GetProjectsAsync(
+	Task<IReadOnlyList<Project>> GetProjectsAsync(
+		ProjectEntityType entityType,
 		GetProjectsRequest request,
-		ProjectEntityType entityType,
-		CancellationToken token = default);
+		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyCollection<IssueField>> GetIssueFieldsAsync(string field, CancellationToken token = default);
+	Task<IssueField> GetAccessibleFieldsForIssueAsync(
+		string field,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default);
 }

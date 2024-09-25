@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -12,13 +13,9 @@ public sealed class Issue
 	public required IssueType Type { get; set; }
 	public Priority Priority { get; set; }
 	public DateTime CreatedAt { get; set; }
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
-	public string[] Alliases { get; set; } = Array.Empty<string>();
-	public string[] Sprints { get; set; } = Array.Empty<string>();
-	public UserInfo[] Followers { get; set; } = Array.Empty<UserInfo>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<string> Alliases { get; set; } = [];
+	public Collection<string> Sprints { get; set; } = [];
+	public Collection<UserInfo> Followers { get; set; } = [];
 	public required UserInfo CreatedBy { get; set; }
 	public int Votes { get; set; }
 	public UserInfo? Assignee { get; set; }

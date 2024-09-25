@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 namespace Mindbox.YandexTracker;
@@ -24,15 +25,11 @@ public class CreateCommentResponse
 	[DataMember(Name = "updateAt")]
 	public DateTime UpdatedAt { get; set; }
 
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
 	[DataMember(Name = "summonees")]
-	public FieldInfo[] Summonees { get; set; } = Array.Empty<FieldInfo>();
+	public Collection<FieldInfo> Summonees { get; set; } = [];
 
 	[DataMember(Name = "maillistSummonees")]
-	public FieldInfo[] MaillistSummonees { get; set; } = Array.Empty<FieldInfo>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<FieldInfo> MaillistSummonees { get; set; } = [];
 
 	[DataMember(Name = "type")]
 	public required string CommentType { get; set; }

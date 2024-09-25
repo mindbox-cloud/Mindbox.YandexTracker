@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -18,6 +19,9 @@ public class GetIssuesRequest
 
 	[DataMember(EmitDefaultValue = false, Name = "query")]
 	public string? Query { get; set; }
+
+	[JsonIgnore]
+	public IssueExpandData? Expand { get; set; }
 }
 
 [DataContract]

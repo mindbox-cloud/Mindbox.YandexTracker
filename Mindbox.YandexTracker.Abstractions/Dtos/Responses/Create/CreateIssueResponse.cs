@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 namespace Mindbox.YandexTracker;
@@ -27,18 +28,14 @@ public class CreateIssueResponse
 	[DataMember(Name = "description")]
 	public string? Description { get; set; }
 
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
 	[DataMember(Name = "sprint")]
-	public string[] Sprints { get; set; } = Array.Empty<string>();
+	public Collection<string> Sprints { get; set; } = [];
 
 	[DataMember(Name = "followers")]
-	public FieldInfo[] Followers { get; set; } = Array.Empty<FieldInfo>();
+	public Collection<FieldInfo> Followers { get; set; } = [];
 
 	[DataMember(Name = "aliases")]
-	public string[] Aliases { get; set; } = Array.Empty<string>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<string> Aliases { get; set; } = [];
 
 	[DataMember(Name = "type")]
 	public required FieldInfo Type { get; set; }

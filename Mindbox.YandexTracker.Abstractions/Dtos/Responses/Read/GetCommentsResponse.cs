@@ -1,4 +1,4 @@
-using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -13,12 +13,8 @@ public class GetCommentsResponse
 	[DataMember(Name = "text")]
 	public required string Text { get; set; }
 
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
 	[DataMember(Name = "attachments")]
-	public FieldInfo[] Attachments { get; set; } = Array.Empty<FieldInfo>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<FieldInfo> Attachments { get; set; } = [];
 
 	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; set; }

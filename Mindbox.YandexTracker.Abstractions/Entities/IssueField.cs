@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -20,9 +21,5 @@ public class IssueField
 public class OptionsProviderInfo
 {
 	public required string Type { get; set; }
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
-	public string[] Values { get; set; } = Array.Empty<string>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<string> Values { get; set; } = [];
 }

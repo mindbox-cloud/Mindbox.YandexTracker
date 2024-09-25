@@ -1,4 +1,4 @@
-using System;
+using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -15,13 +15,9 @@ public class Queue
 	public bool AllowExternals { get; set; }
 	public required IssueType DefaultType { get; set; }
 	public Priority DefaultPriority { get; set; }
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
-	public UserInfo[] TeamUsers { get; set; } = Array.Empty<UserInfo>();
-	public IssueType[] IssueTypes { get; set; } = Array.Empty<IssueType>();
-	public IssueTypeConfig[] IssueTypesConfig { get; set; } = Array.Empty<IssueTypeConfig>();
-	public string[] Workflows { get; set; } = Array.Empty<string>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<UserInfo> eamUsers { get; set; } = [];
+	public Collection<IssueType> ssueTypes { get; set; } = [];
+	public Collection<IssueTypeConfig> ssueTypesConfig { get; set; } = [];
+	public Collection<string> Workflows { get; set; } = [];
 	public bool DenyVoting { get; set; }
 }

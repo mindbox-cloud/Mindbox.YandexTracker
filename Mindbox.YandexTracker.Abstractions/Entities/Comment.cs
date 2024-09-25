@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -10,11 +11,7 @@ public class Comment
 	public UserInfo? UpdatedBy { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime? UpdatedAt { get; set; }
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
-	public Attachment[] Attachments { get; set; } = Array.Empty<Attachment>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<Attachment> Attachments { get; set; } = [];
 	public CommentType CommentType { get; set; }
 	public CommentTransportType TransportType { get; set; }
 }

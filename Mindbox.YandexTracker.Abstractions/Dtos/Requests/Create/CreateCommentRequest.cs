@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -17,4 +18,7 @@ public class CreateCommentRequest
 
 	[DataMember(EmitDefaultValue = false, Name = "maillistSummonees")]
 	public Collection<string>? MaillistSummonees { get; set; }
+
+	[JsonIgnore]
+	public bool? IsAddToFollowers { get; set; }
 }

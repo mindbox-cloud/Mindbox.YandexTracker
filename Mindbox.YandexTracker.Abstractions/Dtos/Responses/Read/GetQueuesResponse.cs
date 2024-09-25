@@ -1,4 +1,4 @@
-using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 namespace Mindbox.YandexTracker;
@@ -27,24 +27,20 @@ public class GetQueuesResponse
 	[DataMember(Name = "defaultPriority")]
 	public required FieldInfo DefaultPriority { get; set; }
 
-#pragma warning disable CA1819
-#pragma warning disable IDE0301
 	[DataMember(Name = "teamUsers")]
-	public FieldInfo[] TeamUsers { get; set; } = Array.Empty<FieldInfo>();
+	public Collection<FieldInfo> TeamUsers { get; set; } = [];
 
 	[DataMember(Name = "issueTypes")]
-	public FieldInfo[] IssueTypes { get; set; } = Array.Empty<FieldInfo>();
+	public Collection<FieldInfo> IssueTypes { get; set; } = [];
 
 	[DataMember(Name = "versions")]
-	public FieldInfo[] Versions { get; set; } = Array.Empty<FieldInfo>();
+	public Collection<FieldInfo> Versions { get; set; } = [];
 
 	[DataMember(Name = "workflows")]
-	public FieldInfo[] Workflows { get; set; } = Array.Empty<FieldInfo>();
+	public Collection<FieldInfo> Workflows { get; set; } = [];
 
 	[DataMember(Name = "issueTypesConfig")]
-	public IssueTypeConfigDto[] IssueTypesConfig { get; set; } = Array.Empty<IssueTypeConfigDto>();
-#pragma warning restore IDE0301
-#pragma warning restore CA1819
+	public Collection<IssueTypeConfigDto> IssueTypesConfig { get; set; } = [];
 
 	[DataMember(Name = "denyVoting")]
 	public bool DenyVoting { get; set; }

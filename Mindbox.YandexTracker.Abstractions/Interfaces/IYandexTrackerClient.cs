@@ -61,5 +61,4 @@ public interface IYandexTrackerClient
 		CancellationToken token);
 
 	Task<IReadOnlyCollection<IssueField>> GetIssueFieldsAsync(string field, CancellationToken token);
-	Task<IssueField> CreateIssueFieldAsync(CreateIssueFieldRequest request, CancellationToken token);
 }

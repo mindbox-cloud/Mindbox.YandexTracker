@@ -58,7 +58,7 @@ public interface IYandexTrackerClient
 		GetProjectsRequest request,
 		CancellationToken cancellationToken = default);
 
-	Task<IssueField> GetAccessibleFieldsForIssueAsync(
+	Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default);
 

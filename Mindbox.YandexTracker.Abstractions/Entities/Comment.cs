@@ -11,7 +11,7 @@ public class Comment
 	public UserInfo? UpdatedBy { get; set; }
 	public DateTime CreatedAt { get; set; }
 	public DateTime? UpdatedAt { get; set; }
-	public Collection<Attachment> Attachments { get; set; } = [];
+	public Collection<string> Attachments { get; set; } = [];
 	public CommentType CommentType { get; set; }
 	public CommentTransportType TransportType { get; set; }
 }

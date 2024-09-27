@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -19,4 +20,7 @@ public class GetProjectsRequest
 
 	[DataMember(EmitDefaultValue = false, Name = "rootOnly")]
 	public bool? RootOnly { get; set; }
+
+	[JsonIgnore]
+	public ProjectFieldData? FieldsWhichIncludedInResponse { get; set; }
 }

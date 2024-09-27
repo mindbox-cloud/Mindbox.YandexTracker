@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -12,6 +14,9 @@ public class GetIssueResponse
 
 	[DataMember(Name = "key")]
 	public required string Key { get; set; }
+
+	[DataMember(Name = "summary")]
+	public required string Summary { get; set; }
 
 	[DataMember(Name = "lastCommentUpdatedAt")]
 	public DateTime? LastCommentUpdatedAt { get; set; }
@@ -69,4 +74,7 @@ public class GetIssueResponse
 
 	[DataMember(Name = "favorite")]
 	public bool IsFavorite { get; set; }
+
+	[JsonExtensionData]
+	public Dictionary<string, object> Fields { get; set; } = [];
 }

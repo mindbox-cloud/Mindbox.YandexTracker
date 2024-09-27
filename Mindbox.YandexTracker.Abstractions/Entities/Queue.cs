@@ -12,12 +12,11 @@ public class Queue
 	public required UserInfo Lead { get; set; }
 	public string? Description { get; set; }
 	public bool AssignAuto { get; set; }
-	public bool AllowExternals { get; set; }
 	public required IssueType DefaultType { get; set; }
 	public Priority DefaultPriority { get; set; }
-	public Collection<UserInfo> eamUsers { get; set; } = [];
-	public Collection<IssueType> ssueTypes { get; set; } = [];
-	public Collection<IssueTypeConfig> ssueTypesConfig { get; set; } = [];
-	public Collection<string> Workflows { get; set; } = [];
+	public Collection<UserInfo> TeamUsers { get; set; } = [];
+	public Collection<IssueType> IssueTypes { get; set; } = [];
+	public Collection<IssueTypeConfig> IssueTypesConfig { get; set; } = [];
+	public Collection<IssueType> Workflows { get; set; } = [];
 	public bool DenyVoting { get; set; }
 }

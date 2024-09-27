@@ -12,8 +12,11 @@ public class GetQueuesResponse
 	[DataMember(Name = "key")]
 	public required string Key { get; set; }
 
+	[DataMember(Name = "name")]
+	public required string Name { get; set; }
+
 	[DataMember(Name = "description")]
-	public required string Description { get; set; }
+	public string? Description { get; set; }
 
 	[DataMember(Name = "lead")]
 	public required FieldInfo Lead { get; set; }
@@ -37,11 +40,18 @@ public class GetQueuesResponse
 	public Collection<FieldInfo> Versions { get; set; } = [];
 
 	[DataMember(Name = "workflows")]
-	public Collection<FieldInfo> Workflows { get; set; } = [];
+	public WorkflowInfoDto? Workflows { get; set; }
 
 	[DataMember(Name = "issueTypesConfig")]
-	public Collection<IssueTypeConfigDto> IssueTypesConfig { get; set; } = [];
+	public Collection<IssueTypeConfigDto> IssueTypesConfigDto { get; set; } = [];
 
 	[DataMember(Name = "denyVoting")]
 	public bool DenyVoting { get; set; }
+}
+
+[DataContract]
+public class WorkflowInfoDto
+{
+	[DataMember(Name = "dev")]
+	public Collection<FieldInfo> Fields { get; set; } = [];
 }

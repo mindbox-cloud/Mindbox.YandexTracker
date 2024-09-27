@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -32,8 +33,10 @@ public class CreateCommentResponse
 	public Collection<FieldInfo> MaillistSummonees { get; set; } = [];
 
 	[DataMember(Name = "type")]
-	public required string CommentType { get; set; }
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public CommentType Type { get; set; }
 
 	[DataMember(Name = "transport")]
-	public required string TransportType { get; set; }
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public CommentTransportType TransportType { get; set; }
 }

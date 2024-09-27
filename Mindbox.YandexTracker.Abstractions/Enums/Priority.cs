@@ -2,9 +2,9 @@ namespace Mindbox.YandexTracker;
 
 public enum Priority
 {
+	Trivial,
 	Minor,
-	Low,
-	Medium,
+	Normal,
 	Critical,
 	Blocker
 }

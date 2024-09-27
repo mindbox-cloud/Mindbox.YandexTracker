@@ -10,6 +10,9 @@ public class CreateProjectRequest
 {
 	[DataMember(Name = "fields")]
 	public required ProjectFieldsDto Fields { get; set; }
+
+	[JsonIgnore]
+	public ProjectFieldData? FieldsWhichIncludedInResponse { get; set; }
 }
 
 [DataContract]

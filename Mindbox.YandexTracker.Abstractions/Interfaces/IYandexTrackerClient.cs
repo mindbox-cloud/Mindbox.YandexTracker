@@ -59,7 +59,7 @@ public interface IYandexTrackerClient
 		CancellationToken cancellationToken = default);
 
 	Task<IssueField> GetAccessibleFieldsForIssueAsync(
-		string field,
+		string queueKey,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default);

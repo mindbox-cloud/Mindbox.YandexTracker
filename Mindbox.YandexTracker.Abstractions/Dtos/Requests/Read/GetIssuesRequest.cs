@@ -21,7 +21,7 @@ public class GetIssuesRequest
 	public string? Query { get; set; }
 
 	[JsonIgnore]
-	public IssueExpandData? Expand { get; set; }
+	public IssuesExpandData? Expand { get; set; }
 }
 
 [DataContract]

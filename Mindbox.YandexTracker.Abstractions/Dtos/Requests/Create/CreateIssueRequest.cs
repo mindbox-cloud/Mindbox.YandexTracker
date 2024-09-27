@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -44,5 +45,6 @@ public class CreateIssueRequest
 	public string? Assignee { get; set; }
 
 	[DataMember(EmitDefaultValue = false)]
-	public Dictionary<string, List<object>>? Fields { get; set; } 
+	[JsonExtensionData]
+	public Dictionary<string, object>? Fields { get; set; } 
 }

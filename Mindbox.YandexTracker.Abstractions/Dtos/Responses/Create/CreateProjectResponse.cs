@@ -1,36 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetProjectsResponse
-{
-	[DataMember(Name = "hits")]
-	public int Hits { get; set; }
-
-	[DataMember(Name = "pages")]
-	public int Pages { get; set; }
-
-	[DataMember(Name = "values")]
-	public required Collection<ProjectInfo> Values { get; set; }
-
-	[DataMember(Name = "orderBy")]
-	public string? OrderBy { get; set; }
-}
-
-[DataContract]
-public class ProjectInfo
+public class CreateProjectResponse
 {
 	[DataMember(Name = "id")]
-	public int Id { get; set; }
+	public required string Id { get; set; }
 
 	[DataMember(Name = "entityType")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public ProjectEntityType ProjectType { get; set; }
+	public ProjectEntityType ProjectEntityType { get; set; }
 
 	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; set; }
@@ -39,8 +22,9 @@ public class ProjectInfo
 	public DateTime CreatedAt { get; set; }
 
 	[DataMember(Name = "updatedAt")]
-	public required DateTime UpdatedAt { get; set; }
+	public DateTime UpdatedAt { get; set; }
 
 	[DataMember(Name = "fields")]
+	[JsonExtensionData]
 	public Dictionary<string, object> Fields { get; set; } = [];
 }

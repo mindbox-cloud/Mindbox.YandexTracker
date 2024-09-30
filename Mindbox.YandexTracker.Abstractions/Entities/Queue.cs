@@ -2,9 +2,9 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-#pragma warning disable CA1711
+#pragma warning disable CA1711 // Идентификаторы не должны иметь неправильных суффиксов
 public class Queue
-#pragma warning restore CA1711
+#pragma warning restore CA1711 // Идентификаторы не должны иметь неправильных суффиксов
 {
 	public required int Id { get; set; }
 	public required string Key { get; set; }

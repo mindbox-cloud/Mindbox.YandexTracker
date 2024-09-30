@@ -2,9 +2,11 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-#pragma warning disable CA1711 // Идентификаторы не должны иметь неправильных суффиксов
+// Queue - зарезервированное слово, идентификатор не должен на него оканчиваться, CA1711 на это ругается
+// Но название норм по бизнесу, поэтому повесим прагму.
+#pragma warning disable CA1711
 public class Queue
-#pragma warning restore CA1711 // Идентификаторы не должны иметь неправильных суффиксов
+#pragma warning restore CA1711
 {
 	public required int Id { get; set; }
 	public required string Key { get; set; }

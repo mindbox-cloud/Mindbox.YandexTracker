@@ -15,7 +15,7 @@ public class IssueField
 	public required string QueryProvider { get; set; }
 	public string? SuggestProvider { get; set; }
 	public int Order { get; set; }
-	public required FieldInfo Category { get; set; }
+	public required string CategoryId { get; set; }
 	public required string Schema { get; set; }
 }
 

@@ -11,7 +11,7 @@ public class IssueField
 	public bool Readonly { get; set; }
 	public bool Options { get; set; }
 	public bool Suggest { get; set; }
-	public OptionsProviderInfo? OptionsProvider { get; set; }
+	public required OptionsProviderInfo OptionsProvider { get; set; }
 	public required string QueryProvider { get; set; }
 	public string? SuggestProvider { get; set; }
 	public int Order { get; set; }

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 namespace Mindbox.YandexTracker;
@@ -27,7 +28,7 @@ public class GetIssueFieldsResponse
 	public ProviderInfoDto? SuggestProvider { get; set; }
 
 	[DataMember(Name = "optionsProvider")]
-	public required ProviderInfoDto OptionsProvider { get; set; }
+	public required OptionsProviderInfoDto OptionsProvider { get; set; }
 
 	[DataMember(Name = "queryProvider")]
 	public ProviderInfoDto? QueryProvider { get; set; }
@@ -60,4 +61,14 @@ public class SchemaInfoDto
 
 	[DataMember(Name = "required")]
 	public bool Required { get; set; }
+}
+
+[DataContract]
+public class OptionsProviderInfoDto
+{
+	[DataMember(Name = "type")]
+	public required string Type { get; set; }
+
+	[DataMember(Name = "values")]
+	public Collection<string> Values { get; set; } = [];
 }

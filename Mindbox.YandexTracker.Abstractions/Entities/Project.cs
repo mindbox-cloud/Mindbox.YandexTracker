@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-public class Project
+public sealed record Project
 {
 	public required string Id { get; set; }
 	public ProjectEntityType ProjectType { get; set; }

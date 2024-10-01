@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class IssueTypeConfigDto
+public sealed record IssueTypeConfigDto
 {
 	[DataMember(Name = "issueType")]
 	public required FieldInfo IssueType { get; set; }

@@ -1,12 +1,12 @@
-using System.Collections.ObjectModel;
 using System;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetQueuesRequest
+public sealed record GetQueuesRequest
 {
 	[DataMember(EmitDefaultValue = false, Name = "input")]
 	public string? Input { get; set; }
@@ -25,7 +25,7 @@ public class GetQueuesRequest
 }
 
 [DataContract]
-public class QueueFieldsDto
+public sealed record QueueFieldsDto
 {
 	[DataMember(EmitDefaultValue = false, Name = "summary")]
 	public required string Summary { get; set; }
@@ -65,8 +65,8 @@ public class QueueFieldsDto
 
 	[DataMember(EmitDefaultValue = false, Name = "entityStatus")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public ProjectEntityStatus EntityStatus { get; set; }
+	public ProjectEntityStatus? EntityStatus { get; set; }
 
 	[DataMember(EmitDefaultValue = false, Name = "quarter")]
-	public object? Quarter { get; set; }
+	public Collection<string>? Quarter { get; set; }
 }

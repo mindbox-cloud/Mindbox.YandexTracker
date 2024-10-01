@@ -1,6 +1,6 @@
 namespace Mindbox.YandexTracker;
 
-public class IssueStatus
+public sealed record IssueStatus
 {
 	public required string Name { get; set; }
 	public required IssueStatusType Type { get; set; }

@@ -1,6 +1,6 @@
 namespace Mindbox.YandexTracker;
 
-public sealed class UserInfo
+public sealed record UserInfo
 {
 	public required string Id { get; set; }
 }

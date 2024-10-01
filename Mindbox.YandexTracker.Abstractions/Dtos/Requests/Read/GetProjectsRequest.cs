@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetProjectsRequest
+public sealed record GetProjectsRequest
 {
 	[DataMember(EmitDefaultValue = false, Name = "input")]
 	public string? Input { get; set; }

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetQueuesResponse
+public sealed record GetQueuesResponse
 {
 	[DataMember(Name = "id")]
 	public int Id { get; set; }

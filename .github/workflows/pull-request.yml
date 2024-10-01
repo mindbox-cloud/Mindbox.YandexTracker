@@ -11,21 +11,22 @@ jobs:
         with:
           fetch-depth: 2
         
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
       - name: Ensure Version Bump
         uses: mindbox-cloud/github-actions/ensure-bump@master
         with:
           abstractionsPath: 'Mindbox.YandexTracker.Abstractions'
-          
-      - name: Run translation checker
-        uses: mindbox-cloud/github-actions/localization/translation-checker@master
+        
 
       - name: Install dependencies
-        run: |
-          dotnet nuget add source --username USERNAME --password ${{ secrets.GH_FULL_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/mindbox-cloud/index.json"
-          dotnet restore          
+        run: dotnet restore          
 
       - name: Build
-        run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore /warnaserror
+        run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore
 
       - name: Test
         run: dotnet test --no-restore

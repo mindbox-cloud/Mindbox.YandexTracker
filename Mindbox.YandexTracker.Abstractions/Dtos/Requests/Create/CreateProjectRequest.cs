@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class CreateProjectRequest
+public sealed record CreateProjectRequest
 {
 	[DataMember(Name = "fields")]
 	public required ProjectFieldsDto Fields { get; set; }
@@ -16,7 +16,7 @@ public class CreateProjectRequest
 }
 
 [DataContract]
-public class ProjectFieldsDto
+public sealed record ProjectFieldsDto
 {
 	[DataMember(EmitDefaultValue = false, Name = "summary")]
 	public required string Summary { get; set; }

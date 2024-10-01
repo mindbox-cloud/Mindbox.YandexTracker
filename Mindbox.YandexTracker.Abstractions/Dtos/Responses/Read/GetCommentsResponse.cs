@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetCommentsResponse
+public sealed record GetCommentsResponse
 {
 	[DataMember(Name = "id")]
 	public int Id { get; set; }

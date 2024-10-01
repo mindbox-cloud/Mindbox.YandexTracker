@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetProjectsResponse
+public sealed record GetProjectsResponse
 {
 	[DataMember(Name = "hits")]
 	public int Hits { get; set; }
@@ -23,7 +23,7 @@ public class GetProjectsResponse
 }
 
 [DataContract]
-public class ProjectInfo
+public sealed record ProjectInfo
 {
 	[DataMember(Name = "id")]
 	public int Id { get; set; }

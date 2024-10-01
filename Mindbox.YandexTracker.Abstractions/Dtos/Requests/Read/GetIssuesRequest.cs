@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class GetIssuesRequest
+public sealed record GetIssuesRequest
 {
 	[DataMember(EmitDefaultValue = false, Name = "queue")]
 	public string? Queue { get; set; }
@@ -25,7 +25,7 @@ public class GetIssuesRequest
 }
 
 [DataContract]
-public class IssueFilter
+public sealed record IssueFilter
 {
 	[DataMember(EmitDefaultValue = false, Name = "lastCommentUpdatedAt")]
 	public DateTime? LastCommentUpdatedAt { get; set; }

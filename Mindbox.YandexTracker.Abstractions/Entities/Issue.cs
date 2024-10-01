@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-public sealed class Issue
+public sealed record Issue
 {
 	public required string Key { get; set; }
 	public DateTime? LastCommentUpdatedAt { get; set; }

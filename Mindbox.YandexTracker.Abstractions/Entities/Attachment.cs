@@ -2,7 +2,7 @@ using System;
 
 namespace Mindbox.YandexTracker;
 
-public class Attachment
+public sealed record Attachment
 {
 	public int Id { get; set; }
 	public required string Name { get; set; }
@@ -15,7 +15,7 @@ public class Attachment
 	public AttachmentData? Metadata { get; set; }
 }
 
-public class AttachmentData
+public sealed record AttachmentData
 {
 	public required string Size { get; set; }
 }

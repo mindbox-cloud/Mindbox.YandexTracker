@@ -1,6 +1,6 @@
 namespace Mindbox.YandexTracker;
 
-public class Resolution
+public sealed record Resolution
 {
 	public required string Name { get; set; }
 	public required string Key { get; set; }

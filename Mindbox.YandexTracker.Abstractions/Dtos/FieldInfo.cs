@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public sealed class FieldInfo
+public sealed record FieldInfo
 {
 	[DataMember(Name = "id")]
 	public int Id { get; set; }

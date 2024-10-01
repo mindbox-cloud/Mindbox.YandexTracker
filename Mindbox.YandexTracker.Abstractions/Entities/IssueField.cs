@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-public class IssueField
+public sealed record IssueField
 {
 	public required string Id { get; set; }
 	public required string Key { get; set; }
@@ -19,7 +19,7 @@ public class IssueField
 	public required string Schema { get; set; }
 }
 
-public class OptionsProviderInfo
+public sealed record OptionsProviderInfo
 {
 	public required string Type { get; set; }
 	public Collection<string> Values { get; set; } = [];

@@ -5,7 +5,7 @@ namespace Mindbox.YandexTracker;
 // Queue - зарезервированное слово, идентификатор не должен на него оканчиваться, CA1711 на это ругается
 // Но название норм по бизнесу, поэтому повесим прагму.
 #pragma warning disable CA1711
-public class Queue
+public sealed record Queue
 #pragma warning restore CA1711
 {
 	public required int Id { get; set; }

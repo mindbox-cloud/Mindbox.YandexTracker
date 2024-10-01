@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public class CreateAttachmentResponse
+public sealed record CreateAttachmentResponse
 {
 	[DataMember(Name = "id")]
 	public required string Id { get; set; }

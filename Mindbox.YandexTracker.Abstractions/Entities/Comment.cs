@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-public class Comment
+public sealed record Comment
 {
 	public int Id { get; set; }
 	public required string Text { get; set; }

@@ -21,11 +21,8 @@ jobs:
         with:
           abstractionsPath: 'Mindbox.YandexTracker.Abstractions'
         
-
       - name: Install dependencies
-        run: |
-          dotnet nuget add source --username USERNAME --password ${{ secrets.GH_FULL_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/mindbox-cloud/index.json"
-          dotnet restore      
+        run: dotnet restore      
 
       - name: Build
         run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore

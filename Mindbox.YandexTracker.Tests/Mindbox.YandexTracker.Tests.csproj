@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mindbox.LibraryTemplate\Mindbox.LibraryTemplate.csproj" />
+      <ProjectReference Include="..\Mindbox.YandexTracker\Mindbox.YandexTracker.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,21 @@
+using System;
+
+namespace Mindbox.YandexTracker;
+
+public sealed record Attachment
+{
+	public int Id { get; init; }
+	public required string Name { get; init; }
+	public required string Content { get; init; }
+	public required string Thumbnail { get; init; }
+	public required UserInfo CreatedBy { get; init; }
+	public required DateTime CreatedAt { get; init; }
+	public FileType MimeType { get; init; }
+	public int Size { get; init; }
+	public AttachmentData? Metadata { get; init; }
+}
+
+public sealed record AttachmentData
+{
+	public required string Size { get; init; }
+}

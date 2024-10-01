@@ -13,8 +13,8 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionMajor>1</VersionMajor>
-    <VersionMinor>0</VersionMinor>
+    <VersionMajor>0</VersionMajor>
+    <VersionMinor>1</VersionMinor>
     <BuildNumber>$(BuildNumber)</BuildNumber>
     <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
     <PackageVersion>$(VersionMajor).$(VersionMinor).$(BuildNumber)$(VersionTag)</PackageVersion>
@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Mindbox.LibraryTemplate.Tests</_Parameter1>
+      <_Parameter1>Mindbox.YandexTracker.Tests</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.CLSCompliant">
       <_Parameter1>true</_Parameter1>

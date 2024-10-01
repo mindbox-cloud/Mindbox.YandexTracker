@@ -5,13 +5,13 @@ namespace Mindbox.YandexTracker;
 
 public sealed record Comment
 {
-	public int Id { get; set; }
-	public required string Text { get; set; }
-	public required UserInfo CreatedBy { get; set; }
-	public UserInfo? UpdatedBy { get; set; }
-	public DateTime CreatedAt { get; set; }
-	public DateTime? UpdatedAt { get; set; }
-	public Collection<string> Attachments { get; set; } = [];
-	public CommentType CommentType { get; set; }
-	public CommentTransportType TransportType { get; set; }
+	public int Id { get; init; }
+	public required string Text { get; init; }
+	public required UserInfo CreatedBy { get; init; }
+	public UserInfo? UpdatedBy { get; init; }
+	public DateTime CreatedAt { get; init; }
+	public DateTime? UpdatedAt { get; init; }
+	public Collection<string> Attachments { get; init; } = [];
+	public CommentType CommentType { get; init; }
+	public CommentTransportType TransportType { get; init; }
 }

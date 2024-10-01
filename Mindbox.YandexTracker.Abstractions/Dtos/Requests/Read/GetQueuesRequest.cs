@@ -9,64 +9,64 @@ namespace Mindbox.YandexTracker;
 public sealed record GetQueuesRequest
 {
 	[DataMember(EmitDefaultValue = false, Name = "input")]
-	public string? Input { get; set; }
+	public string? Input { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "filter")]
-	public QueueFieldsDto? Filter { get; set; }
+	public QueueFieldsDto? Filter { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "orderBy")]
-	public string? OrderBy { get; set; }
+	public string? OrderBy { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "orderAsc")]
-	public bool? OrderAscending { get; set; }
+	public bool? OrderAscending { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "rootOnly")]
-	public bool? RootOnly { get; set; }
+	public bool? RootOnly { get; init; }
 }
 
 [DataContract]
 public sealed record QueueFieldsDto
 {
 	[DataMember(EmitDefaultValue = false, Name = "summary")]
-	public required string Summary { get; set; }
+	public required string Summary { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "teamAccess")]
-	public bool? TeamAccess { get; set; }
+	public bool? TeamAccess { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "description")]
-	public string? Description { get; set; }
+	public string? Description { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "author")]
-	public int? AuthorId { get; set; }
+	public int? AuthorId { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "lead")]
-	public int? LeadId { get; set; }
+	public int? LeadId { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "teamUsers")]
-	public Collection<int>? TeamUsers { get; set; }
+	public Collection<int>? TeamUsers { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "clients")]
-	public Collection<int>? Clients { get; set; }
+	public Collection<int>? Clients { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "followers")]
-	public Collection<int>? Followers { get; set; }
+	public Collection<int>? Followers { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "start")]
-	public DateTime? Start { get; set; }
+	public DateTime? Start { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "end")]
-	public DateTime? End { get; set; }
+	public DateTime? End { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "tags")]
-	public Collection<string>? Tags { get; set; }
+	public Collection<string>? Tags { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "parentEntity")]
-	public int? ParentEntityId { get; set; }
+	public int? ParentEntityId { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "entityStatus")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public ProjectEntityStatus? EntityStatus { get; set; }
+	public ProjectEntityStatus? EntityStatus { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "quarter")]
-	public Collection<string>? Quarter { get; set; }
+	public Collection<string>? Quarter { get; init; }
 }

@@ -2,10 +2,10 @@ namespace Mindbox.YandexTracker;
 
 public sealed record Component
 {
-	public int Id { get; set; }
-	public required string Name { get; set; }
-	public string? Queue { get; set; }
-	public string? Description { get; set; }
-	public required bool AssignAuto { get; set; }
-	public UserInfo? Lead { get; set; }
+	public int Id { get; init; }
+	public required string Name { get; init; }
+	public string? Queue { get; init; }
+	public string? Description { get; init; }
+	public required bool AssignAuto { get; init; }
+	public UserInfo? Lead { get; init; }
 }

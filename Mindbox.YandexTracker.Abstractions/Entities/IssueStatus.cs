@@ -2,7 +2,7 @@ namespace Mindbox.YandexTracker;
 
 public sealed record IssueStatus
 {
-	public required string Name { get; set; }
-	public required IssueStatusType Type { get; set; }
-	public required string Key { get; set; }
+	public required string Name { get; init; }
+	public required IssueStatusType Type { get; init; }
+	public required string Key { get; init; }
 }

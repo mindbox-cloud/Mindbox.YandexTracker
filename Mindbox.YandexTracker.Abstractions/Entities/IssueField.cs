@@ -4,23 +4,23 @@ namespace Mindbox.YandexTracker;
 
 public sealed record IssueField
 {
-	public required string Id { get; set; }
-	public required string Key { get; set; }
-	public required string Name { get; set; }
-	public string? Description { get; set; }
-	public bool Readonly { get; set; }
-	public bool Options { get; set; }
-	public bool Suggest { get; set; }
-	public required OptionsProviderInfo OptionsProvider { get; set; }
-	public required string QueryProvider { get; set; }
-	public string? SuggestProvider { get; set; }
-	public int Order { get; set; }
-	public required string CategoryId { get; set; }
-	public required string Schema { get; set; }
+	public required string Id { get; init; }
+	public required string Key { get; init; }
+	public required string Name { get; init; }
+	public string? Description { get; init; }
+	public bool Readonly { get; init; }
+	public bool Options { get; init; }
+	public bool Suggest { get; init; }
+	public required OptionsProviderInfo OptionsProvider { get; init; }
+	public required string QueryProvider { get; init; }
+	public string? SuggestProvider { get; init; }
+	public int Order { get; init; }
+	public required string CategoryId { get; init; }
+	public required string Schema { get; init; }
 }
 
 public sealed record OptionsProviderInfo
 {
-	public required string Type { get; set; }
-	public Collection<string> Values { get; set; } = [];
+	public required string Type { get; init; }
+	public Collection<string> Values { get; init; } = [];
 }

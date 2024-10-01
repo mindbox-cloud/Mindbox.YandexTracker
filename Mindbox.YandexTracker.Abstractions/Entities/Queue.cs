@@ -8,17 +8,17 @@ namespace Mindbox.YandexTracker;
 public sealed record Queue
 #pragma warning restore CA1711
 {
-	public required int Id { get; set; }
-	public required string Key { get; set; }
-	public required string Name { get; set; }
-	public required UserInfo Lead { get; set; }
-	public string? Description { get; set; }
-	public bool AssignAuto { get; set; }
-	public required IssueType DefaultType { get; set; }
-	public Priority DefaultPriority { get; set; }
-	public Collection<UserInfo> TeamUsers { get; set; } = [];
-	public Collection<IssueType> IssueTypes { get; set; } = [];
-	public Collection<IssueTypeConfig> IssueTypesConfig { get; set; } = [];
-	public Collection<IssueType> Workflows { get; set; } = [];
-	public bool DenyVoting { get; set; }
+	public required int Id { get; init; }
+	public required string Key { get; init; }
+	public required string Name { get; init; }
+	public required UserInfo Lead { get; init; }
+	public string? Description { get; init; }
+	public bool AssignAuto { get; init; }
+	public required IssueType DefaultType { get; init; }
+	public Priority DefaultPriority { get; init; }
+	public Collection<UserInfo> TeamUsers { get; init; } = [];
+	public Collection<IssueType> IssueTypes { get; init; } = [];
+	public Collection<IssueTypeConfig> IssueTypesConfig { get; init; } = [];
+	public Collection<IssueType> Workflows { get; init; } = [];
+	public bool DenyVoting { get; init; }
 }

@@ -9,22 +9,22 @@ namespace Mindbox.YandexTracker;
 public sealed record CreateProjectResponse
 {
 	[DataMember(Name = "id")]
-	public required string Id { get; set; }
+	public required string Id { get; init; }
 
 	[DataMember(Name = "entityType")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public ProjectEntityType ProjectEntityType { get; set; }
+	public ProjectEntityType ProjectEntityType { get; init; }
 
 	[DataMember(Name = "createdBy")]
-	public required FieldInfo CreatedBy { get; set; }
+	public required FieldInfo CreatedBy { get; init; }
 
 	[DataMember(Name = "createdAt")]
-	public DateTime CreatedAt { get; set; }
+	public DateTime CreatedAt { get; init; }
 
 	[DataMember(Name = "updatedAt")]
-	public DateTime UpdatedAt { get; set; }
+	public DateTime UpdatedAt { get; init; }
 
 	[DataMember(Name = "fields")]
 	[JsonExtensionData]
-	public Dictionary<string, object> Fields { get; set; } = [];
+	public Dictionary<string, object> Fields { get; init; } = [];
 }

@@ -9,42 +9,42 @@ namespace Mindbox.YandexTracker;
 public sealed record CreateIssueRequest
 {
 	[DataMember(Name = "summary")]
-	public required string Summary { get; set; }
+	public required string Summary { get; init; }
 
 	[DataMember(Name = "queue")]
-	public required FieldInfo Queue { get; set; }
+	public required FieldInfo Queue { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "followers")]
-	public Collection<FieldInfo>? Followers { get; set; }
+	public Collection<FieldInfo>? Followers { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "type")]
-	public IssueType? Type { get; set; }
+	public IssueType? Type { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "description")]
-	public string? Description { get; set; }
+	public string? Description { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "parent")]
-	public string? Parent { get; set; }
+	public string? Parent { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "author")]
-	public string? Author { get; set; }
+	public string? Author { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "unique")]
-	public string? Unique { get; set; }
+	public string? Unique { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "attachmentIds")]
-	public Collection<string>? AttachemntsIds { get; set; }
+	public Collection<string>? AttachemntsIds { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "sprint")]
-	public Collection<string>? Sprints { get; set; }
+	public Collection<string>? Sprints { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "priority")]
-	public Priority? Priority { get; set; }
+	public Priority? Priority { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "assignee")]
-	public string? Assignee { get; set; }
+	public string? Assignee { get; init; }
 
 	[DataMember(EmitDefaultValue = false)]
 	[JsonExtensionData]
-	public Dictionary<string, object>? Fields { get; set; } 
+	public Dictionary<string, object>? Fields { get; init; } 
 }

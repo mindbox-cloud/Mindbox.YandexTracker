@@ -9,34 +9,34 @@ namespace Mindbox.YandexTracker;
 public sealed record CreateCommentResponse
 {
 	[DataMember(Name = "id")]
-	public int Id { get; set; }
+	public int Id { get; init; }
 
 	[DataMember(Name = "text")]
-	public required string Text { get; set; }
+	public required string Text { get; init; }
 
 	[DataMember(Name = "createBody")]
-	public required FieldInfo CreatedBy { get; set; }
+	public required FieldInfo CreatedBy { get; init; }
 
 	[DataMember(Name = "updateBody")]
-	public required FieldInfo UpdatedBy { get; set; }
+	public required FieldInfo UpdatedBy { get; init; }
 
 	[DataMember(Name = "createdAt")]
-	public DateTime CreatedAt { get; set; }
+	public DateTime CreatedAt { get; init; }
 
 	[DataMember(Name = "updateAt")]
-	public DateTime UpdatedAt { get; set; }
+	public DateTime UpdatedAt { get; init; }
 
 	[DataMember(Name = "summonees")]
-	public Collection<FieldInfo> Summonees { get; set; } = [];
+	public Collection<FieldInfo> Summonees { get; init; } = [];
 
 	[DataMember(Name = "maillistSummonees")]
-	public Collection<FieldInfo> MaillistSummonees { get; set; } = [];
+	public Collection<FieldInfo> MaillistSummonees { get; init; } = [];
 
 	[DataMember(Name = "type")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public CommentType Type { get; set; }
+	public CommentType Type { get; init; }
 
 	[DataMember(Name = "transport")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public CommentTransportType TransportType { get; set; }
+	public CommentTransportType TransportType { get; init; }
 }

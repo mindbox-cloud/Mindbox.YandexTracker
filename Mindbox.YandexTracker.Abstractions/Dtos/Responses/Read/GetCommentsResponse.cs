@@ -8,25 +8,25 @@ namespace Mindbox.YandexTracker;
 public sealed record GetCommentsResponse
 {
 	[DataMember(Name = "id")]
-	public int Id { get; set; }
+	public int Id { get; init; }
 
 	[DataMember(Name = "text")]
-	public required string Text { get; set; }
+	public required string Text { get; init; }
 
 	[DataMember(Name = "attachments")]
-	public Collection<FieldInfo> Attachments { get; set; } = [];
+	public Collection<FieldInfo> Attachments { get; init; } = [];
 
 	[DataMember(Name = "createdBy")]
-	public required FieldInfo CreatedBy { get; set; }
+	public required FieldInfo CreatedBy { get; init; }
 
 	[DataMember(Name = "updatedBy")]
-	public required FieldInfo UpdatedBy { get; set; }
+	public required FieldInfo UpdatedBy { get; init; }
 
 	[DataMember(Name = "type")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public CommentType Type { get; set; }
+	public CommentType Type { get; init; }
 
 	[DataMember(Name = "transport")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public CommentTransportType TransportType { get; set; }
+	public CommentTransportType TransportType { get; init; }
 }

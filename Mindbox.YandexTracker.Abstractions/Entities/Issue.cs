@@ -6,26 +6,26 @@ namespace Mindbox.YandexTracker;
 
 public sealed record Issue
 {
-	public required string Key { get; set; }
-	public DateTime? LastCommentUpdatedAt { get; set; }
-	public string Summary { get; set; } = default!;
-	public string? Parent { get; set; }
-	public required UserInfo UpdatedBy { get; set; }
-	public string? Description { get; set; }
-	public required IssueType Type { get; set; }
-	public Priority Priority { get; set; }
-	public DateTime CreatedAt { get; set; }
-	public Collection<string> Aliases { get; set; } = [];
-	public Collection<string> Sprints { get; set; } = [];
-	public Collection<UserInfo> Followers { get; set; } = [];
-	public required UserInfo CreatedBy { get; set; }
-	public int Votes { get; set; }
-	public UserInfo? Assignee { get; set; }
-	public string? Project { get; set; }
-	public required string Queue { get; set; }
-	public DateTime UpdatedAt { get; set; }
-	public required IssueStatus Status { get; set; }
-	public IssueStatus? PreviousStatus { get; set; }
-	public bool IsFavorite { get; set; }
-	public Dictionary<string, object> CustomFields { get; set; } = [];
+	public required string Key { get; init; }
+	public DateTime? LastCommentUpdatedAt { get; init; }
+	public string Summary { get; init; } = default!;
+	public string? Parent { get; init; }
+	public required UserInfo UpdatedBy { get; init; }
+	public string? Description { get; init; }
+	public required IssueType Type { get; init; }
+	public Priority Priority { get; init; }
+	public DateTime CreatedAt { get; init; }
+	public Collection<string> Aliases { get; init; } = [];
+	public Collection<string> Sprints { get; init; } = [];
+	public Collection<UserInfo> Followers { get; init; } = [];
+	public required UserInfo CreatedBy { get; init; }
+	public int Votes { get; init; }
+	public UserInfo? Assignee { get; init; }
+	public string? Project { get; init; }
+	public required string Queue { get; init; }
+	public DateTime UpdatedAt { get; init; }
+	public required IssueStatus Status { get; init; }
+	public IssueStatus? PreviousStatus { get; init; }
+	public bool IsFavorite { get; init; }
+	public Dictionary<string, object> CustomFields { get; init; } = [];
 }

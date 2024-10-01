@@ -6,11 +6,11 @@ namespace Mindbox.YandexTracker;
 public sealed record FieldInfo
 {
 	[DataMember(Name = "id")]
-	public int Id { get; set; }
+	public int Id { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "key")]
-	public string? Key { get; set; }
+	public string? Key { get; init; }
 
 	[DataMember(Name = "display")]
-	public required string Display { get; set; }
+	public required string Display { get; init; }
 }

@@ -7,11 +7,11 @@ namespace Mindbox.YandexTracker;
 public sealed record IssueTypeConfigDto
 {
 	[DataMember(Name = "issueType")]
-	public required FieldInfo IssueType { get; set; }
+	public required FieldInfo IssueType { get; init; }
 
 	[DataMember(Name = "workflow")]
-	public required FieldInfo Workflow { get; set; }
+	public required FieldInfo Workflow { get; init; }
 
 	[DataMember(Name = "resolutions")]
-	public required Collection<FieldInfo> Resolutions { get; set; }
+	public required Collection<FieldInfo> Resolutions { get; init; }
 }

@@ -10,37 +10,37 @@ namespace Mindbox.YandexTracker;
 public sealed record GetProjectsResponse
 {
 	[DataMember(Name = "hits")]
-	public int Hits { get; set; }
+	public int Hits { get; init; }
 
 	[DataMember(Name = "pages")]
-	public int Pages { get; set; }
+	public int Pages { get; init; }
 
 	[DataMember(Name = "values")]
-	public required Collection<ProjectInfo> Values { get; set; }
+	public required Collection<ProjectInfo> Values { get; init; }
 
 	[DataMember(Name = "orderBy")]
-	public string? OrderBy { get; set; }
+	public string? OrderBy { get; init; }
 }
 
 [DataContract]
 public sealed record ProjectInfo
 {
 	[DataMember(Name = "id")]
-	public int Id { get; set; }
+	public int Id { get; init; }
 
 	[DataMember(Name = "entityType")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public ProjectEntityType ProjectType { get; set; }
+	public ProjectEntityType ProjectType { get; init; }
 
 	[DataMember(Name = "createdBy")]
-	public required FieldInfo CreatedBy { get; set; }
+	public required FieldInfo CreatedBy { get; init; }
 
 	[DataMember(Name = "createdAt")]
-	public DateTime CreatedAt { get; set; }
+	public DateTime CreatedAt { get; init; }
 
 	[DataMember(Name = "updatedAt")]
-	public required DateTime UpdatedAt { get; set; }
+	public required DateTime UpdatedAt { get; init; }
 
 	[DataMember(Name = "fields")]
-	public Dictionary<string, object> Fields { get; set; } = [];
+	public Dictionary<string, object> Fields { get; init; } = [];
 }

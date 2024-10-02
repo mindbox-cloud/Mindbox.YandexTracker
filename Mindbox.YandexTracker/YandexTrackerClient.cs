@@ -319,6 +319,7 @@ public sealed class YandexTrackerClient(
 
 		using var httpClient = httpClientFactory.CreateClient();
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", optionsSnapshot.Token);
+		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", optionsSnapshot.Organization);
 		httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
 
 		var apiVersion = "v2";

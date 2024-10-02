@@ -32,7 +32,7 @@ public sealed class YandexTrackerClient(
 				: ((QueueExpandData)expand).ToQueryString();
 		}
 
-		return (await ExecuteGitlabApiRequestAsync<GetQueuesResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<GetQueuesResponse>(
 			$"queues/{queueKey}",
 			HttpMethod.Get,
 			payload: null!,
@@ -51,7 +51,7 @@ public sealed class YandexTrackerClient(
 			parameters["expand"] = ((QueuesExpandData)expand).ToQueryString();
 		}
 
-		return (await ExecuteGitlabCollectionRequestAsync<GetQueuesResponse>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetQueuesResponse>(
 			"queues",
 			parameters: parameters))
 			.Select(dto => dto.ToQueue())
@@ -72,7 +72,7 @@ public sealed class YandexTrackerClient(
 				parameters["expand"] = ((QueueExpandData)expand).ToQueryString();
 		}
 
-		return (await ExecuteGitlabCollectionRequestAsync<GetQueuesResponse>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetQueuesResponse>(
 			"queues",
 			parameters: parameters))
 			.Select(dto => dto.ToQueue())
@@ -93,7 +93,7 @@ public sealed class YandexTrackerClient(
 			parameters["expand"] = ((IssueExpandData)expand).ToQueryString();
 		}
 
-		return (await ExecuteGitlabApiRequestAsync<GetIssueResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<GetIssueResponse>(
 			$"issues/{issueKey}",
 			HttpMethod.Get,
 			payload: null!,
@@ -114,7 +114,7 @@ public sealed class YandexTrackerClient(
 			parameters["expand"] = ((IssuesExpandData)request.Expand).ToQueryString();
 		}
 
-		return (await ExecuteGitlabApiRequestAsync<List<GetIssueResponse>>(
+		return (await ExecuteYandexTrackerApiRequestAsync<List<GetIssueResponse>>(
 			"issues/_search",
 			HttpMethod.Post,
 			payload: request,
@@ -129,7 +129,7 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(request);
 
-		return (await ExecuteGitlabApiRequestAsync<CreateIssueResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateIssueResponse>(
 			"issues",
 			HttpMethod.Post,
 			payload: request))
@@ -139,7 +139,7 @@ public sealed class YandexTrackerClient(
 	public async Task<IReadOnlyList<Component>> GetComponentsAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteGitlabApiRequestAsync<List<GetComponentResponse>>(
+		return (await ExecuteYandexTrackerApiRequestAsync<List<GetComponentResponse>>(
 			"components",
 			HttpMethod.Get,
 			payload: null!))
@@ -164,7 +164,7 @@ public sealed class YandexTrackerClient(
 				parameters["expand"] = ((CommentExpandData)expand).ToQueryString();
 		}
 
-		return (await ExecuteGitlabCollectionRequestAsync<GetCommentsResponse>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
 			$"issues/{issueKey}/comments",
 			parameters: parameters))
 			.Select(dto => dto.ToComment())
@@ -186,7 +186,7 @@ public sealed class YandexTrackerClient(
 			parameters["isAddToFollowers"] = request.IsAddToFollowers.ToString()!;
 		}
 
-		return (await ExecuteGitlabApiRequestAsync<CreateCommentResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateCommentResponse>(
 			$"issues/{issueKey}/comments",
 			HttpMethod.Post,
 			payload: request,
@@ -200,7 +200,7 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(issueKey);
 
-		return (await ExecuteGitlabCollectionRequestAsync<GetAttachmentResponse>($"issues/{issueKey}/attachments"))
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetAttachmentResponse>($"issues/{issueKey}/attachments"))
 			.Select(dto => dto.ToAttachment())
 			.ToList();
 	}
@@ -219,7 +219,7 @@ public sealed class YandexTrackerClient(
 		if (newFileName is not null)
 			parameters["filename"] = newFileName;
 
-		return (await ExecuteGitlabApiRequestAsync<CreateAttachmentResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
 			HttpMethod.Post,
 			payload: file,
@@ -233,7 +233,7 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(queueKey);
 
-		return (await ExecuteGitlabCollectionRequestAsync<string>($"queues/{queueKey}/tags"))
+		return (await ExecuteYandexTrackerCollectionRequestAsync<string>($"queues/{queueKey}/tags"))
 			.ToList();
 	}
 
@@ -252,7 +252,7 @@ public sealed class YandexTrackerClient(
 			parameters["fields"] = ((ProjectFieldData)request.FieldsWhichIncludedInResponse).ToQueryString();
 		}
 
-		return (await ExecuteGitlabApiRequestAsync<CreateProjectResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
 			$"entities/{entityType}",
 			HttpMethod.Post,
 			payload: request,
@@ -275,7 +275,7 @@ public sealed class YandexTrackerClient(
 			parameters["fields"] = ((ProjectFieldData)request.FieldsWhichIncludedInResponse).ToQueryString();
 		}
 
-		return (await ExecuteGitlabApiRequestAsync<GetProjectsResponse>(
+		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
 			$"entities/{entityType}/_search",
 			HttpMethod.Post,
 			payload: request,
@@ -289,11 +289,11 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(queueKey);
 
-		var globalFields = (await ExecuteGitlabCollectionRequestAsync<GetIssueFieldsResponse>("fields"))
+		var globalFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>("fields"))
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
-		var localQuqueFields = (await ExecuteGitlabCollectionRequestAsync<GetIssueFieldsResponse>(
+		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
 			$"queues/{queueKey}/localFields"))
 			.Select(dto => dto.ToIssueField())
 			.ToList();
@@ -303,11 +303,11 @@ public sealed class YandexTrackerClient(
 
 	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteGitlabCollectionRequestAsync<GetUserResponse>("users"))
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>("users"))
 			.ToList();
 	}
 
-	private async Task<TResult> ExecuteGitlabApiRequestAsync<TResult>(
+	private async Task<TResult> ExecuteYandexTrackerApiRequestAsync<TResult>(
 		string requestTo,
 		HttpMethod method,
 		object payload,
@@ -408,7 +408,7 @@ public sealed class YandexTrackerClient(
 			?.SingleOrDefault()
 			?.TrimAndMakeNullIfEmpty();
 
-	private async Task<IEnumerable<TResult>> ExecuteGitlabCollectionRequestAsync<TResult>(
+	private async Task<IEnumerable<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
 		string requestTo,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null)
@@ -427,7 +427,7 @@ public sealed class YandexTrackerClient(
 			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
 			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
 
-			var resultList = await ExecuteGitlabApiRequestAsync<List<TResult>>(
+			var resultList = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
 				HttpMethod.Get,
 				payload: null!,

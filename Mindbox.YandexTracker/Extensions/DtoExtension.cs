@@ -70,14 +70,12 @@ public static class DtoExtension
 
 	public static IssueTypeConfig ToIssueTypeConfig(this IssueTypeConfigDto value)
 	{
-#pragma warning disable CA1305
 		return new IssueTypeConfig
 		{
 			IssueType = value.IssueType.ToIssueType(),
 			Workflow = value.Workflow.Id.ToString(),
 			Resolutions = new Collection<Resolution>(value.Resolutions!.Select(dto => dto.ToResolution()).ToList())
 		};
-#pragma warning restore CA1305
 	}
 
 	public static IssueStatus ToIssueStatus(this FieldInfo value) => value.Key switch

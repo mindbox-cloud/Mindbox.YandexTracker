@@ -26,7 +26,7 @@ public sealed record GetProjectsResponse
 public sealed record ProjectInfo
 {
 	[DataMember(Name = "id")]
-	public int Id { get; init; }
+	public required string Id { get; init; }
 
 	[DataMember(Name = "entityType")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]

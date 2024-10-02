@@ -16,6 +16,9 @@ public sealed record CreateAttachmentResponse
 	[DataMember(Name = "content")]
 	public required string Content { get; init; }
 
+	[DataMember(Name = "thumbnail")]
+	public required string Thumbnail { get; init; }
+
 	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; init; }
 

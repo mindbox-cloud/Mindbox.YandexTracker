@@ -336,20 +336,32 @@ public static class DtoExtension
 				CreatedBy = projectValue.CreatedBy.ToUserInfo(),
 				CreatedAt = projectValue.CreatedAt,
 				UpdatedAt = projectValue.UpdatedAt,
-				Summary = (string)summary!,
-				Description = (string)description!,
-				Author = ((FieldInfo)author!)?.ToUserInfo(),
-				Lead = ((FieldInfo)lead!)?.ToUserInfo(),
-				TeamUsers = new Collection<UserInfo>(((List<FieldInfo>)teamUsers!)?.Select(dto => dto.ToUserInfo()).ToList()!),
-				Clients = new Collection<UserInfo>(((List<FieldInfo>)clients!)?.Select(dto => dto.ToUserInfo()).ToList()!),
-				Followers = new Collection<UserInfo>(((List<FieldInfo>)followers!)?.Select(dto => dto.ToUserInfo()).ToList()!),
-				Tags = new Collection<string>(((List<string>)tags!)),
-				Start = (DateTime)start!,
-				End = (DateTime)end!,
-				TeamAccess = (bool)teamAccess!,
-				Status = ((string)status!)?.ToProjectStatus(),
-				Quarter = new Collection<string>(((List<string>)quarter!)),
-				ChecklistIds = new Collection<string>(((List<FieldInfo>)checklist!)?.Select(dto => dto.Id).ToList()!)
+				Summary = (string?)summary,
+				Description = (string?)description,
+				Author = ((FieldInfo?)author)?.ToUserInfo(),
+				Lead = ((FieldInfo?)lead)?.ToUserInfo(),
+				TeamUsers = teamUsers is not null
+					? new Collection<UserInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
+					: null,
+				Clients = clients is not null
+					? new Collection<UserInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
+					: null,
+				Followers = followers is not null
+					? new Collection<UserInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
+					: null,
+				Tags = tags is not null
+					? new Collection<string>((List<string>)tags)
+					: null,
+				Start = (DateTime?)start,
+				End = (DateTime?)end,
+				TeamAccess = (bool?)teamAccess,
+				Status = ((string?)status)?.ToProjectStatus(),
+				Quarter = quarter is not null
+					? new Collection<string>(((List<string>)quarter))
+					: null,
+				ChecklistIds = checklist is not null
+					? new Collection<string>(((List<FieldInfo>)checklist).Select(dto => dto.Id).ToList())
+					: null
 			});
 		}
 

@@ -13,7 +13,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionMajor>0</VersionMajor>
+    <VersionMajor>1</VersionMajor>
     <VersionMinor>1</VersionMinor>
     <BuildNumber>$(BuildNumber)</BuildNumber>
     <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>

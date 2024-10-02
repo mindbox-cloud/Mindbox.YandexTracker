@@ -53,27 +53,7 @@ public sealed class YandexTrackerClient(
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetQueuesResponse>(
 			"queues",
-			parameters: parameters))
-			.Select(dto => dto.ToQueue())
-			.ToList();
-	}
-
-	public async Task<IReadOnlyList<Queue>> GetQueuesAsync(
-		QueueExpandData? expand = null,
-		CancellationToken cancellationToken = default)
-	{
-		var parameters = new Dictionary<string, string>();
-
-		if (expand is not null and not QueueExpandData.None)
-		{
-			if (expand is QueueExpandData.All)
-				parameters["expand"] = expand.ToString()!;
-			else
-				parameters["expand"] = ((QueueExpandData)expand).ToQueryString();
-		}
-
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetQueuesResponse>(
-			"queues",
+			HttpMethod.Get,
 			parameters: parameters))
 			.Select(dto => dto.ToQueue())
 			.ToList();
@@ -166,6 +146,7 @@ public sealed class YandexTrackerClient(
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
 			$"issues/{issueKey}/comments",
+			HttpMethod.Get,
 			parameters: parameters))
 			.Select(dto => dto.ToComment())
 			.ToList();
@@ -200,7 +181,9 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(issueKey);
 
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetAttachmentResponse>($"issues/{issueKey}/attachments"))
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetAttachmentResponse>(
+			$"issues/{issueKey}/attachments",
+			HttpMethod.Get))
 			.Select(dto => dto.ToAttachment())
 			.ToList();
 	}
@@ -233,7 +216,9 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(queueKey);
 
-		return (await ExecuteYandexTrackerCollectionRequestAsync<string>($"queues/{queueKey}/tags"))
+		return (await ExecuteYandexTrackerCollectionRequestAsync<string>(
+			$"queues/{queueKey}/tags",
+			HttpMethod.Get))
 			.ToList();
 	}
 
@@ -289,12 +274,13 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(queueKey);
 
-		var globalFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>("fields"))
+		var globalFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>("fields", HttpMethod.Get))
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
 		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-			$"queues/{queueKey}/localFields"))
+			$"queues/{queueKey}/localFields",
+			HttpMethod.Post))
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
@@ -303,7 +289,9 @@ public sealed class YandexTrackerClient(
 
 	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>("users"))
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>(
+			"users",
+			HttpMethod.Get))
 			.ToList();
 	}
 
@@ -410,6 +398,7 @@ public sealed class YandexTrackerClient(
 
 	private async Task<IEnumerable<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
 		string requestTo,
+		HttpMethod httpMethod,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null)
 	{
@@ -429,7 +418,7 @@ public sealed class YandexTrackerClient(
 
 			var resultList = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
-				HttpMethod.Get,
+				httpMethod,
 				payload: null!,
 				parametersWithPaging,
 				headers);

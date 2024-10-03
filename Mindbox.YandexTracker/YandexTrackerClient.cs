@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Mindbox.YandexTracker;
+
 public sealed class YandexTrackerClient(
 	IOptionsMonitor<YandexTrackerClientOptions> options,
 	IHttpClientFactory httpClientFactory) : IYandexTrackerClient
@@ -32,12 +33,16 @@ public sealed class YandexTrackerClient(
 				: ((QueueExpandData)expand).ToQueryString();
 		}
 
+		var issueTypeInfos = await GetIssueTypesAsync(cancellationToken);
+		var resolutionInfos = await GetResolutionsAsync(cancellationToken);
+
 		return (await ExecuteYandexTrackerApiRequestAsync<GetQueuesResponse>(
 			$"queues/{queueKey}",
 			HttpMethod.Get,
 			payload: null!,
-			parameters: parameters))
-			.ToQueue();
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.ToQueue(issueTypeInfos, resolutionInfos);
 	}
 
 	public async Task<IReadOnlyList<Queue>> GetQueuesAsync(
@@ -51,11 +56,15 @@ public sealed class YandexTrackerClient(
 			parameters["expand"] = ((QueuesExpandData)expand).ToQueryString();
 		}
 
+		var issueTypeInfos = await GetIssueTypesAsync(cancellationToken);
+		var resolutionInfos = await GetResolutionsAsync(cancellationToken);
+
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetQueuesResponse>(
 			"queues",
 			HttpMethod.Get,
-			parameters: parameters))
-			.Select(dto => dto.ToQueue())
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToQueue(issueTypeInfos, resolutionInfos))
 			.ToList();
 	}
 
@@ -73,12 +82,16 @@ public sealed class YandexTrackerClient(
 			parameters["expand"] = ((IssueExpandData)expand).ToQueryString();
 		}
 
+		var issueTypeInfos = await GetIssueTypesAsync(cancellationToken);
+		var issueStatusInfos = await GetIssueStatusesAsync(cancellationToken);
+
 		return (await ExecuteYandexTrackerApiRequestAsync<GetIssueResponse>(
 			$"issues/{issueKey}",
 			HttpMethod.Get,
 			payload: null!,
-			parameters: parameters))
-			.ToIssue();
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.ToIssue(issueTypeInfos, issueStatusInfos);
 	}
 
 	public async Task<IReadOnlyList<Issue>> GetIssuesAsync(
@@ -94,12 +107,16 @@ public sealed class YandexTrackerClient(
 			parameters["expand"] = ((IssuesExpandData)request.Expand).ToQueryString();
 		}
 
+		var issueTypeInfos = await GetIssueTypesAsync(cancellationToken);
+		var issueStatusInfos = await GetIssueStatusesAsync(cancellationToken);
+
 		return (await ExecuteYandexTrackerApiRequestAsync<List<GetIssueResponse>>(
 			"issues/_search",
 			HttpMethod.Post,
 			payload: request,
-			parameters: parameters))
-			.Select(dto => dto.ToIssue())
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToIssue(issueTypeInfos, issueStatusInfos))
 			.ToList();
 	}
 
@@ -109,11 +126,15 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(request);
 
+		var issueTypeInfos = await GetIssueTypesAsync(cancellationToken);
+		var issueStatusInfos = await GetIssueStatusesAsync(cancellationToken);
+
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateIssueResponse>(
 			"issues",
 			HttpMethod.Post,
-			payload: request))
-			.ToIssue();
+			payload: request,
+			cancellationToken: cancellationToken))
+			.ToIssue(issueTypeInfos, issueStatusInfos);
 	}
 
 	public async Task<IReadOnlyList<Component>> GetComponentsAsync(
@@ -122,7 +143,8 @@ public sealed class YandexTrackerClient(
 		return (await ExecuteYandexTrackerApiRequestAsync<List<GetComponentResponse>>(
 			"components",
 			HttpMethod.Get,
-			payload: null!))
+			payload: null!,
+			cancellationToken: cancellationToken))
 			.Select(dto => dto.ToComponent())
 			.ToList();
 	}
@@ -147,7 +169,8 @@ public sealed class YandexTrackerClient(
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
 			$"issues/{issueKey}/comments",
 			HttpMethod.Get,
-			parameters: parameters))
+			parameters: parameters,
+			cancellationToken: cancellationToken))
 			.Select(dto => dto.ToComment())
 			.ToList();
 	}
@@ -171,7 +194,8 @@ public sealed class YandexTrackerClient(
 			$"issues/{issueKey}/comments",
 			HttpMethod.Post,
 			payload: request,
-			parameters: parameters))
+			parameters: parameters,
+			cancellationToken: cancellationToken))
 			.ToComment();
 	}
 
@@ -183,7 +207,8 @@ public sealed class YandexTrackerClient(
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
-			HttpMethod.Get))
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
 			.Select(dto => dto.ToAttachment())
 			.ToList();
 	}
@@ -206,7 +231,8 @@ public sealed class YandexTrackerClient(
 			$"issues/{issueKey}/attachments",
 			HttpMethod.Post,
 			payload: file,
-			parameters: parameters))
+			parameters: parameters,
+			cancellationToken: cancellationToken))
 			.ToAttachment();
 	}
 
@@ -218,7 +244,8 @@ public sealed class YandexTrackerClient(
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<string>(
 			$"queues/{queueKey}/tags",
-			HttpMethod.Get))
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
 			.ToList();
 	}
 
@@ -241,7 +268,8 @@ public sealed class YandexTrackerClient(
 			$"entities/{entityType}",
 			HttpMethod.Post,
 			payload: request,
-			parameters: parameters))
+			parameters: parameters,
+			cancellationToken: cancellationToken))
 			.ToProject();
 	}
 
@@ -264,7 +292,8 @@ public sealed class YandexTrackerClient(
 			$"entities/{entityType}/_search",
 			HttpMethod.Post,
 			payload: request,
-			parameters: parameters))
+			parameters: parameters,
+			cancellationToken: cancellationToken))
 			.ToProjects();
 	}
 
@@ -274,13 +303,17 @@ public sealed class YandexTrackerClient(
 	{
 		ArgumentNullException.ThrowIfNull(queueKey);
 
-		var globalFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>("fields", HttpMethod.Get))
+		var globalFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+			"fields",
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
 		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
 			$"queues/{queueKey}/localFields",
-			HttpMethod.Post))
+			HttpMethod.Post,
+			cancellationToken: cancellationToken))
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
@@ -291,7 +324,38 @@ public sealed class YandexTrackerClient(
 	{
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>(
 			"users",
-			HttpMethod.Get))
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
+			.ToList();
+	}
+
+	public async Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+		CancellationToken cancellationToken = default)
+	{
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueTypeResponse>(
+			$"issuetypes",
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
+			.ToList();
+	}
+
+	public async Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+		CancellationToken cancellationToken = default)
+	{
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetResolutionResponse>(
+			$"resolutions",
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
+			.ToList();
+	}
+
+	public async Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+		CancellationToken cancellationToken = default)
+	{
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueStatusResponse>(
+			$"statuses",
+			HttpMethod.Get,
+			cancellationToken: cancellationToken))
 			.ToList();
 	}
 
@@ -300,7 +364,8 @@ public sealed class YandexTrackerClient(
 		HttpMethod method,
 		object payload,
 		IDictionary<string, string>? parameters = null,
-		IDictionary<string, string>? headers = null)
+		IDictionary<string, string>? headers = null,
+		CancellationToken cancellationToken = default)
 		where TResult : class
 	{
 		var optionsSnapshot = options.CurrentValue;
@@ -322,9 +387,10 @@ public sealed class YandexTrackerClient(
 
 		return await RetryHelpers.RetryOnExceptionAsync(
 			ExecuteAndProcessResultAsync,
-			retryCount: 4);
+			retryCount: 4,
+			cancellationToken);
 
-		async Task<TResult> ExecuteAndProcessResultAsync()
+		async Task<TResult> ExecuteAndProcessResultAsync(CancellationToken cancellationToken)
 		{
 			var request = new HttpRequestMessage(method, requestUri);
 
@@ -344,20 +410,22 @@ public sealed class YandexTrackerClient(
 				}
 			}
 
-			var response = await httpClient.SendAsync(request);
+			var response = await httpClient.SendAsync(request, cancellationToken);
 
 			if (!response.IsSuccessStatusCode)
 			{
-				CheckRateLimitExceeded(response);
+				await CheckRateLimitExceededAsync(response, cancellationToken);
 
 				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
 			}
 
-			var resultContent = await response.Content.ReadAsStringAsync();
+			var resultContent = await response.Content.ReadAsStringAsync(cancellationToken);
 			return JsonConvert.DeserializeObject<TResult>(resultContent)!;
 		}
 
-		static void CheckRateLimitExceeded(HttpResponseMessage response)
+		static async Task CheckRateLimitExceededAsync(
+			HttpResponseMessage response,
+			CancellationToken cancellationToken)
 		{
 			var remaining = TryGetHeaderValue(response, "x-ratelimit-remaining");
 
@@ -368,13 +436,14 @@ public sealed class YandexTrackerClient(
 			var retryPeriod = TimeSpan.FromSeconds(retrySeconds + 1);
 			if (retryPeriod.TotalSeconds > TimeSpan.FromMinutes(1).TotalSeconds)
 			{
-				var noRetryException = new NoRetryException("YandexTracker rate limit reached. Too long wait for next try.");
+				var noRetryException = new YandexTrackerRetryLimitExceededException(
+					"YandexTracker rate limit reached. Too long wait for next try.");
 				noRetryException.Data.Add("Retry-After", retrySeconds);
 
 				throw noRetryException;
 			}
 
-			Thread.Sleep(retryPeriod);
+			await Task.Delay(retryPeriod, cancellationToken);
 
 			var exception =
 				new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
@@ -400,14 +469,16 @@ public sealed class YandexTrackerClient(
 		string requestTo,
 		HttpMethod httpMethod,
 		IDictionary<string, string>? parameters = null,
-		IDictionary<string, string>? headers = null)
+		IDictionary<string, string>? headers = null,
+		CancellationToken cancellationToken = default)
 	{
 		const int perPage = 100;
 
 		var pageNumber = 1;
 
 		var result = new List<TResult>();
-		while (true)
+		List<TResult>? resultList;
+		do
 		{
 			var parametersWithPaging = parameters is not null
 				? new Dictionary<string, string>(parameters)
@@ -416,22 +487,19 @@ public sealed class YandexTrackerClient(
 			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
 			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
 
-			var resultList = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
+			resultList = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
 				httpMethod,
 				payload: null!,
 				parametersWithPaging,
-				headers);
+				headers,
+				cancellationToken);
 
 			result.AddRange(resultList);
 
-			if (resultList.Count < perPage)
-			{
-				break;
-			}
-
 			pageNumber++;
 		}
+		while (resultList.Count < perPage);
 
 		return result;
 	}

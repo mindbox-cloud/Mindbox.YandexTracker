@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-public static class DtoExtension
+internal static class DtoExtension
 {
 	public static string ToQueryString<T>(this T value)
 		where T : Enum
@@ -19,43 +19,37 @@ public static class DtoExtension
 		return string.Join(",", enumValues);
 	}
 
-	public static Resolution ToResolution(this FieldInfo value) => value.Id switch
+	public static Resolution ToResolution(
+		this FieldInfo value,
+		IReadOnlyList<GetResolutionResponse> resolutionInfos)
 	{
-		"fixed" => new Resolution { Key = value.Id, Name = "Решен" },
-		"wontFix" => new Resolution { Key = value.Id, Name = "Не будет исправлено" },
-		"cantReproduce" => new Resolution { Key = value.Id, Name = "Не воспроизводится" },
-		"duplicate" => new Resolution { Key = value.Id, Name = "Дубликат" },
-		"later" => new Resolution { Key = value.Id, Name = "Позже" },
-		"overfulfilled" => new Resolution { Key = value.Id, Name = "Перевыполнено" },
-		"successful" => new Resolution { Key = value.Id, Name = "Успешно" },
-		"dontDo" => new Resolution { Key = value.Id, Name = "Не делаем" },
-		_ => throw new ArgumentOutOfRangeException(value.Id)
-	};
+		var resolutionInfo = resolutionInfos.FirstOrDefault(x => x.Key == value.Key);
 
-	public static IssueType ToIssueType(this FieldInfo value) => value.Key switch
+		ArgumentNullException.ThrowIfNull(resolutionInfo);
+
+		return new Resolution
+		{
+			Key = resolutionInfo.Key,
+			Name = resolutionInfo.Name,
+			Description = resolutionInfo.Description
+		};
+	}
+
+	public static IssueType ToIssueType(
+		this FieldInfo value,
+		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos) 
 	{
-		"bug" => new IssueType { Name = "Ошибка", Key = value.Key },
-		"task" => new IssueType { Name = "Задача", Key = value.Key },
-		"newFeature" => new IssueType { Name = "Новая возможность", Key = value.Key },
-		"improvement" => new IssueType { Name = "Улучшение", Key = value.Key },
-		"refactoring" => new IssueType { Name = "Рефакторинг", Key = value.Key },
-		"epic" => new IssueType { Name = "Epic", Key = value.Key },
-		"story" => new IssueType { Name = "Story", Key = value.Key },
-		"changeRequest" => new IssueType { Name = "Change Request", Key = value.Key },
-		"incident" => new IssueType { Name = "Инцидент", Key = value.Key },
-		"serviceRequest" => new IssueType { Name = "Запрос на обслуживание", Key = value.Key },
-		"release" => new IssueType { Name = "Релиз", Key = value.Key },
-		"project" => new IssueType { Name = "Проект", Key = value.Key },
-		"leave" => new IssueType { Name = "Отсутствие", Key = value.Key },
-		"businessTrip" => new IssueType { Name = "Командировка", Key = value.Key },
-		"changes" => new IssueType { Name = "Изменения", Key = value.Key },
-		"request" => new IssueType { Name = "Запрос", Key = value.Key },
-		"vacancy" => new IssueType { Name = "Вакансия", Key = value.Key },
-		"applicant" => new IssueType { Name = "Кандидат", Key = value.Key },
-		"goal" => new IssueType { Name = "Цель", Key = value.Key },
-		"milestone" => new IssueType { Name = "Веха", Key = value.Key },
-		_ => throw new ArgumentOutOfRangeException(value.Key)
-	};
+		var issueTypeInfo = issueTypeInfos.FirstOrDefault(x => x.Key == value.Key);
+
+		ArgumentNullException.ThrowIfNull(issueTypeInfo);
+
+		return new IssueType
+		{
+			Key = issueTypeInfo.Key,
+			Name = issueTypeInfo.Name,
+			Description = issueTypeInfo.Description	
+		};
+	}
 
 	public static Priority ToPriority(this FieldInfo value) => value.Key switch
 	{
@@ -68,72 +62,43 @@ public static class DtoExtension
 	};
 
 
-	public static IssueTypeConfig ToIssueTypeConfig(this IssueTypeConfigDto value)
+	public static IssueTypeConfig ToIssueTypeConfig(
+		this IssueTypeConfigDto value,
+		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyList<GetResolutionResponse> resolutionInfos)
 	{
 		return new IssueTypeConfig
 		{
-			IssueType = value.IssueType.ToIssueType(),
+			IssueType = value.IssueType.ToIssueType(issueTypeInfos),
 			Workflow = value.Workflow.Id.ToString(),
-			Resolutions = new Collection<Resolution>(value.Resolutions!.Select(dto => dto.ToResolution()).ToList())
+			Resolutions = new Collection<Resolution>(value.Resolutions!
+				.Select(dto => dto.ToResolution(resolutionInfos))
+				.ToList())
 		};
 	}
 
-	public static IssueStatus ToIssueStatus(this FieldInfo value) => value.Key switch
+	public static IssueStatus ToIssueStatus(
+		this FieldInfo value,
+		IReadOnlyList<GetIssueStatusResponse> issueStatusInfos)
 	{
-		"open" => new IssueStatus { Name = "Открыт", Type = IssueStatusType.New, Key = value.Key },
-		"needInfo" => new IssueStatus { Name = "Требуется информация", Type = IssueStatusType.Paused, Key = value.Key },
-		"inProgress" => new IssueStatus { Name = "В работе", Type = IssueStatusType.InProgress, Key = value.Key },
-		"testing" => new IssueStatus { Name = "Тестируется", Type = IssueStatusType.InProgress, Key = value.Key },
-		"tested" => new IssueStatus { Name = "Протестировано", Type = IssueStatusType.Paused, Key = value.Key },
-		"inReview" => new IssueStatus { Name = "Ревью", Type = IssueStatusType.Paused, Key = value.Key },
-		"resolved" => new IssueStatus { Name = "Решен", Type = IssueStatusType.Done, Key = value.Key },
-		"closed" => new IssueStatus { Name = "Закрыт", Type = IssueStatusType.Done, Key = value.Key },
-		"rc" => new IssueStatus { Name = "Готов к релизу", Type = IssueStatusType.Paused, Key = value.Key },
-		"backlog" => new IssueStatus { Name = "Бэклог", Type = IssueStatusType.New, Key = value.Key },
-		"selectedForDev" => new IssueStatus { Name = "Будем делать", Type = IssueStatusType.New, Key = value.Key },
-		"readyForTest" => new IssueStatus { Name = "Можно тестировать", Type = IssueStatusType.Paused, Key = value.Key },
-		"needAcceptance" => new IssueStatus { Name = "Ждем подтверждения", Type = IssueStatusType.Paused, Key = value.Key },
-		"cancelled" => new IssueStatus { Name = "Отменено", Type = IssueStatusType.Canceled, Key = value.Key },
-		"confirmed" => new IssueStatus { Name = "Подтверждён", Type = IssueStatusType.Paused, Key = value.Key },
-		"needEstimate" => new IssueStatus { Name = "Оценка задачи", Type = IssueStatusType.Paused, Key = value.Key },
-		"demoToCustomer" => new IssueStatus { Name = "Демонстрация заказчику", Type = IssueStatusType.Paused, Key = value.Key },
-		"firstSupportLine" => new IssueStatus
+		var issueStatusInfo = issueStatusInfos.FirstOrDefault(x => x.Key == value.Key);
+
+		ArgumentNullException.ThrowIfNull(issueStatusInfo);
+
+		return new IssueStatus
 		{
-			Name = "Первая линия поддержки",
-			Type = IssueStatusType.InProgress,
-			Key = value.Key
-		},
-		"secondSupportLine" => new IssueStatus
-		{
-			Name = "Вторая линия поддержки",
-			Type = IssueStatusType.InProgress,
-			Key = value.Key
-		},
-		"new" => new IssueStatus { Name = "Новый", Type = IssueStatusType.New, Key = value.Key },
-		"documentsPrepared" => new IssueStatus
-		{
-			Name = "Документы подготовлены",
-			Type = IssueStatusType.Paused,
-			Key = value.Key
-		},
-		"onHold" => new IssueStatus { Name = "Приостановлено", Type = IssueStatusType.Paused, Key = value.Key },
-		"resultAcceptance" => new IssueStatus
-		{
-			Name = "Согласование результата",
-			Type = IssueStatusType.Paused,
-			Key = value.Key
-		},
-		"newGoal" => new IssueStatus { Name = "Новая цель", Type = IssueStatusType.New, Key = value.Key },
-		"asPlanned" => new IssueStatus { Name = "По плану", Type = IssueStatusType.InProgress, Key = value.Key },
-		"withRisks" => new IssueStatus { Name = "Есть риски", Type = IssueStatusType.Paused, Key = value.Key },
-		"achieved" => new IssueStatus { Name = "Достигнута", Type = IssueStatusType.Done, Key = value.Key },
-		"blockedGoal" => new IssueStatus { Name = "Цель заблокирована", Type = IssueStatusType.Paused, Key = value.Key },
-		"grommed" => new IssueStatus { Name = "Прогрумлено", Type = IssueStatusType.Paused, Key = value.Key },
-		_ => throw new ArgumentOutOfRangeException(value.Id)
-	};
+			Key = issueStatusInfo.Key,
+			Name = issueStatusInfo.Name,
+			Type = issueStatusInfo.Type,
+			Description = issueStatusInfo.Description
+		};
+	}
 
 
-	public static Queue ToQueue(this GetQueuesResponse value)
+	public static Queue ToQueue(
+		this GetQueuesResponse value,
+		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyList<GetResolutionResponse> resolutionInfos)
 	{
 		return new Queue
 		{
@@ -143,13 +108,14 @@ public static class DtoExtension
 			Lead = value.Lead.ToUserInfo(),
 			Description = value.Description,
 			AssignAuto = value.AssignAuto,
-			DefaultType = value.DefaultType.ToIssueType(),
+			DefaultType = value.DefaultType.ToIssueType(issueTypeInfos),
 			DefaultPriority = value.DefaultPriority.ToPriority(),
 			TeamUsers = new Collection<UserInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
-			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType()).ToList()),
+			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
-				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig()).ToList()),
-			Workflows = new Collection<IssueType>(value.Workflows?.Fields.Select(field => field.ToIssueType()).ToList()!),
+				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
+			Workflows = new Collection<IssueType>(
+				value.Workflows?.Fields.Select(field => field.ToIssueType(issueTypeInfos)).ToList()!),
 			DenyVoting = value.DenyVoting
 		};
 	}
@@ -159,7 +125,10 @@ public static class DtoExtension
 		return new UserInfo { Id = value.Key! };
 	}
 
-	public static Issue ToIssue(this GetIssueResponse value)
+	public static Issue ToIssue(
+		this GetIssueResponse value,
+		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyList<GetIssueStatusResponse> issueStatusInfos)
 	{
 		return new Issue
 		{
@@ -169,7 +138,7 @@ public static class DtoExtension
 			Parent = value.Parent?.Key,
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
 			Description = value.Description,
-			Type = value.Type.ToIssueType(),
+			Type = value.Type.ToIssueType(issueTypeInfos),
 			Priority = value.Priority.ToPriority(),
 			CreatedAt = value.CreatedAt,
 			Aliases = value.Aliases,
@@ -181,13 +150,16 @@ public static class DtoExtension
 			Project = value.Project?.Id,
 			Queue = value.Queue.Key!,
 			UpdatedAt = value.UpdatedAt,
-			Status = value.Status.ToIssueStatus(),
-			PreviousStatus = value.PreviousStatus?.ToIssueStatus(),
+			Status = value.Status.ToIssueStatus(issueStatusInfos),
+			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
 			IsFavorite = value.IsFavorite
 		};
 	}
 
-	public static Issue ToIssue(this CreateIssueResponse value)
+	public static Issue ToIssue(
+		this CreateIssueResponse value,
+		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyList<GetIssueStatusResponse> issueStatusInfos)
 	{
 		return new Issue
 		{
@@ -197,7 +169,7 @@ public static class DtoExtension
 			Parent = value.Parent?.Key,
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
 			Description = value.Description,
-			Type = value.Type.ToIssueType(),
+			Type = value.Type.ToIssueType(issueTypeInfos),
 			Priority = value.Priority.ToPriority(),
 			CreatedAt = value.CreatedAt,
 			Aliases = value.Aliases,
@@ -209,8 +181,8 @@ public static class DtoExtension
 			Project = value.Project?.Id,
 			Queue = value.Queue.Key!,
 			UpdatedAt = value.UpdatedAt,
-			Status = value.Status.ToIssueStatus(),
-			PreviousStatus = value.PreviousStatus?.ToIssueStatus(),
+			Status = value.Status.ToIssueStatus(issueStatusInfos),
+			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
 			IsFavorite = value.IsFavorite
 		};
 	}

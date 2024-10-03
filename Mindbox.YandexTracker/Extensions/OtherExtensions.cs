@@ -2,7 +2,7 @@ using System;
 
 namespace Mindbox.YandexTracker;
 
-public static class OtherExtensions
+internal static class OtherExtensions
 {
 	public static string? TrimAndMakeNullIfEmpty(this string value)
 	{

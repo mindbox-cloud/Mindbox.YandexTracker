@@ -1,4 +1,5 @@
 namespace Mindbox.YandexTracker;
+
 public sealed record YandexTrackerClientOptions
 {
 	public required string Token { get; init; }

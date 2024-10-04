@@ -133,7 +133,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		var issueStatusInfos = (await GetIssueStatusesAsync(cancellationToken))
 			.ToDictionary(dto => dto.Key, dto => dto);
 
-		return (await ExecuteYandexTrackerApiRequestAsync<List<GetIssueResponse>>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
 			"issues/_search",
 			HttpMethod.Post,
 			payload: request,
@@ -268,11 +268,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentNullException.ThrowIfNull(queueKey);
 
-		return (await ExecuteYandexTrackerCollectionRequestAsync<string>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<string>(
 			$"queues/{queueKey}/tags",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.ToList();
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<Project> CreateProjectAsync(
@@ -348,41 +347,37 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>(
 			"users",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.ToList();
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueTypeResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueTypeResponse>(
 			"issuetypes",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.ToList();
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetResolutionResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetResolutionResponse>(
 			"resolutions",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.ToList();
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueStatusResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueStatusResponse>(
 			"statuses",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.ToList();
+			cancellationToken: cancellationToken);
 	}
 
 	private async Task<TResult> ExecuteYandexTrackerApiRequestAsync<TResult>(
@@ -495,9 +490,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			?.SingleOrDefault()
 			?.TrimAndMakeNullIfEmpty();
 
-	private async Task<IEnumerable<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
+	private async Task<IReadOnlyList<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
 		string requestTo,
 		HttpMethod httpMethod,
+		object? payload = null,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
@@ -520,7 +516,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			dataChunk = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
 				httpMethod,
-				payload: null!,
+				payload: payload,
 				parametersWithPaging,
 				headers,
 				cancellationToken);

@@ -7,7 +7,7 @@ namespace Mindbox.YandexTracker;
 public static class RetryHelpers
 {
 	public static async Task<TResult> RetryOnExceptionAsync<TResult>(
-		Func<CancellationToken, Task<TResult>> func,
+		Func<Task<TResult>> func,
 		int retryCount,
 		CancellationToken cancellationToken)
 	{
@@ -19,7 +19,7 @@ public static class RetryHelpers
 		{
 			try
 			{
-				return await func(cancellationToken);
+				return await func();
 			}
 			catch (Exception e)
 			{

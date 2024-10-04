@@ -21,11 +21,12 @@ internal static class DtoExtension
 
 	public static Resolution ToResolution(
 		this FieldInfo value,
-		IReadOnlyList<GetResolutionResponse> resolutionInfos)
+		IReadOnlyDictionary<string, GetResolutionResponse> resolutionInfos)
 	{
-		var resolutionInfo = resolutionInfos.FirstOrDefault(x => x.Key == value.Key);
-
-		ArgumentNullException.ThrowIfNull(resolutionInfo);
+		if (!resolutionInfos.TryGetValue(value.Key!, out var resolutionInfo))
+		{
+			throw new ArgumentException($"Resolution with key = {value.Key} not found");
+		}
 
 		return new Resolution
 		{
@@ -37,11 +38,12 @@ internal static class DtoExtension
 
 	public static IssueType ToIssueType(
 		this FieldInfo value,
-		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos) 
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos) 
 	{
-		var issueTypeInfo = issueTypeInfos.FirstOrDefault(x => x.Key == value.Key);
-
-		ArgumentNullException.ThrowIfNull(issueTypeInfo);
+		if (!issueTypeInfos.TryGetValue(value.Key!, out var issueTypeInfo))
+		{
+			throw new ArgumentException($"IssueType with key = {value.Key} not found");
+		}
 
 		return new IssueType
 		{
@@ -64,8 +66,8 @@ internal static class DtoExtension
 
 	public static IssueTypeConfig ToIssueTypeConfig(
 		this IssueTypeConfigDto value,
-		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyList<GetResolutionResponse> resolutionInfos)
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyDictionary<string, GetResolutionResponse> resolutionInfos)
 	{
 		return new IssueTypeConfig
 		{
@@ -79,11 +81,12 @@ internal static class DtoExtension
 
 	public static IssueStatus ToIssueStatus(
 		this FieldInfo value,
-		IReadOnlyList<GetIssueStatusResponse> issueStatusInfos)
+		IReadOnlyDictionary<string, GetIssueStatusResponse> issueStatusInfos)
 	{
-		var issueStatusInfo = issueStatusInfos.FirstOrDefault(x => x.Key == value.Key);
-
-		ArgumentNullException.ThrowIfNull(issueStatusInfo);
+		if (!issueStatusInfos.TryGetValue(value.Key!, out var issueStatusInfo))
+		{
+			throw new ArgumentException($"IssueStatus with key = {value.Key} not found");
+		}
 
 		return new IssueStatus
 		{
@@ -97,8 +100,8 @@ internal static class DtoExtension
 
 	public static Queue ToQueue(
 		this GetQueuesResponse value,
-		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyList<GetResolutionResponse> resolutionInfos)
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyDictionary<string, GetResolutionResponse> resolutionInfos)
 	{
 		return new Queue
 		{
@@ -127,8 +130,8 @@ internal static class DtoExtension
 
 	public static Issue ToIssue(
 		this GetIssueResponse value,
-		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyList<GetIssueStatusResponse> issueStatusInfos)
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyDictionary<string, GetIssueStatusResponse> issueStatusInfos)
 	{
 		return new Issue
 		{
@@ -158,8 +161,8 @@ internal static class DtoExtension
 
 	public static Issue ToIssue(
 		this CreateIssueResponse value,
-		IReadOnlyList<GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyList<GetIssueStatusResponse> issueStatusInfos)
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
+		IReadOnlyDictionary<string, GetIssueStatusResponse> issueStatusInfos)
 	{
 		return new Issue
 		{

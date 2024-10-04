@@ -36,4 +36,35 @@ public static class RetryHelpers
 			++num;
 		}
 	}
+
+	public static async Task RetryOnExceptionAsync(
+		Func<Task> func,
+		int retryCount,
+		CancellationToken cancellationToken)
+	{
+		ArgumentNullException.ThrowIfNull(func);
+
+		var num = 1;
+
+		while (true)
+		{
+			try
+			{
+				await func();
+			}
+			catch (Exception e)
+			{
+				if (e is YandexTrackerRetryLimitExceededException)
+				{
+					throw;
+				}
+				if (num > retryCount)
+				{
+					throw new YandexTrackerException($"{retryCount} error responses in a row.", e);
+				}
+			}
+
+			++num;
+		}
+	}
 }

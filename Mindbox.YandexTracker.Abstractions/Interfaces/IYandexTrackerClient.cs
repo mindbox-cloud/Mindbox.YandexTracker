@@ -15,6 +15,12 @@ public interface IYandexTrackerClient
 		QueuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	Task<Queue> CreateQueueAsync(
+		CreateQueueRequest request,
+		CancellationToken cancellationToken = default);
+
+	Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default);
+
 	Task<Issue> GetIssueAsync(
 		string issueKey,
 		IssueExpandData? expand = null,
@@ -38,6 +44,11 @@ public interface IYandexTrackerClient
 		CreateCommentRequest request,
 		CancellationToken cancellationToken = default);
 
+	Task DeleteCommentAsync(
+		string issueKey,
+		string commentKey,
+		CancellationToken cancellationToken = default);
+
 	Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default);
 
 	Task<Attachment> CreateAttachmentAsync(
@@ -46,11 +57,21 @@ public interface IYandexTrackerClient
 		string? newFileName = null,
 		CancellationToken cancellationToken = default);
 
+	Task DeleteAttachmentAsync(
+		string issueKey,
+		string attachmentKey,
+		CancellationToken cancellationToken = default);
+
 	Task<IReadOnlyList<string>> GetTagsAsync(string queueKey, CancellationToken cancellationToken = default);
 
 	Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		CreateProjectRequest request,
+		CancellationToken cancellationToken = default);
+
+	Task DeleteProjectAsync(
+		ProjectEntityType entityType,
+		string projectKey,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Project>> GetProjectsAsync(

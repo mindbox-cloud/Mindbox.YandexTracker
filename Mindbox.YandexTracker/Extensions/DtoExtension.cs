@@ -97,6 +97,21 @@ internal static class DtoExtension
 		};
 	}
 
+	public static Queue ToQueue(
+		this CreateQueueResponse value,
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos)
+	{
+		return new Queue
+		{
+			DefaultType = value.DefaultType.ToIssueType(issueTypeInfos),
+			Id = value.Id,
+			Key = value.Key,
+			Lead = value.Lead.ToUserInfo(),
+			Name = value.Name,
+			AssignAuto = value.AssignAuto,
+			DefaultPriority = value.DefaultPriority.ToPriority()
+		};
+	}
 
 	public static Queue ToQueue(
 		this GetQueuesResponse value,

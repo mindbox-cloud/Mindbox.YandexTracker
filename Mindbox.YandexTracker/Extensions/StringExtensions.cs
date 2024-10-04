@@ -1,4 +1,5 @@
 namespace Mindbox.YandexTracker;
+
 internal static class StringExtensions
 {
 	public static string? TrimAndMakeNullIfEmpty(this string value)

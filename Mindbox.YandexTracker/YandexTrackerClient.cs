@@ -388,7 +388,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	private async Task<TResult> ExecuteYandexTrackerApiRequestAsync<TResult>(
 		string requestTo,
 		HttpMethod method,
-		object payload,
+		object? payload,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
@@ -507,7 +507,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		var pageNumber = 1;
 
 		var result = new List<TResult>();
-		List<TResult>? resultList;
+		List<TResult> dataChunk;
 		do
 		{
 			var parametersWithPaging = parameters is not null
@@ -517,7 +517,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
 			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
 
-			resultList = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
+			dataChunk = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
 				httpMethod,
 				payload: null!,
@@ -525,11 +525,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				headers,
 				cancellationToken);
 
-			result.AddRange(resultList);
+			result.AddRange(dataChunk);
 
 			pageNumber++;
 		}
-		while (resultList.Count < perPage);
+		while (dataChunk.Count < perPage);
 
 		return result;
 	}

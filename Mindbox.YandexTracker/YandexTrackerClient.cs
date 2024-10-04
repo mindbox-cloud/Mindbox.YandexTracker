@@ -337,7 +337,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
 			$"queues/{queueKey}/localFields",
-			HttpMethod.Post,
+			HttpMethod.Get,
 			cancellationToken: cancellationToken))
 			.Select(dto => dto.ToIssueField())
 			.ToList();

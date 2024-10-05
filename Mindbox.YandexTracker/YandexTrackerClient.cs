@@ -561,6 +561,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string requestTo,
 		HttpMethod httpMethod,
 		object? payload = null,
+		bool withPagination = false,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
@@ -577,8 +578,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				? new Dictionary<string, string>(parameters)
 				: [];
 
-			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
-			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
+			if (withPagination)
+			{
+				parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
+				parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
+			}
 
 			dataChunk = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
@@ -592,7 +596,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			pageNumber++;
 		}
-		while (dataChunk.Count < perPage);
+		while (dataChunk.Count < perPage && withPagination);
 
 		return result;
 	}

@@ -26,6 +26,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		_httpClient = httpClientFactory.CreateClient();
 
 		_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
+		_httpClient.DefaultRequestHeaders.Host = "api.tracker.yandex.net";
 	}
 
 	public async Task<Queue> GetQueueAsync(
@@ -53,7 +54,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return (await ExecuteYandexTrackerApiRequestAsync<GetQueuesResponse>(
 			$"queues/{queueKey}",
 			HttpMethod.Get,
-			payload: null!,
+			payload: null,
 			parameters: parameters,
 			cancellationToken: cancellationToken))
 			.ToQueue(issueTypeInfos, resolutionInfos);
@@ -335,14 +336,22 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
-		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-			$"queues/{queueKey}/localFields",
-			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.Select(dto => dto.ToIssueField())
-			.ToList();
+		List<IssueField> localQueueFields = [];
 
-		return [.. globalFields, .. localQuqueFields];
+		try
+		{
+			localQueueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+				$"queues/{queueKey}/localFields",
+				HttpMethod.Get,
+				cancellationToken: cancellationToken))
+				.Select(dto => dto.ToIssueField())
+				.ToList();
+		}
+		catch (InvalidOperationException)
+		{
+		}
+
+		return [.. globalFields, .. localQueueFields];
 	}
 
 	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
@@ -408,14 +417,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteCommentAsync(
 		string issueKey,
-		string commentKey,
+		int commentId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(issueKey);
-		ArgumentNullException.ThrowIfNull(commentKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"issues/{issueKey}/comments/{commentKey}",
+			$"issues/{issueKey}/comments/{commentId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);
@@ -435,13 +443,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
-		string projectKey,
+		int projectShortId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(projectKey);
-
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType}/{projectKey}",
+			$"entities/{entityType}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);
@@ -561,6 +567,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string requestTo,
 		HttpMethod httpMethod,
 		object? payload = null,
+		bool withPagination = false,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
@@ -577,8 +584,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				? new Dictionary<string, string>(parameters)
 				: [];
 
-			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
-			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
+			if (withPagination)
+			{
+				parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
+				parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
+			}
 
 			dataChunk = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
@@ -592,7 +602,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			pageNumber++;
 		}
-		while (dataChunk.Count < perPage);
+		while (dataChunk.Count < perPage && withPagination);
 
 		return result;
 	}

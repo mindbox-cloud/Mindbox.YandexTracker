@@ -46,7 +46,7 @@ public interface IYandexTrackerClient
 
 	Task DeleteCommentAsync(
 		string issueKey,
-		string commentKey,
+		int commentId,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default);
@@ -71,7 +71,7 @@ public interface IYandexTrackerClient
 
 	Task DeleteProjectAsync(
 		ProjectEntityType entityType,
-		string projectKey,
+		int projectShortId,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Project>> GetProjectsAsync(

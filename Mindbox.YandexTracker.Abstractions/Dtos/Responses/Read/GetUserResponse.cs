@@ -7,16 +7,16 @@ namespace Mindbox.YandexTracker;
 public sealed record GetUserResponse
 {
 	[DataMember(Name = "uid")]
-	public int Id { get; init; }
+	public required string Id { get; init; }
 
 	[DataMember(Name = "login")]
 	public required string Login { get; init; }
 
 	[DataMember(Name = "trackerUid")]
-	public int TrackerUid { get; init; }
+	public required string TrackerUid { get; init; }
 
 	[DataMember(Name = "passportUid")]
-	public int PassportUid { get; init; }
+	public required string PassportUid { get; init; }
 
 	[DataMember(Name = "cloudUid")]
 	public required string CloudUid { get; init; }

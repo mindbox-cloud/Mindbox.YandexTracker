@@ -6,6 +6,7 @@ namespace Mindbox.YandexTracker;
 public sealed record Project
 {
 	public required string Id { get; init; }
+	public required int ShortId { get; init; }
 	public ProjectEntityType ProjectType { get; init; }
 	public required UserInfo CreatedBy { get; init; }
 	public DateTime CreatedAt { get; init; }

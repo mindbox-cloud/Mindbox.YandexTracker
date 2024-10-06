@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Mindbox.YandexTracker;
 
@@ -19,6 +21,7 @@ public sealed record CreateQueueRequest
 	public required string DefaultType { get; init; }
 
 	[DataMember(Name = "defaultPriority")]
+	[JsonConverter(typeof(StringEnumConverter))]
 	public Priority DefaultPriority { get; init; }
 
 	[DataMember(Name = "issueTypesConfig")]

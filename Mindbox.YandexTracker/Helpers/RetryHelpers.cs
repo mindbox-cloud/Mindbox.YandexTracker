@@ -1,10 +1,10 @@
-using System.Threading.Tasks;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace Mindbox.YandexTracker;
+namespace Mindbox.YandexTracker.Helpers;
 
-public static class RetryHelpers
+internal static class RetryHelpers
 {
 	public static async Task<TResult> RetryOnExceptionAsync<TResult>(
 		Func<Task<TResult>> func,
@@ -17,40 +17,11 @@ public static class RetryHelpers
 
 		while (true)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+
 			try
 			{
 				return await func();
-			}
-			catch (Exception e)
-			{
-				if (e is YandexTrackerRetryLimitExceededException)
-				{
-					throw;
-				}
-				if (num > retryCount)
-				{
-					throw new YandexTrackerException($"{retryCount} error responses in a row.", e);
-				}
-			}
-
-			++num;
-		}
-	}
-
-	public static async Task RetryOnExceptionAsync(
-		Func<Task> func,
-		int retryCount,
-		CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(func);
-
-		var num = 1;
-
-		while (true)
-		{
-			try
-			{
-				await func();
 			}
 			catch (Exception e)
 			{

@@ -9,23 +9,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using Mindbox.YandexTracker.Helpers;
 using Newtonsoft.Json;
 
 namespace Mindbox.YandexTracker;
 
 public sealed class YandexTrackerClient : IYandexTrackerClient
 {
-	private readonly IOptionsMonitor<YandexTrackerClientOptions> _options;
 	private readonly HttpClient _httpClient;
 
 	public YandexTrackerClient(
 		IOptionsMonitor<YandexTrackerClientOptions> options,
 		IHttpClientFactory httpClientFactory)
 	{
-		_options = options;
-		_httpClient = httpClientFactory.CreateClient();
+		ArgumentNullException.ThrowIfNull(options);
+		ArgumentNullException.ThrowIfNull(httpClientFactory);
 
-		_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
+		_httpClient = CreateHttpClient(httpClientFactory, options.CurrentValue);
+	}
+
+	private static HttpClient CreateHttpClient(
+		IHttpClientFactory httpClientFactory,
+		YandexTrackerClientOptions options)
+	{
+		var httpClient = httpClientFactory.CreateClient();
+
+		httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
+		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.Token);
+		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
+
+		return httpClient;
 	}
 
 	public async Task<Queue> GetQueueAsync(
@@ -456,17 +469,26 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		CancellationToken cancellationToken = default)
 		where TResult : class
 	{
-		var optionsSnapshot = _options.CurrentValue;
+		var httpResponse = await ExecuteYandexTrackerApiRawRequestAsync(
+			requestTo,
+			method,
+			payload,
+			parameters,
+			headers,
+			cancellationToken);
 
-		_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", optionsSnapshot.Token);
+		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+		return JsonConvert.DeserializeObject<TResult>(resultContent)!;
+	}
 
-		if (_httpClient.DefaultRequestHeaders.Contains("X-Cloud-Org-ID"))
-		{
-			_httpClient.DefaultRequestHeaders.Remove("X-Cloud-Org-ID");
-		}
-
-		_httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", optionsSnapshot.Organization);
-
+	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
+		string requestTo,
+		HttpMethod method,
+		object? payload,
+		IDictionary<string, string>? parameters = null,
+		IDictionary<string, string>? headers = null,
+		CancellationToken cancellationToken = default)
+	{
 		var apiVersion = "v2";
 
 		var effectivePath = $"{apiVersion}/{requestTo}";
@@ -482,7 +504,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			retryCount: 4,
 			cancellationToken);
 
-		async Task<TResult> ExecuteAndProcessResultAsync()
+		async Task<HttpResponseMessage> ExecuteAndProcessResultAsync()
 		{
 			var request = new HttpRequestMessage(method, requestUri);
 
@@ -511,8 +533,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
 			}
 
-			var resultContent = await response.Content.ReadAsStringAsync(cancellationToken);
-			return JsonConvert.DeserializeObject<TResult>(resultContent)!;
+			return response;
 		}
 
 		static async Task CheckRateLimitExceededAsync(
@@ -609,93 +630,12 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
 	{
-		var optionsSnapshot = _options.CurrentValue;
-
-		_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", optionsSnapshot.Token);
-
-		if (_httpClient.DefaultRequestHeaders.Contains("X-Cloud-Org-ID"))
-		{
-			_httpClient.DefaultRequestHeaders.Remove("X-Cloud-Org-ID");
-		}
-
-		_httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", optionsSnapshot.Organization);
-
-		var apiVersion = "v2";
-
-		var effectivePath = $"{apiVersion}/{requestTo}";
-		var baseAddress = new Uri("https://api.tracker.yandex.net/");
-		var requestUri = new Uri(baseAddress, effectivePath);
-		if (parameters is not null)
-		{
-			requestUri = new Uri(QueryHelpers.AddQueryString(requestUri.ToString(), parameters!));
-		}
-
-		await RetryHelpers.RetryOnExceptionAsync(
-			ExecuteAndProcessResultAsync,
-			retryCount: 4,
+		_ = await ExecuteYandexTrackerApiRawRequestAsync(
+			requestTo,
+			method,
+			payload,
+			parameters,
+			headers,
 			cancellationToken);
-
-		async Task ExecuteAndProcessResultAsync()
-		{
-			var request = new HttpRequestMessage(method, requestUri);
-
-			if (payload is not null)
-			{
-				request.Content = new StringContent(
-					JsonConvert.SerializeObject(payload),
-					Encoding.UTF8,
-					"application/json");
-			}
-
-			if (headers is not null)
-			{
-				foreach (var header in headers)
-				{
-					request.Headers.Add(header.Key, header.Value);
-				}
-			}
-
-			var response = await _httpClient.SendAsync(request, cancellationToken);
-
-			if (!response.IsSuccessStatusCode)
-			{
-				await CheckRateLimitExceededAsync(response, cancellationToken);
-
-				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
-			}
-		}
-
-		static async Task CheckRateLimitExceededAsync(
-			HttpResponseMessage response,
-			CancellationToken cancellationToken)
-		{
-			var remaining = TryGetHeaderValue(response, "x-ratelimit-remaining");
-
-			if (remaining is not "0")
-				return;
-
-			var retrySeconds = TryGetHeaderValue(response, "Retry-After")?.Transform(int.Parse) ?? 1;
-			var retryPeriod = TimeSpan.FromSeconds(retrySeconds + 1);
-			if (retryPeriod.TotalSeconds > TimeSpan.FromMinutes(1).TotalSeconds)
-			{
-				var noRetryException = new YandexTrackerRetryLimitExceededException(
-					"YandexTracker rate limit reached. Too long wait for next try.");
-				noRetryException.Data.Add("Retry-After", retrySeconds);
-
-				throw noRetryException;
-			}
-
-			await Task.Delay(retryPeriod, cancellationToken);
-
-			var exception =
-				new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
-
-			exception.Data.Add("x-ratelimit-remaining", remaining);
-			exception.Data.Add("x-ratelimit-limit", TryGetHeaderValue(response, "x-ratelimit-limit") ?? "null");
-			exception.Data.Add("x-ratelimit-used", TryGetHeaderValue(response, "x-ratelimit-used") ?? "null");
-			exception.Data.Add("x-ratelimit-reset", TryGetHeaderValue(response, "x-ratelimit-resett") ?? "null");
-
-			throw exception;
-		}
 	}
 }

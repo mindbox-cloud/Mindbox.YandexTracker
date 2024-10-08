@@ -137,10 +137,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Summary = "Testik1"
 		});
 
-		//var imageFile = await File.ReadAllBytesAsync("TestFiles\\pepe.png");
-		using var imageFile = File.OpenRead("TestFiles\\pepe.png");
-		using var txtFile = File.OpenRead("TestFiles\\importantInformation.txt");
-		//var txtFile = await File.ReadAllBytesAsync("TestFiles\\importantInformation.txt");
+		await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
+		await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
 
 		var imageAttachment = await YandexTrackerClient.CreateAttachmentAsync(
 			issue.Key,

@@ -274,9 +274,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		using var form = new MultipartFormDataContent();
 		using var fileContent = new StreamContent(fileStream);
-		fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
-		form.Add(fileContent, "file");
+		form.Add(fileContent, "file", newFileName ?? "file");
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
@@ -569,14 +567,20 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			var response = await _httpClient.SendAsync(request, cancellationToken);
 
-			if (!response.IsSuccessStatusCode)
+			if (response.IsSuccessStatusCode) return response;
+
+			await CheckRateLimitExceededAsync(response, cancellationToken);
+
+			string errorMessage;
+			try
 			{
-				await CheckRateLimitExceededAsync(response, cancellationToken);
-
-				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
+				errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
 			}
-
-			return response;
+			catch
+			{
+				errorMessage = "Unknown error";
+			}
+			throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {errorMessage}");
 		}
 
 		static async Task CheckRateLimitExceededAsync(

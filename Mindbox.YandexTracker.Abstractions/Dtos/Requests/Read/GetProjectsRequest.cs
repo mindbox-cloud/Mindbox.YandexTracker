@@ -22,5 +22,5 @@ public sealed record GetProjectsRequest
 	public bool? RootOnly { get; init; }
 
 	[JsonIgnore]
-	public ProjectFieldData? FieldsWhichIncludedInResponse { get; init; }
+	public ProjectFieldData? ReturnedFields { get; init; }
 }

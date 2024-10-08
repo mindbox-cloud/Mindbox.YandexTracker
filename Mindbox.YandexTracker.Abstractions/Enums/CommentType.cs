@@ -5,8 +5,8 @@ namespace Mindbox.YandexTracker;
 [DataContract]
 public enum CommentType
 {
-	[EnumMember(Value = "standart")]
-	Standart,
+	[EnumMember(Value = "standard")]
+	Standard,
 
 	[EnumMember(Value = "incoming")]
 	Incoming,

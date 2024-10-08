@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Mindbox.YandexTracker;
 
@@ -26,7 +27,7 @@ public sealed record CreateAttachmentResponse
 	public DateTime CreatedAt { get; init; }
 
 	[DataMember(Name = "mimetype")]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
+	[JsonConverter(typeof(StringEnumConverter))]
 	public FileType Mimetype { get; init; }
 
 	[DataMember(Name = "size")]

@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mindbox.YandexTracker;
 
-public interface IYandexTrackerClient
+public interface IYandexTrackerClient : IDisposable
 {
 	Task<Queue> GetQueueAsync(
 		string queueKey,
@@ -53,7 +55,7 @@ public interface IYandexTrackerClient
 
 	Task<Attachment> CreateAttachmentAsync(
 		string issueKey,
-		byte[] file,
+		Stream fileStream,
 		string? newFileName = null,
 		CancellationToken cancellationToken = default);
 
@@ -85,12 +87,14 @@ public interface IYandexTrackerClient
 
 	Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default);
 
-	public Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+	Task<GetUserResponse> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
 		CancellationToken cancellationToken = default);
 
-	public Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+	Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
 		CancellationToken cancellationToken = default);
 
-	public Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+	Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
 		CancellationToken cancellationToken = default);
 }

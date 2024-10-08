@@ -142,7 +142,7 @@ internal static class DtoExtension
 
 	public static UserInfo ToUserInfo(this FieldInfo value)
 	{
-		return new UserInfo { Id = value.Key! };
+		return new UserInfo { Id = value.Id };
 	}
 
 	public static Issue ToIssue(
@@ -166,7 +166,7 @@ internal static class DtoExtension
 			Followers = new Collection<UserInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			Votes = value.Votes,
-			Assignee = value.Assignee!.ToUserInfo(),
+			Assignee = value.Assignee?.ToUserInfo(),
 			Project = value.Project?.Id,
 			Queue = value.Queue.Key!,
 			UpdatedAt = value.UpdatedAt,

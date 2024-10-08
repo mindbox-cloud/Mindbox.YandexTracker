@@ -8,7 +8,7 @@ namespace Mindbox.YandexTracker.Tests;
 
 public abstract class YandexTrackerTestBase
 {
-	protected string TestQueueKey { get; } = "LIBRARYTESTS";
+	protected string TestQueueKey { get; private set; } = null!;
 	protected IServiceProvider ServiceProvider { get; private set; } = null!;
 	protected IYandexTrackerClient YandexTrackerClient { get; private set; } = null!;
 
@@ -21,6 +21,9 @@ public abstract class YandexTrackerTestBase
 
 		ServiceProvider = serviceCollection.BuildServiceProvider();
 		YandexTrackerClient = GetRequiredService<IYandexTrackerClient>();
+
+		// в ключе может быть до 15 латинских символов
+		TestQueueKey = $"TEST{StringHelper.GetUniqueString(length: 11)}";
 		await CreateQueueAsync();
 	}
 
@@ -37,7 +40,7 @@ public abstract class YandexTrackerTestBase
 			Key = TestQueueKey,
 			DefaultType = "task",
 			LeadKey = "ya.toporow",
-			Name = "TestQueueKey",
+			Name = TestQueueKey.ToUpperInvariant(),
 			IssutTypesConfig =
 			[
 				new()

@@ -12,7 +12,7 @@ public sealed record CreateProjectRequest
 	public required ProjectFieldsDto Fields { get; init; }
 
 	[JsonIgnore]
-	public ProjectFieldData? FieldsWhichIncludedInResponse { get; init; }
+	public ProjectFieldData? ReturnedFields { get; init; }
 }
 
 [DataContract]

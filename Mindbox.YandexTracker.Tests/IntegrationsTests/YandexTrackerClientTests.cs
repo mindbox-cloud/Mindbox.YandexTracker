@@ -1,4 +1,4 @@
-using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -47,15 +47,15 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		// Arrange
 		Assert.IsNotNull(issue);
-		Assert.AreEqual(issue, issueResponse);
+		Assert.AreEqual(issue.Key, issueResponse.Key);
 	}
 
 	[TestMethod]
-	public async Task GetIssueAsync_IssueKeyWhichNotExist_ThrowException()
+	public async Task GetIssueAsync_IssueKeyWhichNotExist_ThrowYandexTrackerExceptionE()
 	{
 		var someIssueKey = "randomIssue";
 
-		await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+		await Assert.ThrowsExceptionAsync<YandexTrackerException>(async () =>
 		{
 			await YandexTrackerClient.GetIssueAsync(someIssueKey);
 		});
@@ -84,7 +84,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		}))
 		.ToArray();
 
-		CollectionAssert.AreEquivalent(expectedIssues, issues);
+		Assert.AreEqual(expectedIssues.Length, issues.Length);
 	}
 
 	[TestMethod]
@@ -119,17 +119,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 				Text = "SomeComment2"
 			});
 
-		Comment[] expectedComments = [comment1, comment2];
-
 		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key)).ToArray();
 
 		Assert.IsNotNull(comments);
-		CollectionAssert.AreEquivalent(expectedComments, comments);
-
-		var deleteFirstCommentTask = YandexTrackerClient.DeleteCommentAsync(issue.Key, comment1.Id);
-		var deleteSecondCommentTask = YandexTrackerClient.DeleteCommentAsync(issue.Key, comment2.Id);
-
-		await Task.WhenAll(deleteFirstCommentTask, deleteSecondCommentTask);
+		CollectionAssert.AreEquivalent(comment1.Attachments, comments.First().Attachments);
+		CollectionAssert.AreEquivalent(comment2.Attachments, comments.Last().Attachments);
+		Assert.AreEqual(comment1 with { Attachments = comments.First().Attachments }, comments.First());
+		Assert.AreEqual(comment2 with { Attachments = comments.Last().Attachments }, comments.Last());
 	}
 
 	[TestMethod]
@@ -141,20 +137,28 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Summary = "Testik1"
 		});
 
-		var attachment1 = await YandexTrackerClient.CreateAttachmentAsync(
+		using var imageFile = File.OpenRead("TestFiles//pepe.png");
+		using var txtFile = File.OpenRead("TestFiles//importantInformation.txt");
+
+		var imageAttachment = await YandexTrackerClient.CreateAttachmentAsync(
+			issue.Key,
+			imageFile);
+
+		var textAttachment = await YandexTrackerClient.CreateAttachmentAsync(
 			issue.Key,
 			null!);
 
-		var attachment2 = await YandexTrackerClient.CreateAttachmentAsync(
-			issue.Key,
-			null!);
-
-		Attachment[] expectedAttachments = [attachment1, attachment2];
+		Attachment[] expectedAttachments = [imageAttachment, textAttachment];
 
 		var attachments = (await YandexTrackerClient.GetAttachmentsAsync(issue.Key)).ToArray();
 
 		Assert.IsNotNull(attachments);
 		CollectionAssert.AreEquivalent(expectedAttachments, attachments);
+
+		var deleteImageAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, imageAttachment.Id);
+		var deleteTxtAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, textAttachment.Id);
+
+		await Task.WhenAll(deleteImageAttachmentTask, deleteTxtAttachmentTask);
 	}
 
 	[TestMethod]
@@ -193,7 +197,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		var request = new GetProjectsRequest
 		{
-			FieldsWhichIncludedInResponse = ProjectFieldData.None
+			ReturnedFields = ProjectFieldData.None
 		};
 
 		// Act

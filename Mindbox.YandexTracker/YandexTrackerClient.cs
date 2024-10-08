@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,24 +10,38 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using Mindbox.YandexTracker.Helpers;
 using Newtonsoft.Json;
 
 namespace Mindbox.YandexTracker;
 
 public sealed class YandexTrackerClient : IYandexTrackerClient
 {
-	private readonly IOptionsMonitor<YandexTrackerClientOptions> _options;
 	private readonly HttpClient _httpClient;
 
 	public YandexTrackerClient(
 		IOptionsMonitor<YandexTrackerClientOptions> options,
 		IHttpClientFactory httpClientFactory)
 	{
-		_options = options;
-		_httpClient = httpClientFactory.CreateClient();
+		ArgumentNullException.ThrowIfNull(options);
+		ArgumentNullException.ThrowIfNull(httpClientFactory);
 
+		_httpClient = CreateHttpClient(httpClientFactory, options.CurrentValue);
 		_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
 		_httpClient.DefaultRequestHeaders.Host = "api.tracker.yandex.net";
+	}
+
+	private static HttpClient CreateHttpClient(
+		IHttpClientFactory httpClientFactory,
+		YandexTrackerClientOptions options)
+	{
+		var httpClient = httpClientFactory.CreateClient();
+
+		httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
+		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.Token);
+		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
+
+		return httpClient;
 	}
 
 	public async Task<Queue> GetQueueAsync(
@@ -34,7 +49,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		QueueExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(queueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -42,7 +57,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		{
 			parameters["expand"] = expand is QueueExpandData.All
 				? expand.ToString()!
-				: ((QueueExpandData)expand).ToQueryString();
+				: expand.Value.ToQueryString();
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -68,7 +83,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null && (QueuesExpandData)expand != QueuesExpandData.None)
 		{
-			parameters["expand"] = ((QueuesExpandData)expand).ToQueryString();
+			parameters["expand"] = expand.Value.ToQueryString();
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -91,13 +106,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		IssueExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 
 		var parameters = new Dictionary<string, string>();
 
 		if (expand is not null and not IssueExpandData.None)
 		{
-			parameters["expand"] = ((IssueExpandData)expand).ToQueryString();
+			parameters["expand"] = expand.Value.ToQueryString();
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -125,7 +140,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (request.Expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = ((IssuesExpandData)request.Expand).ToQueryString();
+			parameters["expand"] = request.Expand.Value.ToQueryString();
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -181,7 +196,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		CommentExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -190,7 +205,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			if (expand is CommentExpandData.All)
 				parameters["expand"] = expand.ToString()!;
 			else
-				parameters["expand"] = ((CommentExpandData)expand).ToQueryString();
+				parameters["expand"] = expand.Value.ToQueryString();
 		}
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
@@ -207,7 +222,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		CreateCommentRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 		ArgumentNullException.ThrowIfNull(request);
 
 		var parameters = new Dictionary<string, string>();
@@ -230,7 +245,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string issueKey,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
@@ -242,22 +257,28 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task<Attachment> CreateAttachmentAsync(
 		string issueKey,
-		byte[] file,
+		Stream fileStream,
 		string? newFileName = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
-		ArgumentNullException.ThrowIfNull(file);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentNullException.ThrowIfNull(fileStream);
 
 		var parameters = new Dictionary<string, string>();
 
 		if (newFileName is not null)
 			parameters["filename"] = newFileName;
 
+		using var form = new MultipartFormDataContent();
+		using var fileContent = new StreamContent(fileStream);
+		fileContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
+
+		form.Add(fileContent, "file");
+
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
 			HttpMethod.Post,
-			payload: file,
+			payload: form,
 			parameters: parameters,
 			cancellationToken: cancellationToken))
 			.ToAttachment();
@@ -267,7 +288,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string queueKey,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(queueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<string>(
 			$"queues/{queueKey}/tags",
@@ -284,10 +305,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (request.FieldsWhichIncludedInResponse is not null
+		if (request.ReturnedFields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = ((ProjectFieldData)request.FieldsWhichIncludedInResponse).ToQueryString();
+			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
@@ -308,10 +329,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (request.FieldsWhichIncludedInResponse is not null
+		if (request.ReturnedFields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = ((ProjectFieldData)request.FieldsWhichIncludedInResponse).ToQueryString();
+			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
@@ -327,7 +348,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string queueKey,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(queueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
 		var globalFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
 			"fields",
@@ -352,6 +373,19 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		}
 
 		return [.. globalFields, .. localQueueFields];
+	}
+
+	public async Task<GetUserResponse> GetUserByIdAsync(
+		string userId,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+
+		return await ExecuteYandexTrackerApiRequestAsync<GetUserResponse>(
+			$"users/{userId}",
+			HttpMethod.Get,
+			payload: null,
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
@@ -406,7 +440,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(queueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"queues/{queueKey}",
@@ -420,7 +454,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		int commentId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"issues/{issueKey}/comments/{commentId}",
@@ -431,8 +465,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteAttachmentAsync(string issueKey, string attachmentKey, CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(issueKey);
-		ArgumentNullException.ThrowIfNull(attachmentKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrWhiteSpace(attachmentKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"issues/{issueKey}/attachments/{attachmentKey}",
@@ -453,6 +487,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	public void Dispose()
+	{
+		_httpClient.Dispose();
+	}
+
 	private async Task<TResult> ExecuteYandexTrackerApiRequestAsync<TResult>(
 		string requestTo,
 		HttpMethod method,
@@ -462,17 +501,26 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		CancellationToken cancellationToken = default)
 		where TResult : class
 	{
-		var optionsSnapshot = _options.CurrentValue;
+		var httpResponse = await ExecuteYandexTrackerApiRawRequestAsync(
+			requestTo,
+			method,
+			payload,
+			parameters,
+			headers,
+			cancellationToken);
 
-		_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", optionsSnapshot.Token);
+		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+		return JsonConvert.DeserializeObject<TResult>(resultContent)!;
+	}
 
-		if (_httpClient.DefaultRequestHeaders.Contains("X-Cloud-Org-ID"))
-		{
-			_httpClient.DefaultRequestHeaders.Remove("X-Cloud-Org-ID");
-		}
-
-		_httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", optionsSnapshot.Organization);
-
+	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
+		string requestTo,
+		HttpMethod method,
+		object? payload,
+		IDictionary<string, string>? parameters = null,
+		IDictionary<string, string>? headers = null,
+		CancellationToken cancellationToken = default)
+	{
 		var apiVersion = "v2";
 
 		var effectivePath = $"{apiVersion}/{requestTo}";
@@ -488,7 +536,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			retryCount: 4,
 			cancellationToken);
 
-		async Task<TResult> ExecuteAndProcessResultAsync()
+		async Task<HttpResponseMessage> ExecuteAndProcessResultAsync()
 		{
 			var request = new HttpRequestMessage(method, requestUri);
 
@@ -517,8 +565,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
 			}
 
-			var resultContent = await response.Content.ReadAsStringAsync(cancellationToken);
-			return JsonConvert.DeserializeObject<TResult>(resultContent)!;
+			return response;
 		}
 
 		static async Task CheckRateLimitExceededAsync(
@@ -567,7 +614,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string requestTo,
 		HttpMethod httpMethod,
 		object? payload = null,
-		bool withPagination = false,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
@@ -584,11 +630,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				? new Dictionary<string, string>(parameters)
 				: [];
 
-			if (withPagination)
-			{
-				parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
-				parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
-			}
+			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
+			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
 
 			dataChunk = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
 				requestTo,
@@ -602,7 +645,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			pageNumber++;
 		}
-		while (dataChunk.Count < perPage && withPagination);
+		while (dataChunk.Count == perPage);
 
 		return result;
 	}
@@ -615,93 +658,12 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		IDictionary<string, string>? headers = null,
 		CancellationToken cancellationToken = default)
 	{
-		var optionsSnapshot = _options.CurrentValue;
-
-		_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", optionsSnapshot.Token);
-
-		if (_httpClient.DefaultRequestHeaders.Contains("X-Cloud-Org-ID"))
-		{
-			_httpClient.DefaultRequestHeaders.Remove("X-Cloud-Org-ID");
-		}
-
-		_httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", optionsSnapshot.Organization);
-
-		var apiVersion = "v2";
-
-		var effectivePath = $"{apiVersion}/{requestTo}";
-		var baseAddress = new Uri("https://api.tracker.yandex.net/");
-		var requestUri = new Uri(baseAddress, effectivePath);
-		if (parameters is not null)
-		{
-			requestUri = new Uri(QueryHelpers.AddQueryString(requestUri.ToString(), parameters!));
-		}
-
-		await RetryHelpers.RetryOnExceptionAsync(
-			ExecuteAndProcessResultAsync,
-			retryCount: 4,
+		_ = await ExecuteYandexTrackerApiRawRequestAsync(
+			requestTo,
+			method,
+			payload,
+			parameters,
+			headers,
 			cancellationToken);
-
-		async Task ExecuteAndProcessResultAsync()
-		{
-			var request = new HttpRequestMessage(method, requestUri);
-
-			if (payload is not null)
-			{
-				request.Content = new StringContent(
-					JsonConvert.SerializeObject(payload),
-					Encoding.UTF8,
-					"application/json");
-			}
-
-			if (headers is not null)
-			{
-				foreach (var header in headers)
-				{
-					request.Headers.Add(header.Key, header.Value);
-				}
-			}
-
-			var response = await _httpClient.SendAsync(request, cancellationToken);
-
-			if (!response.IsSuccessStatusCode)
-			{
-				await CheckRateLimitExceededAsync(response, cancellationToken);
-
-				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
-			}
-		}
-
-		static async Task CheckRateLimitExceededAsync(
-			HttpResponseMessage response,
-			CancellationToken cancellationToken)
-		{
-			var remaining = TryGetHeaderValue(response, "x-ratelimit-remaining");
-
-			if (remaining is not "0")
-				return;
-
-			var retrySeconds = TryGetHeaderValue(response, "Retry-After")?.Transform(int.Parse) ?? 1;
-			var retryPeriod = TimeSpan.FromSeconds(retrySeconds + 1);
-			if (retryPeriod.TotalSeconds > TimeSpan.FromMinutes(1).TotalSeconds)
-			{
-				var noRetryException = new YandexTrackerRetryLimitExceededException(
-					"YandexTracker rate limit reached. Too long wait for next try.");
-				noRetryException.Data.Add("Retry-After", retrySeconds);
-
-				throw noRetryException;
-			}
-
-			await Task.Delay(retryPeriod, cancellationToken);
-
-			var exception =
-				new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
-
-			exception.Data.Add("x-ratelimit-remaining", remaining);
-			exception.Data.Add("x-ratelimit-limit", TryGetHeaderValue(response, "x-ratelimit-limit") ?? "null");
-			exception.Data.Add("x-ratelimit-used", TryGetHeaderValue(response, "x-ratelimit-used") ?? "null");
-			exception.Data.Add("x-ratelimit-reset", TryGetHeaderValue(response, "x-ratelimit-resett") ?? "null");
-
-			throw exception;
-		}
 	}
 }

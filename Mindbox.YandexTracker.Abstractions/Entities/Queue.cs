@@ -11,12 +11,12 @@ public sealed record Queue
 	public required string Id { get; init; }
 	public required string Key { get; init; }
 	public required string Name { get; init; }
-	public required UserInfo Lead { get; init; }
+	public required UserShortInfo Lead { get; init; }
 	public string? Description { get; init; }
 	public bool AssignAuto { get; init; }
 	public required IssueType DefaultType { get; init; }
 	public Priority DefaultPriority { get; init; }
-	public Collection<UserInfo> TeamUsers { get; init; } = [];
+	public Collection<UserShortInfo> TeamUsers { get; init; } = [];
 	public Collection<IssueType> IssueTypes { get; init; } = [];
 	public Collection<IssueTypeConfig> IssueTypesConfig { get; init; } = [];
 	public Collection<IssueType> Workflows { get; init; } = [];

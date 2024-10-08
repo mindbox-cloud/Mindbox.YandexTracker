@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public sealed record GetResolutionResponse
+public sealed record IssueType
 {
 	[DataMember(Name = "id")]
 	public int Id { get; init; }

@@ -19,39 +19,6 @@ internal static class DtoExtension
 		return string.Join(",", enumValues);
 	}
 
-	public static Resolution ToResolution(
-		this FieldInfo value,
-		IReadOnlyDictionary<string, GetResolutionResponse> resolutionInfos)
-	{
-		if (!resolutionInfos.TryGetValue(value.Key!, out var resolutionInfo))
-		{
-			throw new ArgumentException($"Resolution with key = {value.Key} not found");
-		}
-
-		return new Resolution
-		{
-			Key = resolutionInfo.Key,
-			Name = resolutionInfo.Name,
-			Description = resolutionInfo.Description
-		};
-	}
-
-	public static IssueType ToIssueType(
-		this FieldInfo value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos) 
-	{
-		if (!issueTypeInfos.TryGetValue(value.Key!, out var issueTypeInfo))
-		{
-			throw new ArgumentException($"IssueType with key = {value.Key} not found");
-		}
-
-		return new IssueType
-		{
-			Key = issueTypeInfo.Key,
-			Name = issueTypeInfo.Name,
-			Description = issueTypeInfo.Description	
-		};
-	}
 
 	public static Priority ToPriority(this FieldInfo value) => value.Key switch
 	{
@@ -63,43 +30,51 @@ internal static class DtoExtension
 		_ => throw new ArgumentOutOfRangeException(value.Key)
 	};
 
-
 	public static IssueTypeConfig ToIssueTypeConfig(
 		this IssueTypeConfigDto value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyDictionary<string, GetResolutionResponse> resolutionInfos)
+		IReadOnlyDictionary<string, IssueType> issueTypeInfos,
+		IReadOnlyDictionary<string, Resolution> resolutionInfos)
 	{
 		return new IssueTypeConfig
 		{
 			IssueType = value.IssueType.ToIssueType(issueTypeInfos),
-			Workflow = value.Workflow.Id.ToString(),
-			Resolutions = new Collection<Resolution>(value.Resolutions!
+			Workflow = value.Workflow.Id,
+			Resolutions = new Collection<Resolution>(value.Resolutions
 				.Select(dto => dto.ToResolution(resolutionInfos))
 				.ToList())
 		};
 	}
 
+	public static Resolution ToResolution(
+		this FieldInfo value,
+		IReadOnlyDictionary<string, Resolution> resolutionInfos)
+	{
+		return !resolutionInfos.TryGetValue(value.Key!, out var resolution)
+			? throw new ArgumentException($"Resolution with key = {value.Key} not found")
+			: resolution;
+	}
+
+	public static IssueType ToIssueType(
+		this FieldInfo value,
+		IReadOnlyDictionary<string, IssueType> issueTypes)
+	{
+		return !issueTypes.TryGetValue(value.Key!, out var issueType)
+			? throw new ArgumentException($"IssueType with key = {value.Key} not found")
+			: issueType;
+	}
+
 	public static IssueStatus ToIssueStatus(
 		this FieldInfo value,
-		IReadOnlyDictionary<string, GetIssueStatusResponse> issueStatusInfos)
+		IReadOnlyDictionary<string, IssueStatus> issueStatuses)
 	{
-		if (!issueStatusInfos.TryGetValue(value.Key!, out var issueStatusInfo))
-		{
-			throw new ArgumentException($"IssueStatus with key = {value.Key} not found");
-		}
-
-		return new IssueStatus
-		{
-			Key = issueStatusInfo.Key,
-			Name = issueStatusInfo.Name,
-			Type = issueStatusInfo.Type,
-			Description = issueStatusInfo.Description
-		};
+		return !issueStatuses.TryGetValue(value.Key!, out var issueStatusInfo)
+			? throw new ArgumentException($"IssueStatus with key = {value.Key} not found")
+			: issueStatusInfo;
 	}
 
 	public static Queue ToQueue(
 		this CreateQueueResponse value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos)
+		IReadOnlyDictionary<string, IssueType> issueTypeInfos)
 	{
 		return new Queue
 		{
@@ -115,8 +90,8 @@ internal static class DtoExtension
 
 	public static Queue ToQueue(
 		this GetQueuesResponse value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyDictionary<string, GetResolutionResponse> resolutionInfos)
+		IReadOnlyDictionary<string, IssueType> issueTypeInfos,
+		IReadOnlyDictionary<string, Resolution> resolutionInfos)
 	{
 		return new Queue
 		{
@@ -128,7 +103,7 @@ internal static class DtoExtension
 			AssignAuto = value.AssignAuto,
 			DefaultType = value.DefaultType.ToIssueType(issueTypeInfos),
 			DefaultPriority = value.DefaultPriority.ToPriority(),
-			TeamUsers = new Collection<UserInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
+			TeamUsers = new Collection<UserShortInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
 			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
 				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
@@ -140,15 +115,15 @@ internal static class DtoExtension
 		};
 	}
 
-	public static UserInfo ToUserInfo(this FieldInfo value)
+	public static UserShortInfo ToUserInfo(this FieldInfo value)
 	{
-		return new UserInfo { Id = value.Id };
+		return new UserShortInfo { Id = value.Id! };
 	}
 
 	public static Issue ToIssue(
 		this GetIssueResponse value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyDictionary<string, GetIssueStatusResponse> issueStatusInfos)
+		IReadOnlyDictionary<string, IssueType> issueTypeInfos,
+		IReadOnlyDictionary<string, IssueStatus> issueStatusInfos)
 	{
 		return new Issue
 		{
@@ -163,7 +138,7 @@ internal static class DtoExtension
 			CreatedAt = value.CreatedAt,
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
-			Followers = new Collection<UserInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
+			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			Votes = value.Votes,
 			Assignee = value.Assignee?.ToUserInfo(),
@@ -178,8 +153,8 @@ internal static class DtoExtension
 
 	public static Issue ToIssue(
 		this CreateIssueResponse value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos,
-		IReadOnlyDictionary<string, GetIssueStatusResponse> issueStatusInfos)
+		IReadOnlyDictionary<string, IssueType> issueTypeInfos,
+		IReadOnlyDictionary<string, IssueStatus> issueStatusInfos)
 	{
 		return new Issue
 		{
@@ -194,7 +169,7 @@ internal static class DtoExtension
 			CreatedAt = value.CreatedAt,
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
-			Followers = new Collection<UserInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
+			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			Votes = value.Votes,
 			Assignee = value.Assignee?.ToUserInfo(),
@@ -245,7 +220,7 @@ internal static class DtoExtension
 			Id = value.Id,
 			Text = value.Text,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
-			UpdatedBy = value.UpdatedBy?.ToUserInfo(),
+			UpdatedBy = value.UpdatedBy.ToUserInfo(),
 			CreatedAt = value.CreatedAt,
 			UpdatedAt = value.UpdatedAt,
 			Attachments = new Collection<string>(value.Attachments.Select(dto => dto.Id).ToList()),
@@ -334,13 +309,13 @@ internal static class DtoExtension
 				Author = ((FieldInfo?)author)?.ToUserInfo(),
 				Lead = ((FieldInfo?)lead)?.ToUserInfo(),
 				TeamUsers = teamUsers is not null
-					? new Collection<UserInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
+					? new Collection<UserShortInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
 					: null,
 				Clients = clients is not null
-					? new Collection<UserInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
+					? new Collection<UserShortInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
 					: null,
 				Followers = followers is not null
-					? new Collection<UserInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
+					? new Collection<UserShortInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
 					: null,
 				Tags = tags is not null
 					? new Collection<string>((List<string>)tags)

@@ -77,14 +77,14 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		});
 
 		Issue[] expectedIssues = [issue1, issue2];
+		await Task.Delay(1000);
 
-		var issues = (await YandexTrackerClient.GetIssuesAsync(new GetIssuesRequest
+		var issues = await YandexTrackerClient.GetIssuesAsync(new GetIssuesRequest
 		{
 			Queue = TestQueueKey
-		}))
-		.ToArray();
+		});
 
-		Assert.AreEqual(expectedIssues.Length, issues.Length);
+		Assert.AreEqual(expectedIssues.Length, issues.Count);
 	}
 
 	[TestMethod]
@@ -137,8 +137,10 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Summary = "Testik1"
 		});
 
-		using var imageFile = File.OpenRead("TestFiles//pepe.png");
-		using var txtFile = File.OpenRead("TestFiles//importantInformation.txt");
+		//var imageFile = await File.ReadAllBytesAsync("TestFiles\\pepe.png");
+		using var imageFile = File.OpenRead("TestFiles\\pepe.png");
+		using var txtFile = File.OpenRead("TestFiles\\importantInformation.txt");
+		//var txtFile = await File.ReadAllBytesAsync("TestFiles\\importantInformation.txt");
 
 		var imageAttachment = await YandexTrackerClient.CreateAttachmentAsync(
 			issue.Key,
@@ -146,19 +148,19 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		var textAttachment = await YandexTrackerClient.CreateAttachmentAsync(
 			issue.Key,
-			null!);
+			txtFile);
 
 		Attachment[] expectedAttachments = [imageAttachment, textAttachment];
 
 		var attachments = (await YandexTrackerClient.GetAttachmentsAsync(issue.Key)).ToArray();
 
-		Assert.IsNotNull(attachments);
-		CollectionAssert.AreEquivalent(expectedAttachments, attachments);
-
 		var deleteImageAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, imageAttachment.Id);
 		var deleteTxtAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, textAttachment.Id);
 
 		await Task.WhenAll(deleteImageAttachmentTask, deleteTxtAttachmentTask);
+
+		Assert.IsNotNull(attachments);
+		CollectionAssert.AreEquivalent(expectedAttachments, attachments);
 	}
 
 	[TestMethod]
@@ -170,7 +172,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task GetProjectsAsync_Project_ProjectFields_ResponseIsNotNullAndContainsTwoProjects()
+	public async Task GetProjectsAsync_Project_ProjectFields_ResponseIsNotNullAndContainsTwoCreatedProjects()
 	{
 		// Arrange
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
@@ -189,11 +191,11 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			{
 				Fields = new ProjectFieldsDto
 				{
-					Summary = "project1"
+					Summary = "project2"
 				}
 			});
 
-		Project[] expectedProjects = [project1, project2];
+		await Task.Delay(1000);
 
 		var request = new GetProjectsRequest
 		{
@@ -201,17 +203,32 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		};
 
 		// Act
-		var projects = (await YandexTrackerClient.GetProjectsAsync(
+		var projects = await YandexTrackerClient.GetProjectsAsync(
 			ProjectEntityType.Project,
-			request))
-			.ToArray();
-
-		// Assert
-		Assert.IsNotNull(projects);
-		CollectionAssert.AreEquivalent(expectedProjects, projects);
+			request);
 
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId);
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId);
+
+		// Assert
+		Assert.IsNotNull(projects);
+
+		Assert.IsTrue(projects.Any(project => project.ShortId == project1.ShortId));
+		Assert.IsTrue(projects.Any(project => project.ShortId == project2.ShortId));
+	}
+
+	[TestMethod]
+	public async Task GetUserByIdAsync_ResponseIsNotNullAndContainsInformationAboutUser()
+	{
+		// Arrange
+		var userId = "8000000000000001";
+
+		// Act
+		var userInfo = await YandexTrackerClient.GetUserByIdAsync(userId);
+
+		// Assert
+		Assert.IsNotNull(userInfo);
+		Assert.AreEqual("Робот", userInfo.LastName);
 	}
 
 	[TestMethod]

@@ -274,7 +274,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		using var form = new MultipartFormDataContent();
 		using var fileContent = new StreamContent(fileStream);
-		fileContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
+		fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
 		form.Add(fileContent, "file");
 
@@ -314,8 +314,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
+		var projectType = entityType.ToLowerInvariant();
+
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType}",
+			$"entities/{projectType}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -338,8 +340,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
+		var projectType = entityType.ToLowerInvariant();
+
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType}/_search",
+			$"entities/{projectType}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -483,8 +487,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		int projectShortId,
 		CancellationToken cancellationToken = default)
 	{
+		var projectType = entityType.ToLowerInvariant();
+
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType}/{projectShortId}",
+			$"entities/{projectType}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);

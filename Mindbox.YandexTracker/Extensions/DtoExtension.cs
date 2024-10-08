@@ -107,15 +107,17 @@ internal static class DtoExtension
 			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
 				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
-			Workflows = new Collection<IssueType>(
-				value.Workflows?.Fields.Select(field => field.ToIssueType(issueTypeInfos)).ToList()!),
+			Workflows = value.Workflows is not null
+				? new Collection<IssueType>(
+					value.Workflows.Fields.Select(field => field.ToIssueType(issueTypeInfos)).ToList())
+				: [],
 			DenyVoting = value.DenyVoting
 		};
 	}
 
 	public static UserShortInfo ToUserInfo(this FieldInfo value)
 	{
-		return new UserShortInfo { Id = value.Key! };
+		return new UserShortInfo { Id = value.Id! };
 	}
 
 	public static Issue ToIssue(
@@ -139,7 +141,7 @@ internal static class DtoExtension
 			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			Votes = value.Votes,
-			Assignee = value.Assignee!.ToUserInfo(),
+			Assignee = value.Assignee?.ToUserInfo(),
 			Project = value.Project?.Id,
 			Queue = value.Queue.Key!,
 			UpdatedAt = value.UpdatedAt,
@@ -297,6 +299,7 @@ internal static class DtoExtension
 			projects.Add(new Project
 			{
 				Id = projectValue.Id,
+				ShortId = projectValue.ShortId,
 				ProjectType = projectValue.ProjectType,
 				CreatedBy = projectValue.CreatedBy.ToUserInfo(),
 				CreatedAt = projectValue.CreatedAt,
@@ -338,6 +341,7 @@ internal static class DtoExtension
 		return new Project
 		{
 			Id = value.Id,
+			ShortId = value.ShortId,
 			ProjectType = value.ProjectEntityType,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			CreatedAt = value.CreatedAt,
@@ -355,11 +359,13 @@ internal static class DtoExtension
 			Readonly = value.Readonly,
 			Options = value.Options,
 			Suggest = value.Suggest,
-			OptionsProvider = new OptionsProviderInfo
-			{
-				Type = value.OptionsProvider.Type,
-				Values = value.OptionsProvider.Values
-			},
+			OptionsProvider = value.OptionsProvider is not null
+				? new OptionsProviderInfo
+				{
+					Type = value.OptionsProvider.Type,
+					Values = value.OptionsProvider.Values
+				}
+				: null,
 			QueryProvider = value.QueryProvider?.Type,
 			SuggestProvider = value.SuggestProvider?.Type,
 			Order = value.Order,

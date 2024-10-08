@@ -42,6 +42,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				Assembly.GetExecutingAssembly().GetName().Version!.ToString()));
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.Token);
 		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
+		httpClient.DefaultRequestHeaders.Host = "api.tracker.yandex.net";
 
 		return httpClient;
 	}
@@ -71,7 +72,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return (await ExecuteYandexTrackerApiRequestAsync<GetQueuesResponse>(
 			$"queues/{queueKey}",
 			HttpMethod.Get,
-			payload: null!,
+			payload: null,
 			parameters: parameters,
 			cancellationToken: cancellationToken))
 			.ToQueue(issueTypeInfos, resolutionInfos);
@@ -273,9 +274,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		using var form = new MultipartFormDataContent();
 		using var fileContent = new StreamContent(fileStream);
-		fileContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
-
-		form.Add(fileContent, "file");
+		form.Add(fileContent, "file", newFileName ?? "file");
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
@@ -313,8 +312,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
+		var projectType = entityType.ToLowerInvariant();
+
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType}",
+			$"entities/{projectType}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -337,8 +338,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
+		var projectType = entityType.ToLowerInvariant();
+
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType}/_search",
+			$"entities/{projectType}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -359,14 +362,22 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
-		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-			$"queues/{queueKey}/localFields",
-			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.Select(dto => dto.ToIssueField())
-			.ToList();
+		List<IssueField> localQueueFields = [];
 
-		return [.. globalFields, .. localQuqueFields];
+		try
+		{
+			localQueueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+				$"queues/{queueKey}/localFields",
+				HttpMethod.Get,
+				cancellationToken: cancellationToken))
+				.Select(dto => dto.ToIssueField())
+				.ToList();
+		}
+		catch (InvalidOperationException)
+		{
+		}
+
+		return [.. globalFields, .. localQueueFields];
 	}
 
 	public async Task<UserDetailedInfo> GetUserByIdAsync(
@@ -445,14 +456,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteCommentAsync(
 		string issueKey,
-		string commentKey,
+		int commentId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
-		ArgumentException.ThrowIfNullOrWhiteSpace(commentKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"issues/{issueKey}/comments/{commentKey}",
+			$"issues/{issueKey}/comments/{commentId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);
@@ -472,13 +482,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
-		string projectKey,
+		int projectShortId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(projectKey);
+		var projectType = entityType.ToLowerInvariant();
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType}/{projectKey}",
+			$"entities/{projectType}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);
@@ -557,14 +567,20 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			var response = await _httpClient.SendAsync(request, cancellationToken);
 
-			if (!response.IsSuccessStatusCode)
+			if (response.IsSuccessStatusCode) return response;
+
+			await CheckRateLimitExceededAsync(response, cancellationToken);
+
+			string errorMessage;
+			try
 			{
-				await CheckRateLimitExceededAsync(response, cancellationToken);
-
-				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
+				errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
 			}
-
-			return response;
+			catch
+			{
+				errorMessage = "Unknown error";
+			}
+			throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {errorMessage}");
 		}
 
 		static async Task CheckRateLimitExceededAsync(

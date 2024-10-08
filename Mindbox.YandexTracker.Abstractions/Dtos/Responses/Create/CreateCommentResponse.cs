@@ -14,16 +14,16 @@ public sealed record CreateCommentResponse
 	[DataMember(Name = "text")]
 	public required string Text { get; init; }
 
-	[DataMember(Name = "createBody")]
+	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; init; }
 
-	[DataMember(Name = "updateBody")]
+	[DataMember(Name = "updatedBy")]
 	public required FieldInfo UpdatedBy { get; init; }
 
 	[DataMember(Name = "createdAt")]
 	public DateTime CreatedAt { get; init; }
 
-	[DataMember(Name = "updateAt")]
+	[DataMember(Name = "updatedAt")]
 	public DateTime UpdatedAt { get; init; }
 
 	[DataMember(Name = "summonees")]

@@ -365,6 +365,19 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return [.. globalFields, .. localQuqueFields];
 	}
 
+	public async Task<GetUserResponse> GetUserByIdAsync(
+		string userId,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+
+		return await ExecuteYandexTrackerApiRequestAsync<GetUserResponse>(
+			$"users/{userId}",
+			HttpMethod.Get,
+			payload: null,
+			cancellationToken: cancellationToken);
+	}
+
 	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
 		return await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>(
@@ -465,6 +478,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);
+	}
+
+	public void Dispose()
+	{
+		_httpClient.Dispose();
 	}
 
 	private async Task<TResult> ExecuteYandexTrackerApiRequestAsync<TResult>(
@@ -640,10 +658,5 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters,
 			headers,
 			cancellationToken);
-	}
-
-	public void Dispose()
-	{
-		_httpClient.Dispose();
 	}
 }

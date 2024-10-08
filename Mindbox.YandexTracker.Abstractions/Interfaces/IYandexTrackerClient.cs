@@ -87,6 +87,8 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default);
 
+	Task<GetUserResponse> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
+
 	Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
 		CancellationToken cancellationToken = default);
 

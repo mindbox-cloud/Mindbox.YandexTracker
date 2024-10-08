@@ -89,12 +89,12 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<UserDetailedInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+	Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+	Task<IReadOnlyList<Resolution>> GetResolutionsAsync(
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+	Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(
 		CancellationToken cancellationToken = default);
 }

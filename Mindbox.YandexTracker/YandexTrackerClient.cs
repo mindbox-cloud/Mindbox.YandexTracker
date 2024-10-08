@@ -390,28 +390,28 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+	public async Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueTypeResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<IssueType>(
 			"issuetypes",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+	public async Task<IReadOnlyList<Resolution>> GetResolutionsAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<GetResolutionResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<Resolution>(
 			"resolutions",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+	public async Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueStatusResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<IssueStatus>(
 			"statuses",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);

@@ -1,10 +1,9 @@
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 [DataContract]
-public sealed record GetIssueStatusResponse
+public sealed record Resolution
 {
 	[DataMember(Name = "id")]
 	public int Id { get; init; }
@@ -17,8 +16,4 @@ public sealed record GetIssueStatusResponse
 
 	[DataMember(Name = "description")]
 	public required string Description { get; init; }
-
-	[DataMember(Name = "type")]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public IssueStatusType Type { get; init; }
 }

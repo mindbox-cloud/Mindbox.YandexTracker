@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +36,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		var httpClient = httpClientFactory.CreateClient();
 
-		httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("YandexTrackerClient", "1"));
+		httpClient.DefaultRequestHeaders.UserAgent.Add(
+			new ProductInfoHeaderValue(
+				"Mindbox.YandexTrackerClient",
+				Assembly.GetExecutingAssembly().GetName().Version!.ToString()));
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.Token);
 		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
 
@@ -365,22 +369,22 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return [.. globalFields, .. localQuqueFields];
 	}
 
-	public async Task<GetUserResponse> GetUserByIdAsync(
+	public async Task<UserDetailedInfo> GetUserByIdAsync(
 		string userId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-		return await ExecuteYandexTrackerApiRequestAsync<GetUserResponse>(
+		return await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
 			$"users/{userId}",
 			HttpMethod.Get,
 			payload: null,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default)
+	public async Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<GetUserResponse>(
+		return await ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
 			"users",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
@@ -480,11 +484,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public void Dispose()
-	{
-		_httpClient.Dispose();
-	}
-
 	private async Task<TResult> ExecuteYandexTrackerApiRequestAsync<TResult>(
 		string requestTo,
 		HttpMethod method,
@@ -535,9 +534,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			if (payload is not null)
 			{
-				if (payload is HttpContent)
+				if (payload is HttpContent content)
 				{
-					request.Content = payload as HttpContent;
+					request.Content = content;
 				}
 				else
 				{
@@ -665,5 +664,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters,
 			headers,
 			cancellationToken);
+	}
+
+	public void Dispose()
+	{
+		_httpClient.Dispose();
 	}
 }

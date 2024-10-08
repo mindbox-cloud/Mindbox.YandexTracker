@@ -10,17 +10,17 @@ public sealed record Issue
 	public DateTime? LastCommentUpdatedAt { get; init; }
 	public string Summary { get; init; } = default!;
 	public string? Parent { get; init; }
-	public required UserInfo UpdatedBy { get; init; }
+	public required UserShortInfo UpdatedBy { get; init; }
 	public string? Description { get; init; }
 	public required IssueType Type { get; init; }
 	public Priority Priority { get; init; }
 	public DateTime CreatedAt { get; init; }
 	public Collection<string> Aliases { get; init; } = [];
 	public Collection<string> Sprints { get; init; } = [];
-	public Collection<UserInfo> Followers { get; init; } = [];
-	public required UserInfo CreatedBy { get; init; }
+	public Collection<UserShortInfo> Followers { get; init; } = [];
+	public required UserShortInfo CreatedBy { get; init; }
 	public int Votes { get; init; }
-	public UserInfo? Assignee { get; init; }
+	public UserShortInfo? Assignee { get; init; }
 	public string? Project { get; init; }
 	public required string Queue { get; init; }
 	public DateTime UpdatedAt { get; init; }

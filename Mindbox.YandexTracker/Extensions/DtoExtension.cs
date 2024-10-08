@@ -38,7 +38,7 @@ internal static class DtoExtension
 
 	public static IssueType ToIssueType(
 		this FieldInfo value,
-		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos) 
+		IReadOnlyDictionary<string, GetIssueTypeResponse> issueTypeInfos)
 	{
 		if (!issueTypeInfos.TryGetValue(value.Key!, out var issueTypeInfo))
 		{
@@ -49,7 +49,7 @@ internal static class DtoExtension
 		{
 			Key = issueTypeInfo.Key,
 			Name = issueTypeInfo.Name,
-			Description = issueTypeInfo.Description	
+			Description = issueTypeInfo.Description
 		};
 	}
 
@@ -128,7 +128,7 @@ internal static class DtoExtension
 			AssignAuto = value.AssignAuto,
 			DefaultType = value.DefaultType.ToIssueType(issueTypeInfos),
 			DefaultPriority = value.DefaultPriority.ToPriority(),
-			TeamUsers = new Collection<UserInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
+			TeamUsers = new Collection<UserShortInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
 			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
 				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
@@ -138,9 +138,9 @@ internal static class DtoExtension
 		};
 	}
 
-	public static UserInfo ToUserInfo(this FieldInfo value)
+	public static UserShortInfo ToUserInfo(this FieldInfo value)
 	{
-		return new UserInfo { Id = value.Key! };
+		return new UserShortInfo { Id = value.Key! };
 	}
 
 	public static Issue ToIssue(
@@ -161,7 +161,7 @@ internal static class DtoExtension
 			CreatedAt = value.CreatedAt,
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
-			Followers = new Collection<UserInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
+			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			Votes = value.Votes,
 			Assignee = value.Assignee!.ToUserInfo(),
@@ -192,7 +192,7 @@ internal static class DtoExtension
 			CreatedAt = value.CreatedAt,
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
-			Followers = new Collection<UserInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
+			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			Votes = value.Votes,
 			Assignee = value.Assignee?.ToUserInfo(),
@@ -331,13 +331,13 @@ internal static class DtoExtension
 				Author = ((FieldInfo?)author)?.ToUserInfo(),
 				Lead = ((FieldInfo?)lead)?.ToUserInfo(),
 				TeamUsers = teamUsers is not null
-					? new Collection<UserInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
+					? new Collection<UserShortInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
 					: null,
 				Clients = clients is not null
-					? new Collection<UserInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
+					? new Collection<UserShortInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
 					: null,
 				Followers = followers is not null
-					? new Collection<UserInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
+					? new Collection<UserShortInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
 					: null,
 				Tags = tags is not null
 					? new Collection<string>((List<string>)tags)

@@ -7,5 +7,5 @@ public sealed record Component
 	public string? Queue { get; init; }
 	public string? Description { get; init; }
 	public required bool AssignAuto { get; init; }
-	public UserInfo? Lead { get; init; }
+	public UserShortInfo? Lead { get; init; }
 }

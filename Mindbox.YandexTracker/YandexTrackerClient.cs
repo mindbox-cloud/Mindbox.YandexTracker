@@ -535,10 +535,17 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			if (payload is not null)
 			{
-				request.Content = new StringContent(
-					JsonConvert.SerializeObject(payload),
-					Encoding.UTF8,
-					"application/json");
+				if (payload is HttpContent)
+				{
+					request.Content = payload as HttpContent;
+				}
+				else
+				{
+					request.Content = new StringContent(
+						JsonConvert.SerializeObject(payload),
+						Encoding.UTF8,
+						"application/json");
+				}
 			}
 
 			if (headers is not null)

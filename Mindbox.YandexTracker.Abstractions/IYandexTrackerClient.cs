@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mindbox.YandexTracker;
 
-public interface IYandexTrackerClient
+public interface IYandexTrackerClient : IDisposable
 {
 	Task<Queue> GetQueueAsync(
 		string queueKey,
@@ -14,6 +16,12 @@ public interface IYandexTrackerClient
 	Task<IReadOnlyList<Queue>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
+
+	Task<Queue> CreateQueueAsync(
+		CreateQueueRequest request,
+		CancellationToken cancellationToken = default);
+
+	Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default);
 
 	Task<Issue> GetIssueAsync(
 		string issueKey,
@@ -38,12 +46,22 @@ public interface IYandexTrackerClient
 		CreateCommentRequest request,
 		CancellationToken cancellationToken = default);
 
+	Task DeleteCommentAsync(
+		string issueKey,
+		string commentKey,
+		CancellationToken cancellationToken = default);
+
 	Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default);
 
 	Task<Attachment> CreateAttachmentAsync(
 		string issueKey,
-		byte[] file,
+		Stream fileStream,
 		string? newFileName = null,
+		CancellationToken cancellationToken = default);
+
+	Task DeleteAttachmentAsync(
+		string issueKey,
+		string attachmentKey,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<string>> GetTagsAsync(string queueKey, CancellationToken cancellationToken = default);
@@ -51,6 +69,11 @@ public interface IYandexTrackerClient
 	Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		CreateProjectRequest request,
+		CancellationToken cancellationToken = default);
+
+	Task DeleteProjectAsync(
+		ProjectEntityType entityType,
+		string projectKey,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Project>> GetProjectsAsync(
@@ -62,5 +85,16 @@ public interface IYandexTrackerClient
 		string queueKey,
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetUserResponse>> GetUsersAsync(CancellationToken cancellationToken = default);
+	Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default);
+
+	Task<UserDetailedInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<Resolution>> GetResolutionsAsync(
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(
+		CancellationToken cancellationToken = default);
 }

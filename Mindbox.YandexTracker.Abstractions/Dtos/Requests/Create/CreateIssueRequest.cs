@@ -33,7 +33,7 @@ public sealed record CreateIssueRequest
 	public string? Unique { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "attachmentIds")]
-	public Collection<string>? AttachemntsIds { get; init; }
+	public Collection<string>? AttachmentsIds { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "sprint")]
 	public Collection<string>? Sprints { get; init; }
@@ -46,5 +46,5 @@ public sealed record CreateIssueRequest
 
 	[DataMember(EmitDefaultValue = false)]
 	[JsonExtensionData]
-	public Dictionary<string, object>? Fields { get; init; } 
+	public Dictionary<string, object>? Fields { get; init; }
 }

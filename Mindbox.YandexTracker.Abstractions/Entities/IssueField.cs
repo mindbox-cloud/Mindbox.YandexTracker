@@ -12,7 +12,7 @@ public sealed record IssueField
 	public bool Options { get; init; }
 	public bool Suggest { get; init; }
 	public required OptionsProviderInfo OptionsProvider { get; init; }
-	public required string QueryProvider { get; init; }
+	public string? QueryProvider { get; init; }
 	public string? SuggestProvider { get; init; }
 	public int Order { get; init; }
 	public required string CategoryId { get; init; }

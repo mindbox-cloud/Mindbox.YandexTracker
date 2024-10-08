@@ -40,5 +40,5 @@ public sealed record GetAttachmentResponse
 public class AttachmentDataDto
 {
 	[DataMember(Name = "size")]
-	public required int Size { get; init; }
+	public required string Size { get; init; }
 }

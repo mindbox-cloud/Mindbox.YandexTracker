@@ -7,7 +7,7 @@ namespace Mindbox.YandexTracker;
 public sealed record GetQueuesResponse
 {
 	[DataMember(Name = "id")]
-	public int Id { get; init; }
+	public required string Id { get; init; }
 
 	[DataMember(Name = "key")]
 	public required string Key { get; init; }

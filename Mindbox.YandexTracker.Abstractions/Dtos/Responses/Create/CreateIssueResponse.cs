@@ -29,7 +29,7 @@ public sealed record CreateIssueResponse
 	public string? Description { get; init; }
 
 	[DataMember(Name = "sprint")]
-	public Collection<string> Sprints { get; init; } = [];
+	public Collection<FieldInfo> Sprints { get; init; } = [];
 
 	[DataMember(Name = "followers")]
 	public Collection<FieldInfo> Followers { get; init; } = [];

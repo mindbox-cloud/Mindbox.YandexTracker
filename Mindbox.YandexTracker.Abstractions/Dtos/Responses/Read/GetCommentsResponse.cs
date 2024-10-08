@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -15,6 +16,12 @@ public sealed record GetCommentsResponse
 
 	[DataMember(Name = "attachments")]
 	public Collection<FieldInfo> Attachments { get; init; } = [];
+
+	[DataMember(Name = "createdAt")]
+	public DateTime CreatedAt { get; init; }
+
+	[DataMember(Name = "updatedAt")]
+	public DateTime UpdatedAt { get; init; }
 
 	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; init; }

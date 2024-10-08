@@ -10,5 +10,5 @@ public enum IssueExpandData
 {
 	None = 0,
 	Transitions = 0x0001,
-	Attacments = 0x0002
+	Attachments = 0x0002
 }

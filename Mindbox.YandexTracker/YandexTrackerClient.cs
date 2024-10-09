@@ -313,8 +313,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
+		var projectType = entityType.ToLowerInvariant();
+
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType}",
+			$"entities/{projectType}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -337,8 +339,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
 		}
 
+		var projectType = entityType.ToLowerInvariant();
+
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType}/_search",
+			$"entities/{projectType}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -445,14 +449,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteCommentAsync(
 		string issueKey,
-		string commentKey,
+		int commentId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
-		ArgumentException.ThrowIfNullOrWhiteSpace(commentKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"issues/{issueKey}/comments/{commentKey}",
+			$"issues/{issueKey}/comments/{commentId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);
@@ -472,13 +475,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
-		string projectKey,
+		int projectShortId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(projectKey);
+		var projectType = entityType.ToLowerInvariant();
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType}/{projectKey}",
+			$"entities/{projectType}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			cancellationToken: cancellationToken);

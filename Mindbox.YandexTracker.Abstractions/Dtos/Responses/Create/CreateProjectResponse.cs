@@ -11,6 +11,9 @@ public sealed record CreateProjectResponse
 	[DataMember(Name = "id")]
 	public required string Id { get; init; }
 
+	[DataMember(Name = "shortId")]
+	public int ShortId { get; init; }
+
 	[DataMember(Name = "entityType")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public ProjectEntityType ProjectEntityType { get; init; }

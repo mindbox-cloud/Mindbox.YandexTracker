@@ -12,7 +12,7 @@ public sealed record CreateProjectResponse
 	public required string Id { get; init; }
 
 	[DataMember(Name = "shortId")]
-	public int ShortId { get; init; }
+	public required int ShortId { get; init; }
 
 	[DataMember(Name = "entityType")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]

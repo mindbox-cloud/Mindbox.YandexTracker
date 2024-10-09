@@ -41,6 +41,7 @@ public sealed record CreateIssueRequest
 	public Collection<string>? Sprints { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "priority")]
+	[JsonConverter(typeof(StringEnumConverter))]
 	public Priority? Priority { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "assignee")]

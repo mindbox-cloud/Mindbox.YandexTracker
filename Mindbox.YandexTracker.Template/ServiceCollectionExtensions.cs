@@ -6,18 +6,29 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection AddYandexTrackerClient(
 		this IServiceCollection services,
-		YandexTrackerClientOptions configureOptions)
+		YandexTrackerClientOptions configureOptions,
+		bool enableRarelyChaningDataCaching)
 	{
-		return
-			services
-				.AddHttpClient()
-				.AddMemoryCache()
-				.Configure<YandexTrackerClientOptions>(option =>
-				{
-					option.Token = configureOptions.Token;
-					option.Organization = configureOptions.Organization;
-				})
+		services = services
+			.AddHttpClient()
+			.AddMemoryCache()
+			.Configure<YandexTrackerClientOptions>(option =>
+			{
+				option.Token = configureOptions.Token;
+				option.Organization = configureOptions.Organization;
+			});
+
+		if (enableRarelyChaningDataCaching)
+		{
+			services = services
 				.AddScoped<YandexTrackerClient>()
 				.AddScoped<IYandexTrackerClient, CachingYandexTrackerClient>();
+		}
+		else
+		{
+			services = services.AddScoped<IYandexTrackerClient, YandexTrackerClient>();
+		}
+
+		return services;
 	}
 }

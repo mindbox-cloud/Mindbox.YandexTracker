@@ -17,7 +17,7 @@ public sealed record CreateIssueResponse
 	public required string Summary { get; init; }
 
 	[DataMember(Name = "lastCommentUpdatedAt")]
-	public DateTime LastCommentUpdatedAt { get; init; }
+	public DateTime? LastCommentUpdatedAt { get; init; }
 
 	[DataMember(Name = "parent")]
 	public FieldInfo? Parent { get; init; }

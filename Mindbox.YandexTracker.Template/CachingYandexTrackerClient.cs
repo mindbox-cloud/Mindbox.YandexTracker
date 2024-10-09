@@ -2,7 +2,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Mindbox.YandexTracker.Template;
 
-public class CachingYandexTrackerClient(
+public sealed class CachingYandexTrackerClient(
 	IYandexTrackerClient yandexTrackerClient,
 	IMemoryCache cache) : IYandexTrackerClient
 {
@@ -95,7 +95,7 @@ public class CachingYandexTrackerClient(
 
 	public void Dispose()
 	{
-		throw new NotImplementedException();
+		yandexTrackerClient.Dispose();
 	}
 
 	public async Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(

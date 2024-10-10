@@ -195,6 +195,17 @@ internal static class ResponseExtensions
 		};
 	}
 
+	public static Component ToComponent(this CreateComponentResponse value)
+	{
+		return new Component
+		{
+			AssignAuto = value.AssignAuto,
+			Name = value.Name,
+			Id = value.Id,
+			Queue = value.Queue?.Key
+		};
+	}
+
 	public static Attachment ToAttachment(this GetAttachmentResponse value)
 	{
 		return new Attachment

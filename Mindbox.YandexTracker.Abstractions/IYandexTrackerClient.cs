@@ -52,6 +52,14 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<IReadOnlyList<Component>> GetComponentsAsync(CancellationToken cancellationToken = default);
 
+	Task<Component> CreateComponentAsync(
+		string componentName,
+		string queueKey,
+		string? description = null,
+		string? leadLogin = null,
+		bool? assignAuto = null,
+		CancellationToken cancellationToken = default);
+
 	Task<IReadOnlyList<Comment>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,

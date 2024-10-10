@@ -307,6 +307,43 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToList();
 	}
 
+	public async Task<Component> CreateComponentAsync(
+		string componentName,
+		string queueKey,
+		string? description = null,
+		string? leadLogin = null,
+		bool? assignAuto = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+
+		var request = new CreateComponentRequest
+		{
+			Name = componentName,
+			Queue = queueKey
+		};
+
+		var parameters = new Dictionary<string, string>();
+
+		if (description is not null)
+			parameters["description"] = description;
+
+		if (leadLogin is not null)
+			parameters["lead"] = leadLogin;
+
+		if (assignAuto is not null)
+			parameters["assignAuto"] = assignAuto.ToString()!;
+
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateComponentResponse>(
+			"components",
+			HttpMethod.Post,
+			payload: request,
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.ToComponent();
+	}
+
 	public async Task<IReadOnlyList<Comment>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,

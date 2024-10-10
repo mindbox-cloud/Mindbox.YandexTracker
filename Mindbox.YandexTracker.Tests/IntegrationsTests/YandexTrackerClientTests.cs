@@ -178,10 +178,18 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	[TestMethod]
 	public async Task GetComponentsAsync_ResponseIsNotNullAndNotEmpty()
 	{
-		var components = await YandexTrackerClient.GetComponentsAsync();
+		var component1 = await YandexTrackerClient.CreateComponentAsync("someName", TestQueueKey);
+		var component2 = await YandexTrackerClient.CreateComponentAsync("someName", TestQueueKey);
+
+		await Task.Delay(1000); // Чтобы компоненты точно создались в трекере
+
+		Component[] expectedComponents = [component1, component2];
+
+		var components = (await YandexTrackerClient.GetComponentsAsync()).ToArray();
 
 		Assert.IsNotNull(components);
-		Assert.IsTrue(components.Any());
+		Assert.IsTrue(components.Any(component => component.Id == component1.Id));
+		Assert.IsTrue(components.Any(component => component.Id == component2.Id));
 	}
 
 	[TestMethod]

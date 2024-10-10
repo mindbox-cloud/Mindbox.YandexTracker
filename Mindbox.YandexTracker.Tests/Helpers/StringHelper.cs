@@ -2,6 +2,7 @@ using System.Linq;
 using System.Security.Cryptography;
 
 namespace Mindbox.YandexTracker.Tests;
+
 internal static class StringHelper
 {
 	private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

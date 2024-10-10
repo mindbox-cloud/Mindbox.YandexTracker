@@ -10,6 +10,7 @@ public abstract class YandexTrackerTestBase
 {
 	protected string TestQueueKey { get; private set; } = null!;
 	protected string CurrentUserId { get; private set; } = null!;
+	protected string CurrentUserLogin { get; private set; } = null!;
 	protected IServiceProvider ServiceProvider { get; private set; } = null!;
 	protected IYandexTrackerClient YandexTrackerClient { get; private set; } = null!;
 
@@ -30,6 +31,7 @@ public abstract class YandexTrackerTestBase
 		// в ключе может быть до 15 латинских символов
 		TestQueueKey = $"TEST{StringHelper.GetUniqueString(length: 11)}";
 		CurrentUserId = configuration.GetValue<string>("CurrentUserId")!;
+		CurrentUserLogin = configuration.GetValue<string>("CurrentUserLogin")!;
 		await CreateQueueAsync();
 	}
 
@@ -41,21 +43,33 @@ public abstract class YandexTrackerTestBase
 
 	private async Task CreateQueueAsync()
 	{
-		await YandexTrackerClient.CreateQueueAsync(new CreateQueueRequest
+		await YandexTrackerClient.CreateQueueAsync(new Queue
 		{
 			Key = TestQueueKey,
-			DefaultType = "task",
-			LeadKey = "ya.toporow",
+			DefaultType = new IssueType
+			{
+				Key = "task",
+				Name = "task"
+			},
+			Lead = new UserShortInfo { Id = CurrentUserId },
 			Name = TestQueueKey.ToUpperInvariant(),
-			IssutTypesConfig =
+			IssueTypesConfig =
 			[
 				new()
 				{
-					IssueType = "task",
+					IssueType = new IssueType
+					{
+						Key = "task",
+						Name = "task"
+					},
 					Workflow = "developmentPresetWorkflow",
 					Resolutions =
 					[
-						"wontFix"
+						new()
+						{
+							Key = "wontFix",
+							Name = "wontFix"
+						}
 					]
 				}
 			]

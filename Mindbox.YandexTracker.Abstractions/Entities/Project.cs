@@ -5,10 +5,10 @@ namespace Mindbox.YandexTracker;
 
 public sealed record Project
 {
-	public required string Id { get; init; }
+	public string Id { get; init; } = null!;
 	public int ShortId { get; init; }
 	public ProjectEntityType ProjectType { get; init; }
-	public required UserShortInfo CreatedBy { get; init; }
+	public UserShortInfo CreatedBy { get; init; } = null!;
 	public DateTime CreatedAt { get; init; }
 	public DateTime UpdatedAt { get; init; }
 	public string? Summary { get; init; }
@@ -23,7 +23,7 @@ public sealed record Project
 	public DateTime? End { get; init; }
 	public bool? TeamAccess { get; init; }
 	public ProjectEntityStatus? Status { get; init; }
-	public Collection<FieldInfo>? IssueQueues { get; init; }
 	public Collection<string>? Quarter { get; init; }
 	public Collection<string>? ChecklistIds { get; init; }
+	public int? ParentId { get; init; }
 }

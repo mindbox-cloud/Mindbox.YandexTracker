@@ -48,8 +48,9 @@ public abstract class YandexTrackerTestBase
 			Key = TestQueueKey,
 			DefaultType = new IssueType
 			{
+				Id = 2,
 				Key = "task",
-				Name = "task"
+				Name = "Задача"
 			},
 			Lead = new UserShortInfo { Id = CurrentUserId },
 			Name = TestQueueKey.ToUpperInvariant(),
@@ -59,16 +60,18 @@ public abstract class YandexTrackerTestBase
 				{
 					IssueType = new IssueType
 					{
+						Id = 2,
 						Key = "task",
-						Name = "task"
+						Name = "Задача"
 					},
 					Workflow = "developmentPresetWorkflow",
 					Resolutions =
 					[
 						new()
 						{
+							Id = 2,
 							Key = "wontFix",
-							Name = "wontFix"
+							Name = "Не будет исправлено"
 						}
 					]
 				}

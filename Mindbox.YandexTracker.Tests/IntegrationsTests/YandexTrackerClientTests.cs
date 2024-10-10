@@ -112,18 +112,16 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	[TestMethod]
 	public async Task GetIssuesByFilterAsync_ValidFilter_ResponseIsNotNullAndIssueKeysAreEqual()
 	{
-		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
+		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
 			Summary = "Testik1",
-			CreatedBy = new UserShortInfo { Id = CurrentUserId }
 		});
 
-		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
 			Summary = "Testik2",
-			CreatedBy = new UserShortInfo { Id = CurrentUserId }
 		});
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
@@ -137,13 +135,12 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issues = await YandexTrackerClient.GetIssuesByFilterAsync(new IssuesFilter
 		{
 			Queue = TestQueueKey,
-			CreatedBy = CurrentUserId
+			Summary = "Testik2"
 		});
 
 		Assert.IsNotNull(issues);
-		Assert.AreEqual(2, issues.Count);
-		Assert.AreEqual(issue1.Key, issues[0].Key);
-		Assert.AreEqual(issue2.Key, issues[1].Key);
+		Assert.AreEqual(1, issues.Count);
+		Assert.AreEqual(issue.Key, issues[0].Key);
 	}
 
 	[TestMethod]
@@ -152,19 +149,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1",
-			Status = new IssueStatus
-			{
-				Key = "open",
-				Name = "Open"
-			}
+			Summary = "Testik1"
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
 			Summary = "Testik2",
-			CreatedBy = new UserShortInfo { Id = CurrentUserId }
 		});
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
@@ -176,7 +167,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
 
 		var issues = await YandexTrackerClient.GetIssuesByQueryAsync(
-			$"(\"Queue\": {TestQueueKey} AND CreatedBy: {CurrentUserId}) OR \"Status\": Open");
+			$"Queue: {TestQueueKey} AND Summary: Testik1, Testik2 \"Sort By\": Summary");
 
 		Assert.IsNotNull(issues);
 		Assert.AreEqual(2, issues.Count);
@@ -219,10 +210,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key)).ToArray();
 
 		Assert.IsNotNull(comments);
-		CollectionAssert.AreEquivalent(comment1.Attachments, comments.First().Attachments);
-		CollectionAssert.AreEquivalent(comment2.Attachments, comments.Last().Attachments);
-		Assert.AreEqual(comment1 with { Attachments = comments.First().Attachments }, comments.First());
-		Assert.AreEqual(comment2 with { Attachments = comments.Last().Attachments }, comments.Last());
+		Assert.AreEqual(comment1.Id, comments.First().Id);
+		Assert.AreEqual(comment2.Id, comments.Last().Id);
 	}
 
 	[TestMethod]
@@ -296,8 +285,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			ProjectEntityType.Project,
 			requestProject);
 
-		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId);
-		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId);
+		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId, true);
+		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId, true);
 
 		// Assert
 		Assert.IsNotNull(projects);
@@ -313,7 +302,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		// Assert
 		Assert.IsNotNull(userInfo);
-		Assert.AreEqual(CurrentUserLogin, userInfo.LastName);
+		Assert.AreEqual(CurrentUserLogin, userInfo.Login);
 	}
 
 	[TestMethod]

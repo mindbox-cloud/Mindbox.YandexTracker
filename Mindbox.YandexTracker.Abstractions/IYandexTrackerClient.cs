@@ -92,6 +92,7 @@ public interface IYandexTrackerClient : IDisposable
 	Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
+		bool? withBoard = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>

@@ -432,7 +432,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType.ToLowerInvariant()}",
+			$"entities/{entityType.ToYandexRouteSegment()}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -466,7 +466,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			rootOnly);
 
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType.ToLowerInvariant()}/_search",
+			$"entities/{entityType.ToYandexRouteSegment()}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -613,12 +613,19 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
+		bool? withBoard = null,
 		CancellationToken cancellationToken = default)
 	{
+		var parameters = new Dictionary<string, string>();
+
+		if (withBoard is not null)
+			parameters["withBoard"] = withBoard.ToString()!;
+
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType.ToLowerInvariant()}/{projectShortId}",
+			$"entities/{entityType.ToYandexRouteSegment()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
+			parameters: parameters,
 			cancellationToken: cancellationToken);
 	}
 

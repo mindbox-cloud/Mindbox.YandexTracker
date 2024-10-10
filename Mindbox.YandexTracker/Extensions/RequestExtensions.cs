@@ -9,13 +9,21 @@ internal static class RequestExtensions
 {
 	public static CreateIssueRequest ToCreateIssueRequest(this Issue issue)
 	{
+		var fields = new Dictionary<string, object>(issue.CustomFields)
+		{
+			["aliases"] = issue.Aliases,
+			["project"] = issue.Project!
+		}
+		.Where(x => x.Value is not null)
+		.ToDictionary(x => x.Key, x => x.Value);
+
 		return new CreateIssueRequest
 		{
 			Queue = issue.Queue,
 			Summary = issue.Summary,
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
-			Fields = issue.CustomFields,
+			Fields = fields,
 			Followers = new Collection<string>(issue.Followers.Select(follower => follower.Id).ToList()),
 			Parent = issue.Parent,
 			Priority = issue.Priority,
@@ -40,7 +48,7 @@ internal static class RequestExtensions
 	{
 		return new CreateQueueRequest
 		{
-			DefaultType = queue.DefaultType.ToString(),
+			DefaultType = queue.DefaultType.Key.ToString(),
 			Key = queue.Key,
 			LeadId = queue.Lead.Id,
 			Name = queue.Name,
@@ -56,7 +64,7 @@ internal static class RequestExtensions
 	{
 		return new CreateIssueTypeConfigDto
 		{
-			IssueType = config.IssueType.ToString(),
+			IssueType = config.IssueType.Key.ToString(),
 			Workflow = config.Workflow,
 			Resolutions = new Collection<string>(config.Resolutions.Select(resolution => resolution.Key).ToList())
 		};
@@ -79,7 +87,9 @@ internal static class RequestExtensions
 			var value = prop.GetValue(filter, null);
 			if (prop.GetValue(filter, null) != null)
 			{
-				dict.Add(prop.Name, value!);
+#pragma warning disable CA1308 // Нормализуйте строки до прописных букв
+				dict.Add(prop.Name.ToLowerInvariant(), value!);
+#pragma warning restore CA1308 // Нормализуйте строки до прописных букв
 			}
 		}
 

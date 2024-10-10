@@ -17,7 +17,7 @@ public sealed record IssuesFilter
 	public string? Parent { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "alliases")]
-	public Collection<string>? Alliases { get; init; }
+	public Collection<string>? Aliases { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "updatedBy")]
 	public string? UpdatedBy { get; init; }
@@ -66,4 +66,46 @@ public sealed record IssuesFilter
 
 	[DataMember(EmitDefaultValue = false, Name = "favorite")]
 	public bool? IsFavorite { get; init; }
+
+	public override int GetHashCode()
+	{
+		var hashCodePart1 = HashCode.Combine(
+			LastCommentUpdatedAt,
+			Summary,
+			Parent,
+			UpdatedBy,
+			Description,
+			Type,
+			Priority,
+			CreatedAt);
+
+		var hashCodePart2 = HashCode.Combine(
+			CreatedBy,
+			Votes,
+			Assignee,
+			Project,
+			UpdatedAt,
+			Status,
+			PreviousStatus,
+			IsFavorite);
+
+		var collectionHashCode = 0;
+
+		foreach (var alias in Aliases ?? [])
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, alias.GetHashCode(StringComparison.InvariantCulture));
+		}
+
+		foreach (var sprint in Sprints ?? [])
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, sprint.GetHashCode(StringComparison.InvariantCulture));
+		}
+
+		foreach (var follower in Followers ?? [])
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, follower.GetHashCode(StringComparison.InvariantCulture));
+		}
+
+		return HashCode.Combine(hashCodePart1, hashCodePart2, collectionHashCode, Queue);
+	}
 }

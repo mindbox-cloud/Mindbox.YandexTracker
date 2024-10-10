@@ -613,12 +613,19 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
+		bool? withBoard = null,
 		CancellationToken cancellationToken = default)
 	{
+		var parameters = new Dictionary<string, string>();
+
+		if (withBoard is not null)
+			parameters["withBoard"] = withBoard.ToString()!;
+
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"entities/{entityType.ToLowerInvariant()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
+			parameters: parameters,
 			cancellationToken: cancellationToken);
 	}
 

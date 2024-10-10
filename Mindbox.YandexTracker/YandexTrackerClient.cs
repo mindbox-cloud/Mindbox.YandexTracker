@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -71,7 +72,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return (await ExecuteYandexTrackerApiRequestAsync<GetQueuesResponse>(
 			$"queues/{queueKey}",
 			HttpMethod.Get,
-			payload: null!,
+			payload: null,
 			parameters: parameters,
 			cancellationToken: cancellationToken))
 			.ToQueue(issueTypeInfos, resolutionInfos);
@@ -132,17 +133,18 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToIssue(issueTypeInfos, issueStatusInfos);
 	}
 
-	public async Task<IReadOnlyList<Issue>> GetIssuesAsync(
-		GetIssuesRequest request,
+	public async Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(
+		string queueKey,
+		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(request);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
 		var parameters = new Dictionary<string, string>();
 
-		if (request.Expand is not null and not IssuesExpandData.None)
+		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = request.Expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToQueryString();
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -150,6 +152,116 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var issueStatusInfos = (await GetIssueStatusesAsync(cancellationToken))
 			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var request = new GetIssuesFromQueueRequest
+		{
+			QueueKey = queueKey
+		};
+
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
+			"issues/_search",
+			HttpMethod.Post,
+			payload: request,
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToIssue(issueTypeInfos, issueStatusInfos))
+			.ToList();
+	}
+
+	public async Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
+		IReadOnlyList<string> keys,
+		IssuesExpandData? expand = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(keys);
+
+		var parameters = new Dictionary<string, string>();
+
+		if (expand is not null and not IssuesExpandData.None)
+		{
+			parameters["expand"] = expand.Value.ToQueryString();
+		}
+
+		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
+			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var issueStatusInfos = (await GetIssueStatusesAsync(cancellationToken))
+			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var request = new GetIssuesFromKeysRequest
+		{
+			Keys = new Collection<string>([.. keys])
+		};
+
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
+			"issues/_search",
+			HttpMethod.Post,
+			payload: request,
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToIssue(issueTypeInfos, issueStatusInfos))
+			.ToList();
+	}
+
+	public async Task<IReadOnlyList<Issue>> GetIssuesByFilterAsync(
+		IssuesFilter issuesFilter,
+		IssuesExpandData? expand = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(issuesFilter);
+
+		var parameters = new Dictionary<string, string>();
+
+		if (expand is not null and not IssuesExpandData.None)
+		{
+			parameters["expand"] = expand.Value.ToQueryString();
+		}
+
+		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
+			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var issueStatusInfos = (await GetIssueStatusesAsync(cancellationToken))
+			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var request = new GetIssuesByFilterRequest
+		{
+			Filter = issuesFilter.ToDictionary()
+		};
+
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
+			"issues/_search",
+			HttpMethod.Post,
+			payload: request,
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToIssue(issueTypeInfos, issueStatusInfos))
+			.ToList();
+	}
+
+	public async Task<IReadOnlyList<Issue>> GetIssuesByQueryAsync(
+		string query,
+		IssuesExpandData? expand = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(query);
+
+		var parameters = new Dictionary<string, string>();
+
+		if (expand is not null and not IssuesExpandData.None)
+		{
+			parameters["expand"] = expand.Value.ToQueryString();
+		}
+
+		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
+			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var issueStatusInfos = (await GetIssueStatusesAsync(cancellationToken))
+			.ToDictionary(dto => dto.Key, dto => dto);
+
+		var request = new GetIssuesByQueryRequest
+		{
+			Query = query
+		};
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
 			"issues/_search",
@@ -162,10 +274,12 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	public async Task<Issue> CreateIssueAsync(
-		CreateIssueRequest request,
+		Issue issue,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(request);
+		ArgumentNullException.ThrowIfNull(issue);
+
+		var request = issue.ToCreateIssueRequest();
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
 			.ToDictionary(dto => dto.Key, dto => dto);
@@ -221,17 +335,20 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task<Comment> CreateCommentAsync(
 		string issueKey,
-		CreateCommentRequest request,
+		Comment comment,
+		bool? isAddToFollowers = null,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
-		ArgumentNullException.ThrowIfNull(request);
+		ArgumentNullException.ThrowIfNull(comment);
+
+		var request = comment.ToCreateCommentRequest();
 
 		var parameters = new Dictionary<string, string>();
 
-		if (request.IsAddToFollowers is not null)
+		if (isAddToFollowers is not null)
 		{
-			parameters["isAddToFollowers"] = request.IsAddToFollowers.ToString()!;
+			parameters["isAddToFollowers"] = isAddToFollowers.ToString()!;
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateCommentResponse>(
@@ -273,9 +390,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		using var form = new MultipartFormDataContent();
 		using var fileContent = new StreamContent(fileStream);
-		fileContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
-
-		form.Add(fileContent, "file");
+		form.Add(fileContent, "file", newFileName ?? "file");
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
@@ -300,23 +415,24 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
-		CreateProjectRequest request,
+		Project project,
+		ProjectFieldData? fields = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(request);
+		ArgumentNullException.ThrowIfNull(project);
+
+		var request = project.ToCreateProjectRequest();
 
 		var parameters = new Dictionary<string, string>();
 
-		if (request.ReturnedFields is not null
+		if (fields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
+			parameters["fields"] = fields.Value.ToQueryString();
 		}
 
-		var projectType = entityType.ToLowerInvariant();
-
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{projectType}",
+			$"entities/{entityType.ToLowerInvariant()}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -326,23 +442,31 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public async Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
-		GetProjectsRequest request,
+		Project project,
+		ProjectFieldData? fields = null,
+		string? input = null,
+		string? orderBy = null,
+		bool? orderAscending = null,
+		bool? rootOnly = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(request);
+		ArgumentNullException.ThrowIfNull(project);
 
 		var parameters = new Dictionary<string, string>();
 
-		if (request.ReturnedFields is not null
-			and not ProjectFieldData.None)
+		if (fields is not null and not ProjectFieldData.None)
 		{
-			parameters["fields"] = request.ReturnedFields.Value.ToQueryString();
+			parameters["fields"] = fields.Value.ToQueryString();
 		}
 
-		var projectType = entityType.ToLowerInvariant();
+		var request = project.ToGetProjectsRequest(
+			input,
+			orderBy,
+			orderAscending,
+			rootOnly);
 
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{projectType}/_search",
+			$"entities/{entityType.ToLowerInvariant()}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -363,14 +487,23 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.Select(dto => dto.ToIssueField())
 			.ToList();
 
-		var localQuqueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-			$"queues/{queueKey}/localFields",
-			HttpMethod.Get,
-			cancellationToken: cancellationToken))
-			.Select(dto => dto.ToIssueField())
-			.ToList();
+		List<IssueField> localQueueFields = [];
 
-		return [.. globalFields, .. localQuqueFields];
+		// Если локальных полей нет - InvalidOperationException
+		try
+		{
+			localQueueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+				$"queues/{queueKey}/localFields",
+				HttpMethod.Get,
+				cancellationToken: cancellationToken))
+				.Select(dto => dto.ToIssueField())
+				.ToList();
+		}
+		catch (InvalidOperationException) 
+		{
+		}
+
+		return [.. globalFields, .. localQueueFields];
 	}
 
 	public async Task<UserDetailedInfo> GetUserByIdAsync(
@@ -422,9 +555,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	public async Task<Queue> CreateQueueAsync(
-		CreateQueueRequest request,
+		Queue queue,
 		CancellationToken cancellationToken = default)
 	{
+		ArgumentNullException.ThrowIfNull(queue);
+
+		var request = queue.ToCreateQueueRequest();
+
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
 			.ToDictionary(dto => dto.Key, dto => dto);
 
@@ -476,14 +613,19 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
+		bool? withBoard = null,
 		CancellationToken cancellationToken = default)
 	{
-		var projectType = entityType.ToLowerInvariant();
+		var parameters = new Dictionary<string, string>();
+
+		if (withBoard is not null)
+			parameters["withBoard"] = withBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{projectType}/{projectShortId}",
+			$"entities/{entityType.ToLowerInvariant()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
+			parameters: parameters,
 			cancellationToken: cancellationToken);
 	}
 
@@ -560,14 +702,20 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 			var response = await _httpClient.SendAsync(request, cancellationToken);
 
-			if (!response.IsSuccessStatusCode)
+			if (response.IsSuccessStatusCode) return response;
+
+			await CheckRateLimitExceededAsync(response, cancellationToken);
+
+			string errorMessage;
+			try
 			{
-				await CheckRateLimitExceededAsync(response, cancellationToken);
-
-				throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
+				errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
 			}
-
-			return response;
+			catch
+			{
+				errorMessage = "Unknown error";
+			}
+			throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {errorMessage}");
 		}
 
 		static async Task CheckRateLimitExceededAsync(

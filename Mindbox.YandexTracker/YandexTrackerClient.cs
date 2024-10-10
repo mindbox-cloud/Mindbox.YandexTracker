@@ -489,7 +489,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		List<IssueField> localQueueFields = [];
 
-		// Если локальных полей нет - InvalidOperationException
 		try
 		{
 			localQueueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
@@ -499,8 +498,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				.Select(dto => dto.ToIssueField())
 				.ToList();
 		}
-		catch (InvalidOperationException) 
+		catch (InvalidOperationException)
 		{
+			// Если локальных полей нет - InvalidOperationException
 		}
 
 		return [.. globalFields, .. localQueueFields];

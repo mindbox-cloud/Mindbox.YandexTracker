@@ -18,7 +18,7 @@ public interface IYandexTrackerClient : IDisposable
 		CancellationToken cancellationToken = default);
 
 	Task<Queue> CreateQueueAsync(
-		CreateQueueRequest request,
+		Queue queue,
 		CancellationToken cancellationToken = default);
 
 	Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default);
@@ -28,13 +28,37 @@ public interface IYandexTrackerClient : IDisposable
 		IssueExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<Issue>> GetIssuesAsync(
-		GetIssuesRequest request,
+	Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(
+		string queueKey,
+		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
-	Task<Issue> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default);
+	Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
+		IReadOnlyList<string> keys,
+		IssuesExpandData? expand = null,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<Issue>> GetIssuesByFilterAsync(
+		IssuesFilter issuesFilter,
+		IssuesExpandData? expand = null,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<Issue>> GetIssuesByQueryAsync(
+		string query,
+		IssuesExpandData? expand = null,
+		CancellationToken cancellationToken = default);
+
+	Task<Issue> CreateIssueAsync(Issue issue, CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Component>> GetComponentsAsync(CancellationToken cancellationToken = default);
+
+	Task<Component> CreateComponentAsync(
+		string componentName,
+		string queueKey,
+		string? description = null,
+		string? leadLogin = null,
+		bool? assignAuto = null,
+		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Comment>> GetCommentsAsync(
 		string issueKey,
@@ -43,12 +67,13 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<Comment> CreateCommentAsync(
 		string issueKey,
-		CreateCommentRequest request,
+		Comment comment,
+		bool? isAddToFollowers = null,
 		CancellationToken cancellationToken = default);
 
 	Task DeleteCommentAsync(
 		string issueKey,
-		string commentKey,
+		int commentId,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default);
@@ -68,17 +93,39 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
-		CreateProjectRequest request,
+		Project project,
+		ProjectFieldData? fields = null,
 		CancellationToken cancellationToken = default);
 
 	Task DeleteProjectAsync(
 		ProjectEntityType entityType,
-		string projectKey,
+		int projectShortId,
+		bool? withBoard = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="entityType"></param>
+	/// <param name="project"></param>
+	/// <param name="fields">Дополнительные поля, которые будут включены в ответ.</param>
+	/// <param name="input">Подстрока в названии сущности</param>
+	/// <param name="orderBy">
+	/// Параметры сортировки задач. В параметре можно указать ключ любого поля,
+	/// по которому будет производиться сортировка.
+	/// </param>
+	/// <param name="orderAscending">Направление сортировки</param>
+	/// <param name="rootOnly">Выводить только не вложенные сущности.</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
-		GetProjectsRequest request,
+		Project project,
+		ProjectFieldData? fields = null,
+		string? input = null,
+		string? orderBy = null,
+		bool? orderAscending = null,
+		bool? rootOnly = null,
 		CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(

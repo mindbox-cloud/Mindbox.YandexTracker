@@ -8,7 +8,7 @@ namespace Mindbox.YandexTracker;
 public sealed record Queue
 #pragma warning restore CA1711
 {
-	public required string Id { get; init; }
+	public string Id { get; init; } = null!;
 	public required string Key { get; init; }
 	public required string Name { get; init; }
 	public required UserShortInfo Lead { get; init; }

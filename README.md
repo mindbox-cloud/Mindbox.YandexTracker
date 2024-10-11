@@ -1,12 +1,38 @@
-# Шаблон библиотеки
+# Mindbox.YandexTracker
 
-Шаблон проекта библиотки с настроенными workflows и уже готовой структурой.
+**Ответственный трайб:** Framework
 
-Перед тем, как писать код, ознакомся с [правилами создания общей библиотеки](https://www.notion.so/mindbox/9019ea84fd4845a481127f6a8cb91b6c).
+## Описание
 
-После создания новой библиотеки из шаблона нужно:
-* Перейти в раздел settings\Manage access и по кнопке "Invite teams or people" добавить "mindbox-cloud\developers" с правом write и "mindbox-cloud\platform-sre" с правом admin
-* Заменить все вхождения LibraryTemplate на имя новой бибилотеки (включая имена файлов и `.github\workflows`)
-* Запретить мержить бранчи, если не прошли статус чеки, всем включая администраторов ([пример](https://github.com/mindbox-cloud/Mindbox.Persistence.Rdbms/settings/branch_protection_rules/25072618))
-* Выпилить из .github/workflows синхронизацию с phrase, если в библиотеке нет локализации
-* Заменить readme
+`Mindbox.YandexTracker` — это библиотека для взаимодействия с Яндекс Трекером, предназначенная для работы Issue'сами. Библиотека позволяет получать, создавать и удалять информацию о Issues, Projects, Queues, Comments,
+Tags, Components, Users необходимую для переноса аналогичных сущностей с Github'а на Яндекс Трекер.
+
+## Зачем использовать
+
+Эта библиотека предоставляет интерфейс для работы с Issues из Github, включая:
+- Получение, создание и удаление задач.
+- Получение, создание и удаление проектов.
+- Получение, создание и удаление очередей.
+- Получение, создание и удаление комментариев к задачи.
+- Получение и создание компонентов очереди.
+- Получение, создание и удаление вложений.
+- Получение пользователей, тегов, резолюций, типов и статусов задач, а также списка доступных полей очереди.
+
+Данный пакет необходим для переноса задач с их содержимым из Github'а в Яндекс Трекер.
+
+## Как использовать
+
+Для работы с библиотекой необходимо зарегистрировать `YandexTrackerClient` в вашем IoC-контейнере, используя сборку `Mindbox.YandexTracker.Template`.
+
+### Пример использования
+
+Пример регистрации клиента в IoC-контейнере:
+
+```csharp
+services.AddYandexTrackerClient(new YandexTrackerClientOptions
+{
+    Organization = "your_organization_id",
+    Token = "your_private_token";
+}, 
+new YandexTrackerClientCachingDecoratorOptions(),
+enableRarelyChaningDataCaching: false);

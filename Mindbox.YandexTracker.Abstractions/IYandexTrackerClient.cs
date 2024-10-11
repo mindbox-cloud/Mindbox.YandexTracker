@@ -8,48 +8,81 @@ namespace Mindbox.YandexTracker;
 
 public interface IYandexTrackerClient : IDisposable
 {
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/create-queue"/>
+	/// </remarks>
 	Task<Queue> GetQueueAsync(
 		string queueKey,
 		QueueExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/get-queues"/>
+	/// </remarks>
 	Task<IReadOnlyList<Queue>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/create-queue"/>
+	/// </remarks>
 	Task<Queue> CreateQueueAsync(
 		Queue queue,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/delete-queue"/>
+	/// </remarks>
 	Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/issues/get-issue"/>
+	/// </remarks>
 	Task<Issue> GetIssueAsync(
 		string issueKey,
 		IssueExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
+	/// </remarks>
 	Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(
 		string queueKey,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
+	/// </remarks>
 	Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
-		IReadOnlyList<string> keys,
+		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
+	/// </remarks>
 	Task<IReadOnlyList<Issue>> GetIssuesByFilterAsync(
 		IssuesFilter issuesFilter,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
+	/// </remarks>
 	Task<IReadOnlyList<Issue>> GetIssuesByQueryAsync(
 		string query,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/create-issue"/>
+	/// </remarks>
 	Task<Issue> CreateIssueAsync(Issue issue, CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/get-components"/>
+	/// </remarks>
 	Task<IReadOnlyList<Component>> GetComponentsAsync(CancellationToken cancellationToken = default);
 
 	Task<Component> CreateComponentAsync(
@@ -60,6 +93,9 @@ public interface IYandexTrackerClient : IDisposable
 		bool? assignAuto = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-comments"/>
+	/// </remarks>
 	Task<IReadOnlyList<Comment>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
@@ -74,30 +110,48 @@ public interface IYandexTrackerClient : IDisposable
 	/// Если параметр не задан, то применится дефолтное поведение Яндекс.Трекера (true)</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/add-comment"/>
+	/// </remarks>
 	Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,
 		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/delete-comment"/>
+	/// </remarks>
 	Task DeleteCommentAsync(
 		string issueKey,
 		int commentId,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-attachments-list"/>
+	/// </remarks>
 	Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/post-attachment"/>
+	/// </remarks>
 	Task<Attachment> CreateAttachmentAsync(
 		string issueKey,
 		Stream fileStream,
 		string? newFileName = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/delete-attachment"/>
+	/// </remarks>
 	Task DeleteAttachmentAsync(
 		string issueKey,
 		string attachmentKey,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/queues/get-tags"/>
+	/// </remarks>
 	Task<IReadOnlyList<string>> GetTagsAsync(string queueKey, CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -108,6 +162,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// <param name="returnedFields">Дополнительные поля сущности, которые будут включены в ответ</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns>Вернутся данные по проекту с проставленным значениями от Яндекс.Трекера</returns>
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/entities/create-entity"/>
+	/// </remarks>
 	Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		Project project,
@@ -122,6 +179,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// <param name="deleteWithBoard">Удалить доску, связанную с проектом</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/entities/delete-entity"/>
+	/// </remarks>
 	Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
@@ -143,6 +203,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// <param name="rootOnly">Выводить только не вложенные сущности.</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns>Вернутся данные по проектам с проставленными значениями от Яндекс.Трекера</returns>
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/entities/search-entities"/>
+	/// </remarks>
 	Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		Project project,
@@ -153,6 +216,10 @@ public interface IYandexTrackerClient : IDisposable
 		bool? rootOnly = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-global-fields"/><br />
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/queues/get-local-fields"/>
+	/// </remarks>
 	Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default);
@@ -162,8 +229,14 @@ public interface IYandexTrackerClient : IDisposable
 	/// </summary>
 	Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/get-users"/>
+	/// </remarks>
 	Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/get-user-info"/>
+	/// </remarks>
 	Task<UserDetailedInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(

@@ -166,11 +166,11 @@ public sealed class YandexTrackerClientCachingDecorator(
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
-		IReadOnlyList<string> keys,
+		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.GetIssuesByKeysAsync(keys, expand, cancellationToken);
+		return yandexTrackerClient.GetIssuesByKeysAsync(issueKeys, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(

@@ -3,28 +3,114 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
+/// <summary>
+/// Проект
+/// </summary>
 public sealed record Project
 {
+	/// <summary>
+	/// Идентификатор сущности
+	/// </summary>
 	public string Id { get; init; } = null!;
+
+	/// <summary>
+	/// Идентификатор проекта или портфеля
+	/// </summary>
 	public int ShortId { get; init; }
+
+	/// <summary>
+	/// Тип сущности
+	/// </summary>
 	public ProjectEntityType ProjectType { get; init; }
+
+	/// <summary>
+	/// Информация о создателе проекта
+	/// </summary>
 	public UserShortInfo CreatedBy { get; init; } = null!;
+
+	/// <summary>
+	/// Дата и время создания проекта
+	/// </summary>
 	public DateTime CreatedAt { get; init; }
+
+	/// <summary>
+	/// Дата последнего обновления сущности
+	/// </summary>
 	public DateTime UpdatedAt { get; init; }
+
+	/// <summary>
+	/// Название проекта
+	/// </summary>
 	public string? Summary { get; init; }
+
+	/// <summary>
+	/// Описание проекта
+	/// </summary>
 	public string? Description { get; init; }
+
+	/// <summary>
+	/// Информация о авторе проекта
+	/// </summary>
 	public UserShortInfo? Author { get; init; }
+
+	/// <summary>
+	/// Информация об ответственном за проект
+	/// </summary>
 	public UserShortInfo? Lead { get; init; }
+
+	/// <summary>
+	/// Участники проекта
+	/// </summary>
 	public Collection<UserShortInfo>? TeamUsers { get; init; }
+
+	/// <summary>
+	/// Заказчики
+	/// </summary>
 	public Collection<UserShortInfo>? Clients { get; init; }
+
+	/// <summary>
+	/// Наблюдатели
+	/// </summary>
 	public Collection<UserShortInfo>? Followers { get; init; }
+
+	/// <summary>
+	/// Теги
+	/// </summary>
 	public Collection<string>? Tags { get; init; }
+
+	/// <summary>
+	/// Дата начала
+	/// </summary>
 	public DateTime? Start { get; init; }
+
+	/// <summary>
+	/// Дедлайн
+	/// </summary>
 	public DateTime? End { get; init; }
+
+	/// <summary>
+	/// Доступ
+	/// </summary>
 	public bool? TeamAccess { get; init; }
+
+	/// <summary>
+	/// Статус
+	/// </summary>
 	public ProjectEntityStatus? Status { get; init; }
+
+	/// <summary>
+	/// Кварталы начала и окончания проекта
+	/// </summary>
 	public Collection<string>? Quarter { get; init; }
+
+	/// <summary>
+	/// Идентификаторы чеклистов
+	/// </summary>
 	public Collection<string>? ChecklistIds { get; init; }
+
+	/// <summary>
+	/// Идентификатор родительского проекта
+	/// </summary>
 	public int? ParentId { get; init; }
 
 	public override int GetHashCode()

@@ -8,7 +8,7 @@ internal static class RequestExtensions
 {
 	public static CreateIssueRequest ToCreateIssueRequest(this Issue issue)
 	{
-		var fields = new Dictionary<string, object?>(issue.CustomFields)
+		var fields = new Dictionary<string, object?>(issue.CustomFields!)
 		{
 			["aliases"] = issue.Aliases,
 			["project"] = issue.Project!

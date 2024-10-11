@@ -22,7 +22,7 @@ internal static class RequestExtensions
 			Summary = issue.Summary,
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
-			Fields = fields,
+			Fields = fields!,
 			Followers = new Collection<string>(issue.Followers.Select(follower => follower.Id).ToList()),
 			Parent = issue.Parent,
 			Priority = issue.Priority,
@@ -88,9 +88,9 @@ internal static class RequestExtensions
 			var value = prop.GetValue(filter, null);
 			if (prop.GetValue(filter, null) != null)
 			{
-#pragma warning disable CA1308 // Нормализуйте строки до прописных букв
+#pragma warning disable CA1308 // Поля запроса в Яндекс трекере чувствительны к регистру, поэтому нужно перевести поле в lowerCase
 				dict.Add(prop.Name.ToLowerInvariant(), value!);
-#pragma warning restore CA1308 // Нормализуйте строки до прописных букв
+#pragma warning restore CA1308
 			}
 		}
 

@@ -8,6 +8,13 @@ namespace Mindbox.YandexTracker.Tests;
 [TestClass]
 public class YandexTrackerClientTests : YandexTrackerTestBase
 {
+	private int _index;
+
+	public YandexTrackerClientTests()
+	{
+		_index = 0;
+	}
+
 	[TestMethod]
 	public async Task GetQueueAsync_ValidQueueKey_AllFieldsIncludedInResponse_ShouldReturnExistingQueue()
 	{
@@ -39,7 +46,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik"
+			Summary = GetUniqueName()
 		});
 
 		// Act
@@ -67,13 +74,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1"
+			Summary = GetUniqueName()
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik2"
+			Summary = GetUniqueName()
 		});
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
@@ -81,8 +88,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issues = await YandexTrackerClient.GetIssuesFromQueueAsync(TestQueueKey);
 
 		Assert.IsNotNull(issues);
-		Assert.AreEqual(issue1.Key, issues[0].Key);
-		Assert.AreEqual(issue2.Key, issues[1].Key);
+		Assert.IsTrue(issues.Count >= 2);
+		Assert.IsTrue(issues.Any(issue => issue.Key == issue1.Key));
+		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
 	}
 
 	[TestMethod]
@@ -91,13 +99,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1"
+			Summary = GetUniqueName()
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik2"
+			Summary = GetUniqueName()
 		});
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
@@ -105,29 +113,33 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issues = await YandexTrackerClient.GetIssuesByKeysAsync([issue1.Key, issue2.Key]);
 
 		Assert.IsNotNull(issues);
-		Assert.AreEqual(issue1.Key, issues[0].Key);
-		Assert.AreEqual(issue2.Key, issues[1].Key);
+		// могут быть задачи, созданные в других тестах, поэтому проверяем через any
+		Assert.AreEqual(2, issues.Count);
+		Assert.IsTrue(issues.Any(issue => issue.Key == issue1.Key));
+		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
 	}
 
 	[TestMethod]
 	public async Task GetIssuesByFilterAsync_ValidFilter_ResponseIsNotNullAndIssueKeysAreEqual()
 	{
+		var summary = GetUniqueName();
+
 		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1",
+			Summary = GetUniqueName(),
 		});
 
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik2",
+			Summary = summary,
 		});
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "BadTestik"
+			Summary = GetUniqueName()
 		});
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
@@ -135,57 +147,62 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issues = await YandexTrackerClient.GetIssuesByFilterAsync(new IssuesFilter
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik2"
+			Summary = summary
 		});
 
 		Assert.IsNotNull(issues);
-		Assert.AreEqual(1, issues.Count);
-		Assert.AreEqual(issue.Key, issues[0].Key);
+		// могут быть задачи, созданные в других тестах, поэтому проверяем через any
+		Assert.IsTrue(issues.Count >= 1);
+		Assert.IsTrue(issues.Any(@issue => @issue.Key == issue.Key));
 	}
 
 	[TestMethod]
 	public async Task GetIssuesByQueryAsync_ValidQuery_ResponseIsNotNullAndIssueKeysAreEqual()
 	{
+		var summary1 = GetUniqueName();
+		var summary2 = GetUniqueName();
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1"
+			Summary = summary1
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik2",
+			Summary = summary2
 		});
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "BadTestik"
+			Summary = GetUniqueName()
 		});
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
 
 		var issues = await YandexTrackerClient.GetIssuesByQueryAsync(
-			$"Queue: {TestQueueKey} AND Summary: Testik1, Testik2 \"Sort By\": Summary");
+			$"Queue: {TestQueueKey} AND Summary: {summary1}, {summary2} \"Sort By\": Summary");
 
 		Assert.IsNotNull(issues);
-		Assert.AreEqual(2, issues.Count);
-		Assert.AreEqual(issue1.Key, issues[0].Key);
-		Assert.AreEqual(issue2.Key, issues[1].Key);
+		// могут быть задачи, созданные в других тестах, поэтому проверяем через any
+		Assert.IsTrue(issues.Count >= 2);
+		Assert.IsTrue(issues.Any(issue => issue.Key == issue1.Key));
+		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
 	}
 
 	[TestMethod]
 	public async Task GetComponentsAsync_ResponseIsNotNullAndNotEmpty()
 	{
-		var component1 = await YandexTrackerClient.CreateComponentAsync("someName", TestQueueKey);
-		var component2 = await YandexTrackerClient.CreateComponentAsync("someName", TestQueueKey);
+		var component1 = await YandexTrackerClient.CreateComponentAsync(GetUniqueName(), TestQueueKey);
+		var component2 = await YandexTrackerClient.CreateComponentAsync(GetUniqueName(), TestQueueKey);
 
 		await Task.Delay(1000); // Чтобы компоненты точно создались в трекере
 
 		var components = (await YandexTrackerClient.GetComponentsAsync()).ToArray();
 
 		Assert.IsNotNull(components);
+		Assert.AreNotEqual(component1.Id, component2.Id);
 		// могут быть какие-то дефолтные, поэтому проверяем через any
 		Assert.IsTrue(components.Any(component => component.Id == component1.Id));
 		Assert.IsTrue(components.Any(component => component.Id == component2.Id));
@@ -197,26 +214,31 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1"
+			Summary = GetUniqueName()
 		});
 
 		var comment1 = await YandexTrackerClient.CreateCommentAsync(
 			issue.Key,
 			new Comment
 			{
-				Text = "SomeComment1"
+				Text = GetUniqueName()
 			});
 
 		var comment2 = await YandexTrackerClient.CreateCommentAsync(
 			issue.Key,
 			new Comment
 			{
-				Text = "SomeComment2"
+				Text = GetUniqueName()
 			});
 
-		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key)).ToArray();
+		await Task.Delay(1000); // Чтобы компоненты и задача точно создались в трекере
+
+		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key))
+			.OrderBy(comment => comment.CreatedAt)
+			.ToArray();
 
 		Assert.IsNotNull(comments);
+		Assert.AreEqual(2, comments.Length);
 		Assert.AreEqual(comment1.Id, comments.First().Id);
 		Assert.AreEqual(comment2.Id, comments.Last().Id);
 	}
@@ -227,7 +249,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			Queue = TestQueueKey,
-			Summary = "Testik1"
+			Summary = GetUniqueName()
 		});
 
 		await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
@@ -240,6 +262,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var textAttachment = await YandexTrackerClient.CreateAttachmentAsync(
 			issue.Key,
 			txtFile);
+
+		await Task.Delay(1000); // Чтобы вложения точно создались в трекере
 
 		Attachment[] expectedAttachments = [imageAttachment, textAttachment];
 
@@ -266,25 +290,27 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	public async Task GetProjectsAsync_Project_ProjectFields_ResponseIsNotNullAndContainsOneCreatedProjects()
 	{
 		// Arrange
+		var summary = GetUniqueName();
+
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
 			new Project
 			{
-				Summary = "project1"
+				Summary = summary
 			});
 
 		var project2 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
 			new Project
 			{
-				Summary = "project2"
+				Summary = GetUniqueName()
 			});
 
 		await Task.Delay(1000); // Чтобы проекты точно создались в трекере
 
 		var requestProject = new Project
 		{
-			Summary = "project1"
+			Summary = summary
 		};
 
 		// Act
@@ -372,5 +398,10 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Assert
 		Assert.IsNotNull(response);
 		Assert.IsTrue(response.Any());
+	}
+
+	private string GetUniqueName()
+	{
+		return $"Testik{_index++}";
 	}
 }

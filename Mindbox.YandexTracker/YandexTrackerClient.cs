@@ -307,6 +307,43 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToList();
 	}
 
+	public async Task<Component> CreateComponentAsync(
+		string componentName,
+		string queueKey,
+		string? description = null,
+		string? leadLogin = null,
+		bool? assignAuto = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(componentName);
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+
+		var request = new CreateComponentRequest
+		{
+			Name = componentName,
+			Queue = queueKey
+		};
+
+		var parameters = new Dictionary<string, string>();
+
+		if (description is not null)
+			parameters["description"] = description;
+
+		if (leadLogin is not null)
+			parameters["lead"] = leadLogin;
+
+		if (assignAuto is not null)
+			parameters["assignAuto"] = assignAuto.ToString()!;
+
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateComponentResponse>(
+			"components",
+			HttpMethod.Post,
+			payload: request,
+			parameters: parameters,
+			cancellationToken: cancellationToken))
+			.ToComponent();
+	}
+
 	public async Task<IReadOnlyList<Comment>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
@@ -432,7 +469,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType.ToLowerInvariant()}",
+			$"entities/{entityType.ToYandexRouteSegment()}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -466,7 +503,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			rootOnly);
 
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType.ToLowerInvariant()}/_search",
+			$"entities/{entityType.ToYandexRouteSegment()}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -489,7 +526,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		List<IssueField> localQueueFields = [];
 
-		// Если локальных полей нет - InvalidOperationException
 		try
 		{
 			localQueueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
@@ -499,8 +535,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				.Select(dto => dto.ToIssueField())
 				.ToList();
 		}
-		catch (InvalidOperationException) 
+		catch (InvalidOperationException)
 		{
+			// Если локальных полей нет - InvalidOperationException
 		}
 
 		return [.. globalFields, .. localQueueFields];
@@ -622,7 +659,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["withBoard"] = withBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType.ToLowerInvariant()}/{projectShortId}",
+			$"entities/{entityType.ToYandexRouteSegment()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			parameters: parameters,

@@ -65,10 +65,18 @@ public interface IYandexTrackerClient : IDisposable
 		CommentExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Создает комментарий
+	/// </summary>
+	/// <param name="issueKey">Ключ задачи</param>
+	/// <param name="comment">Комментарий</param>
+	/// <param name="addAuthorToFollowers">Добавить автора комментария в наблюдатели (по умолчанию true)</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,
-		bool? isAddToFollowers = null,
+		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default);
 
 	Task DeleteCommentAsync(
@@ -91,16 +99,32 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<IReadOnlyList<string>> GetTagsAsync(string queueKey, CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Создает проект
+	/// </summary>
+	/// <param name="entityType">Тип сущности (проект или портфель)</param>
+	/// <param name="project">Проект</param>
+	/// <param name="returnedFields">Дополнительные поля сущности, которые будут включены в ответ</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Удаляет проект
+	/// </summary>
+	/// <param name="entityType">Тип сущности (проект или портфель)</param>
+	/// <param name="projectShortId">Идентификатор проекта</param>
+	/// <param name="deleteWithBoard">Удалить вместе с доской, к которой относится проект</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
 	Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
-		bool? withBoard = null,
+		bool? deleteWithBoard = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -108,7 +132,7 @@ public interface IYandexTrackerClient : IDisposable
 	/// </summary>
 	/// <param name="entityType"></param>
 	/// <param name="project"></param>
-	/// <param name="fields">Дополнительные поля, которые будут включены в ответ.</param>
+	/// <param name="returnedFields">Дополнительные поля, которые будут включены в ответ.</param>
 	/// <param name="input">Подстрока в названии сущности</param>
 	/// <param name="orderBy">
 	/// Параметры сортировки задач. В параметре можно указать ключ любого поля,
@@ -121,7 +145,7 @@ public interface IYandexTrackerClient : IDisposable
 	Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		string? input = null,
 		string? orderBy = null,
 		bool? orderAscending = null,

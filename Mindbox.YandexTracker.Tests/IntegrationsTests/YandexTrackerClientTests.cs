@@ -94,7 +94,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task GetIssuesFromKeysAsync_ValidIssueKey_ResponseIsNotNullAndIssueKeysAreEqual()
+	public async Task GetIssuesByKeysAsync_ValidIssueKey_ResponseIsNotNullAndIssueKeysAreEqual()
 	{
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{

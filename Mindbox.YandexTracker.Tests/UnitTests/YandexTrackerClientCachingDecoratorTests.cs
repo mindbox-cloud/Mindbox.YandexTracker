@@ -354,7 +354,7 @@ public class YandexTrackerClientCachingDecoratorTests
 
 		await decorator.GetIssuesFromKeysAsync([]);
 
-		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromKeysAsync(
+		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromByAsync(
 			It.IsAny<IReadOnlyList<string>>(),
 			It.IsAny<IssuesExpandData?>(),
 			It.IsAny<CancellationToken>()));

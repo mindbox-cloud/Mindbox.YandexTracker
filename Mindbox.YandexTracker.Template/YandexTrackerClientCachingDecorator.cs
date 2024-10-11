@@ -23,10 +23,10 @@ public sealed class YandexTrackerClientCachingDecorator(
 	public Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,
-		bool? isAddToFollowers = null,
+		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.CreateCommentAsync(issueKey, comment, isAddToFollowers, cancellationToken);
+		return yandexTrackerClient.CreateCommentAsync(issueKey, comment, addAuthorToFollowers, cancellationToken);
 	}
 
 	public Task<Issue> CreateIssueAsync(Issue issue, CancellationToken cancellationToken = default)
@@ -37,10 +37,10 @@ public sealed class YandexTrackerClientCachingDecorator(
 	public Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.CreateProjectAsync(entityType, project, fields, cancellationToken);
+		return yandexTrackerClient.CreateProjectAsync(entityType, project, returnedFields, cancellationToken);
 	}
 
 	public Task<Queue> CreateQueueAsync(Queue queue, CancellationToken cancellationToken = default)
@@ -61,10 +61,10 @@ public sealed class YandexTrackerClientCachingDecorator(
 	public Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
-		bool? withBoard = null,
+		bool? deleteWithBoard = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.DeleteProjectAsync(entityType, projectShortId, withBoard, cancellationToken);
+		return yandexTrackerClient.DeleteProjectAsync(entityType, projectShortId, deleteWithBoard, cancellationToken);
 	}
 
 	public Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default)
@@ -148,7 +148,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.GetIssuesFromKeysAsync(keys, expand, cancellationToken);
+		return yandexTrackerClient.GetIssuesFromByAsync(keys, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(
@@ -194,14 +194,14 @@ public sealed class YandexTrackerClientCachingDecorator(
 	public Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		string? input = null,
 		string? orderBy = null,
 		bool? orderAscending = null,
 		bool? rootOnly = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_projects_{entityType}_{project.GetHashCode()}_{fields}_" +
+		var cacheKey = $"{options.CacheKeyPrefix}_projects_{entityType}_{project.GetHashCode()}_{returnedFields}_" +
 			$"{input}_{orderBy}_{orderAscending}_{rootOnly}";
 
 		return cache.GetOrCreateAsync(
@@ -211,7 +211,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 				var result = await yandexTrackerClient.GetProjectsAsync(
 					entityType,
 					project,
-					fields,
+					returnedFields,
 					input,
 					orderBy,
 					orderAscending,

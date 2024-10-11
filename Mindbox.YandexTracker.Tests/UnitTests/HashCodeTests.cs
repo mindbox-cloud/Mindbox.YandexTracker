@@ -28,7 +28,7 @@ public class HashCodeTests
 			{
 				Id = "id2"
 			},
-			CustomFields = new Dictionary<string, object>
+			CustomFields = new Dictionary<string, object?>
 			{
 				["field1"] = 5,
 				["field2"] = "field",
@@ -60,7 +60,7 @@ public class HashCodeTests
 			{
 				Id = "id2"
 			},
-			CustomFields = new Dictionary<string, object>
+			CustomFields = new Dictionary<string, object?>
 			{
 				["field1"] = 5,
 				["field2"] = "field",

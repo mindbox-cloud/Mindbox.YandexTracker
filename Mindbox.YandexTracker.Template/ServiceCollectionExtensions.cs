@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 			.AddMemoryCache()
 			.Configure<YandexTrackerClientOptions>(option =>
 			{
-				option.Token = configureOptions.Token;
+				option.OAuthToken = configureOptions.OAuthToken;
 				option.Organization = configureOptions.Organization;
 			})
 			.Configure<YandexTrackerClientCachingDecoratorOptions>(option =>

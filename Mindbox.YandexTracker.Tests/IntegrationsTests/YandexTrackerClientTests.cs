@@ -102,7 +102,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
 
-		var issues = await YandexTrackerClient.GetIssuesFromByAsync([issue1.Key, issue2.Key]);
+		var issues = await YandexTrackerClient.GetIssuesByKeysAsync([issue1.Key, issue2.Key]);
 
 		Assert.IsNotNull(issues);
 		Assert.AreEqual(issue1.Key, issues[0].Key);

@@ -168,7 +168,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToList();
 	}
 
-	public async Task<IReadOnlyList<Issue>> GetIssuesFromByAsync(
+	public async Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> keys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)

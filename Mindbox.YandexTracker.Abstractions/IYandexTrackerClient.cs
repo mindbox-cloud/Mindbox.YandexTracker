@@ -33,7 +33,7 @@ public interface IYandexTrackerClient : IDisposable
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<Issue>> GetIssuesFromByAsync(
+	Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> keys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);

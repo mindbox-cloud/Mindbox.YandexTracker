@@ -94,7 +94,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task GetIssuesFromKeysAsync_ValidIssueKey_ResponseIsNotNullAndIssueKeysAreEqual()
+	public async Task GetIssuesByKeysAsync_ValidIssueKey_ResponseIsNotNullAndIssueKeysAreEqual()
 	{
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
@@ -110,7 +110,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
 
-		var issues = await YandexTrackerClient.GetIssuesFromByAsync([issue1.Key, issue2.Key]);
+		var issues = await YandexTrackerClient.GetIssuesByKeysAsync([issue1.Key, issue2.Key]);
 
 		Assert.IsNotNull(issues);
 		// могут быть задачи, созданные в других тестах, поэтому проверяем через any

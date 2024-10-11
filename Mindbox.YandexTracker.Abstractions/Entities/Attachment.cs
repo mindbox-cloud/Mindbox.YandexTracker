@@ -10,7 +10,7 @@ public sealed record Attachment
 	public required string Thumbnail { get; init; }
 	public required UserShortInfo CreatedBy { get; init; }
 	public required DateTime CreatedAt { get; init; }
-	public FileType MimeType { get; init; }
+	public string MimeType { get; init; } = null!;
 	public int Size { get; init; }
 	public AttachmentData? Metadata { get; init; }
 }

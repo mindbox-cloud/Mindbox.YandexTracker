@@ -183,11 +183,10 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000); // Чтобы компоненты точно создались в трекере
 
-		Component[] expectedComponents = [component1, component2];
-
 		var components = (await YandexTrackerClient.GetComponentsAsync()).ToArray();
 
 		Assert.IsNotNull(components);
+		// могут быть какие-то дефолтные, поэтому проверяем через any
 		Assert.IsTrue(components.Any(component => component.Id == component1.Id));
 		Assert.IsTrue(components.Any(component => component.Id == component2.Id));
 	}
@@ -252,7 +251,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.WhenAll(deleteImageAttachmentTask, deleteTxtAttachmentTask);
 
 		Assert.IsNotNull(attachments);
-		Assert.AreEqual(2, attachments.Length);
+		Assert.AreEqual(expectedAttachments.Length, attachments.Length);
 	}
 
 	[TestMethod]

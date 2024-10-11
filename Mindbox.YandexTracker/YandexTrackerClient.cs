@@ -41,7 +41,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			new ProductInfoHeaderValue(
 				"Mindbox.YandexTrackerClient",
 				Assembly.GetExecutingAssembly().GetName().Version!.ToString()));
-		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.Token);
+		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.OAuthToken);
 		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
 
 		return httpClient;
@@ -168,7 +168,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToList();
 	}
 
-	public async Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
+	public async Task<IReadOnlyList<Issue>> GetIssuesFromByAsync(
 		IReadOnlyList<string> keys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
@@ -543,49 +543,55 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return [.. globalFields, .. localQueueFields];
 	}
 
-	public async Task<UserDetailedInfo> GetUserByIdAsync(
+	public Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken)
+	{
+		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+			"myself",
+			HttpMethod.Get,
+			payload: null,
+			cancellationToken: cancellationToken);
+	}
+
+	public Task<UserDetailedInfo> GetUserByIdAsync(
 		string userId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-		return await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
 			$"users/{userId}",
 			HttpMethod.Get,
 			payload: null,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
+		return ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
 			"users",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(
-		CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<IssueType>(
+		return ExecuteYandexTrackerCollectionRequestAsync<IssueType>(
 			"issuetypes",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<Resolution>> GetResolutionsAsync(
-		CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<Resolution>> GetResolutionsAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<Resolution>(
+		return ExecuteYandexTrackerCollectionRequestAsync<Resolution>(
 			"resolutions",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(
-		CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<IssueStatus>(
+		return ExecuteYandexTrackerCollectionRequestAsync<IssueStatus>(
 			"statuses",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);

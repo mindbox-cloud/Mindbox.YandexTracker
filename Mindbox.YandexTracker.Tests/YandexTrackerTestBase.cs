@@ -28,10 +28,13 @@ public abstract class YandexTrackerTestBase
 		ServiceProvider = serviceCollection.BuildServiceProvider();
 		YandexTrackerClient = GetRequiredService<IYandexTrackerClient>();
 
+		// узнаем инфу о пользователи, от имени которого выполняем запрос
+		var userInfo = await YandexTrackerClient.GetMyselfAsync();
+		CurrentUserId = userInfo.Id;
+		CurrentUserLogin = userInfo.Login;
+
 		// в ключе может быть до 15 латинских символов
 		TestQueueKey = $"TEST{StringHelper.GetUniqueString(length: 11)}";
-		CurrentUserId = configuration.GetValue<string>("CurrentUserId")!;
-		CurrentUserLogin = configuration.GetValue<string>("CurrentUserLogin")!;
 		await CreateQueueAsync();
 	}
 

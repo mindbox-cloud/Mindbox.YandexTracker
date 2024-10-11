@@ -49,5 +49,5 @@ internal sealed record CreateIssueRequest
 
 	[DataMember(EmitDefaultValue = false)]
 	[JsonExtensionData]
-	public Dictionary<string, object>? Fields { get; init; }
+	public Dictionary<string, object?>? Fields { get; init; }
 }

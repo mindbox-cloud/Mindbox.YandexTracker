@@ -33,7 +33,7 @@ public interface IYandexTrackerClient : IDisposable
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
+	Task<IReadOnlyList<Issue>> GetIssuesFromByAsync(
 		IReadOnlyList<string> keys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default);
@@ -104,7 +104,7 @@ public interface IYandexTrackerClient : IDisposable
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	/// <param name="entityType"></param>
 	/// <param name="project"></param>
@@ -131,6 +131,11 @@ public interface IYandexTrackerClient : IDisposable
 	Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Возвращает информацию о пользователе, от имени которого выполняются запросы.
+	/// </summary>
+	Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default);
 

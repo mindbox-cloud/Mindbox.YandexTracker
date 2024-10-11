@@ -70,13 +70,13 @@ public interface IYandexTrackerClient : IDisposable
 	/// </summary>
 	/// <param name="issueKey">Ключ задачи</param>
 	/// <param name="comment">Комментарий</param>
-	/// <param name="isAddToFollowers">Добавить автора комментария в наблюдатели (по умолчанию true)</param>
+	/// <param name="addAuthorToFollowers">Добавить автора комментария в наблюдатели (по умолчанию true)</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
 	Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,
-		bool? isAddToFollowers = null,
+		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default);
 
 	Task DeleteCommentAsync(

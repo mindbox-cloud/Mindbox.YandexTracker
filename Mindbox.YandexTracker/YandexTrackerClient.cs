@@ -373,7 +373,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,
-		bool? isAddToFollowers = null,
+		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
@@ -383,9 +383,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (isAddToFollowers is not null)
+		if (addAuthorToFollowers is not null)
 		{
-			parameters["isAddToFollowers"] = isAddToFollowers.ToString()!;
+			parameters["isAddToFollowers"] = addAuthorToFollowers.ToString()!;
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateCommentResponse>(

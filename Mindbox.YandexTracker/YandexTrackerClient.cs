@@ -469,7 +469,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType.ToYandexRouteSegment()}",
+			$"entities/{entityType.ToYandexCase()}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -503,7 +503,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			rootOnly);
 
 		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType.ToYandexRouteSegment()}/_search",
+			$"entities/{entityType.ToYandexCase()}/_search",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -665,7 +665,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["withBoard"] = deleteWithBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType.ToYandexRouteSegment()}/{projectShortId}",
+			$"entities/{entityType.ToYandexCase()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			parameters: parameters,

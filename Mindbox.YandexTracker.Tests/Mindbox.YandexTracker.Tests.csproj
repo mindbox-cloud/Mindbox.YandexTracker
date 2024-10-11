@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
@@ -19,6 +20,18 @@
     <ItemGroup>
       <ProjectReference Include="..\Mindbox.YandexTracker.Template\Mindbox.YandexTracker.Template.csproj" />
       <ProjectReference Include="..\Mindbox.YandexTracker\Mindbox.YandexTracker.csproj" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <None Update="appsettings.tests.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestFiles\importantInformation.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestFiles\pepe.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

@@ -352,9 +352,9 @@ public class YandexTrackerClientCachingDecoratorTests
 	{
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
-		await decorator.GetIssuesFromKeysAsync([]);
+		await decorator.GetIssuesByKeysAsync([]);
 
-		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromByAsync(
+		_yandexTrackerClientMock.Verify(x => x.GetIssuesByKeysAsync(
 			It.IsAny<IReadOnlyList<string>>(),
 			It.IsAny<IssuesExpandData?>(),
 			It.IsAny<CancellationToken>()));

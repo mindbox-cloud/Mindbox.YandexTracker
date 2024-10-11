@@ -90,9 +90,31 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	public Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.GetMyselfAsync(cancellationToken);
+	}
+
 	public Task<IReadOnlyList<Attachment>> GetAttachmentsAsync(string issueKey, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.GetAttachmentsAsync(issueKey, cancellationToken);
+	}
+
+	public Task<Component> CreateComponentAsync(
+		string componentName,
+		string queueKey,
+		string? description = null,
+		string? leadLogin = null,
+		bool? assignAuto = null,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.CreateComponentAsync(
+			componentName,
+			queueKey,
+			description,
+			leadLogin,
+			assignAuto,
+			cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Comment>> GetCommentsAsync(
@@ -143,12 +165,12 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByQueryAsync(query, expand, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
+	public Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> keys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.GetIssuesFromByAsync(keys, expand, cancellationToken);
+		return yandexTrackerClient.GetIssuesByKeysAsync(keys, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(

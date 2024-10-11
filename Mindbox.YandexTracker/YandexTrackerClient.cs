@@ -453,7 +453,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(project);
@@ -462,10 +462,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (fields is not null
+		if (returnedFields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = fields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToQueryString();
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
@@ -480,7 +480,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		string? input = null,
 		string? orderBy = null,
 		bool? orderAscending = null,
@@ -491,9 +491,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (fields is not null and not ProjectFieldData.None)
+		if (returnedFields is not null and not ProjectFieldData.None)
 		{
-			parameters["fields"] = fields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToQueryString();
 		}
 
 		var request = project.ToGetProjectsRequest(
@@ -650,13 +650,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
-		bool? withBoard = null,
+		bool? deleteWithBoard = null,
 		CancellationToken cancellationToken = default)
 	{
 		var parameters = new Dictionary<string, string>();
 
-		if (withBoard is not null)
-			parameters["withBoard"] = withBoard.ToString()!;
+		if (deleteWithBoard is not null)
+			parameters["withBoard"] = deleteWithBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"entities/{entityType.ToYandexRouteSegment()}/{projectShortId}",

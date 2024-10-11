@@ -12,6 +12,6 @@ internal static class StringHelper
 		return new string(
 			Enumerable.Repeat(Chars, length)
 				.Select(s => s[RandomNumberGenerator.GetInt32(s.Length)])
-					.ToArray());
+				.ToArray());
 	}
 }

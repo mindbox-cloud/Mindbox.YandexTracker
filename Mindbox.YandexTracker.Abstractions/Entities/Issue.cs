@@ -29,4 +29,59 @@ public sealed record Issue
 	public IssueStatus? PreviousStatus { get; init; }
 	public bool IsFavorite { get; init; }
 	public Dictionary<string, object?> CustomFields { get; init; } = [];
+
+	public override int GetHashCode()
+	{
+		var hashCodePart1 = HashCode.Combine(
+			Key,
+			LastCommentUpdatedAt,
+			Summary,
+			Parent,
+			UpdatedBy,
+			Description,
+			Type,
+			Priority
+		);
+
+		var hashCodePart2 = HashCode.Combine(
+			CreatedAt,
+			CreatedBy,
+			Votes,
+			Assignee,
+			Author,
+			Project,
+			Queue,
+			UpdatedAt
+		);
+
+		var hashCodePart3 = HashCode.Combine(
+			Status,
+			PreviousStatus,
+			IsFavorite
+		);
+
+		var collectionHashCode = 0;
+
+		foreach (var alias in Aliases)
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, alias.GetHashCode(StringComparison.InvariantCulture));
+		}
+
+		foreach (var sprint in Sprints)
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, sprint.GetHashCode(StringComparison.InvariantCulture));
+		}
+
+		foreach (var follower in Followers)
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, follower.GetHashCode());
+		}
+
+		foreach (var field in CustomFields)
+		{
+			collectionHashCode = HashCode.Combine(collectionHashCode, field.Key, field.Value?.GetHashCode());
+		}
+
+		return HashCode.Combine(hashCodePart1, hashCodePart2, hashCodePart3, collectionHashCode);
+	}
 }

@@ -7,7 +7,7 @@ internal static class StringExtensions
 		return !string.IsNullOrWhiteSpace(value) ? value.Trim() : null;
 	}
 
-	public static string ToYandexRouteSegment(this ProjectEntityType value)
+	public static string ToYandexCase(this ProjectEntityType value)
 	{
 #pragma warning disable CA1308 // Требует заменить ToLowerInvariant на ToUpperInvariant, но Яндексу нужен lower
 		return value.ToString().ToLowerInvariant();

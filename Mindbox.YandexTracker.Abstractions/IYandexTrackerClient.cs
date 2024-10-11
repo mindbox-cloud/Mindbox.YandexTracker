@@ -70,7 +70,8 @@ public interface IYandexTrackerClient : IDisposable
 	/// </summary>
 	/// <param name="issueKey">Ключ задачи</param>
 	/// <param name="comment">Комментарий</param>
-	/// <param name="addAuthorToFollowers">Добавить автора комментария в наблюдатели (по умолчанию true)</param>
+	/// <param name="addAuthorToFollowers">Добавить автора комментария в наблюдатели.
+	/// Если параметр не задан, то применится дефолтное поведение Яндекс.Трекера (true)</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
 	Task<Comment> CreateCommentAsync(
@@ -106,7 +107,7 @@ public interface IYandexTrackerClient : IDisposable
 	/// <param name="project">Проект</param>
 	/// <param name="returnedFields">Дополнительные поля сущности, которые будут включены в ответ</param>
 	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
+	/// <returns>Вернутся данные по проекту с проставленным значениями от Яндекс.Трекера</returns>
 	Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		Project project,
@@ -118,7 +119,7 @@ public interface IYandexTrackerClient : IDisposable
 	/// </summary>
 	/// <param name="entityType">Тип сущности (проект или портфель)</param>
 	/// <param name="projectShortId">Идентификатор проекта</param>
-	/// <param name="deleteWithBoard">Удалить вместе с доской, к которой относится проект</param>
+	/// <param name="deleteWithBoard">Удалить доску, связанную с проектом</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
 	Task DeleteProjectAsync(
@@ -128,7 +129,7 @@ public interface IYandexTrackerClient : IDisposable
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	///
+	/// Получение проектов
 	/// </summary>
 	/// <param name="entityType"></param>
 	/// <param name="project"></param>
@@ -141,7 +142,7 @@ public interface IYandexTrackerClient : IDisposable
 	/// <param name="orderAscending">Направление сортировки</param>
 	/// <param name="rootOnly">Выводить только не вложенные сущности.</param>
 	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
+	/// <returns>Вернутся данные по проектам с проставленными значениями от Яндекс.Трекера</returns>
 	Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		Project project,

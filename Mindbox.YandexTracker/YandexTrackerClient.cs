@@ -321,25 +321,16 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		var request = new CreateComponentRequest
 		{
 			Name = componentName,
-			Queue = queueKey
+			Queue = queueKey,
+			Description = description,
+			Lead = leadLogin,
+			AssignAuto = assignAuto
 		};
-
-		var parameters = new Dictionary<string, string>();
-
-		if (description is not null)
-			parameters["description"] = description;
-
-		if (leadLogin is not null)
-			parameters["lead"] = leadLogin;
-
-		if (assignAuto is not null)
-			parameters["assignAuto"] = assignAuto.ToString()!;
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateComponentResponse>(
 			"components",
 			HttpMethod.Post,
 			payload: request,
-			parameters: parameters,
 			cancellationToken: cancellationToken))
 			.ToComponent();
 	}

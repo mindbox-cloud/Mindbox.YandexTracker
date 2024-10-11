@@ -8,14 +8,14 @@ namespace Mindbox.YandexTracker.Tests;
 
 public abstract class YandexTrackerTestBase
 {
-	protected string TestQueueKey { get; private set; } = null!;
-	protected string CurrentUserId { get; private set; } = null!;
-	protected string CurrentUserLogin { get; private set; } = null!;
-	protected IServiceProvider ServiceProvider { get; private set; } = null!;
-	protected IYandexTrackerClient YandexTrackerClient { get; private set; } = null!;
+	protected static string TestQueueKey { get; private set; } = null!;
+	protected static string CurrentUserId { get; private set; } = null!;
+	protected static string CurrentUserLogin { get; private set; } = null!;
+	protected static IServiceProvider ServiceProvider { get; private set; } = null!;
+	protected static IYandexTrackerClient YandexTrackerClient { get; private set; } = null!;
 
-	[TestInitialize]
-	public async Task TestInitializeAsync()
+	[ClassInitialize(InheritanceBehavior.BeforeEachDerivedClass)]
+	public static async Task TestInitializeAsync(TestContext context)
 	{
 		var serviceCollection = new ServiceCollection();
 
@@ -38,13 +38,13 @@ public abstract class YandexTrackerTestBase
 		await CreateQueueAsync();
 	}
 
-	[TestCleanup]
-	public async Task TestCleanupAsync()
+	[ClassCleanup(InheritanceBehavior.BeforeEachDerivedClass)]
+	public static async Task TestCleanupAsync()
 	{
 		await YandexTrackerClient.DeleteQueueAsync(TestQueueKey);
 	}
 
-	private async Task CreateQueueAsync()
+	private static async Task CreateQueueAsync()
 	{
 		await YandexTrackerClient.CreateQueueAsync(new Queue
 		{
@@ -90,6 +90,6 @@ public abstract class YandexTrackerTestBase
 			.AddScoped<IYandexTrackerClient, YandexTrackerClient>();
 	}
 
-	protected T GetRequiredService<T>() where T : notnull
+	protected static T GetRequiredService<T>() where T : notnull
 		=> ServiceProvider.GetRequiredService<T>();
 }

@@ -41,7 +41,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			new ProductInfoHeaderValue(
 				"Mindbox.YandexTrackerClient",
 				Assembly.GetExecutingAssembly().GetName().Version!.ToString()));
-		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.Token);
+		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.OAuthToken);
 		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
 
 		return httpClient;
@@ -168,7 +168,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToList();
 	}
 
-	public async Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
+	public async Task<IReadOnlyList<Issue>> GetIssuesFromByAsync(
 		IReadOnlyList<string> keys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
@@ -373,7 +373,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,
-		bool? isAddToFollowers = null,
+		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
@@ -383,9 +383,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (isAddToFollowers is not null)
+		if (addAuthorToFollowers is not null)
 		{
-			parameters["isAddToFollowers"] = isAddToFollowers.ToString()!;
+			parameters["isAddToFollowers"] = addAuthorToFollowers.ToString()!;
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateCommentResponse>(
@@ -453,7 +453,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<Project> CreateProjectAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentNullException.ThrowIfNull(project);
@@ -462,10 +462,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (fields is not null
+		if (returnedFields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = fields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToQueryString();
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
@@ -480,7 +480,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<IReadOnlyList<Project>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		Project project,
-		ProjectFieldData? fields = null,
+		ProjectFieldData? returnedFields = null,
 		string? input = null,
 		string? orderBy = null,
 		bool? orderAscending = null,
@@ -491,9 +491,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var parameters = new Dictionary<string, string>();
 
-		if (fields is not null and not ProjectFieldData.None)
+		if (returnedFields is not null and not ProjectFieldData.None)
 		{
-			parameters["fields"] = fields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToQueryString();
 		}
 
 		var request = project.ToGetProjectsRequest(
@@ -543,49 +543,55 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return [.. globalFields, .. localQueueFields];
 	}
 
-	public async Task<UserDetailedInfo> GetUserByIdAsync(
+	public Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken)
+	{
+		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+			"myself",
+			HttpMethod.Get,
+			payload: null,
+			cancellationToken: cancellationToken);
+	}
+
+	public Task<UserDetailedInfo> GetUserByIdAsync(
 		string userId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-		return await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
 			$"users/{userId}",
 			HttpMethod.Get,
 			payload: null,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
+		return ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
 			"users",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(
-		CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<IssueType>(
+		return ExecuteYandexTrackerCollectionRequestAsync<IssueType>(
 			"issuetypes",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<Resolution>> GetResolutionsAsync(
-		CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<Resolution>> GetResolutionsAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<Resolution>(
+		return ExecuteYandexTrackerCollectionRequestAsync<Resolution>(
 			"resolutions",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(
-		CancellationToken cancellationToken = default)
+	public Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(CancellationToken cancellationToken = default)
 	{
-		return await ExecuteYandexTrackerCollectionRequestAsync<IssueStatus>(
+		return ExecuteYandexTrackerCollectionRequestAsync<IssueStatus>(
 			"statuses",
 			HttpMethod.Get,
 			cancellationToken: cancellationToken);
@@ -650,13 +656,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
-		bool? withBoard = null,
+		bool? deleteWithBoard = null,
 		CancellationToken cancellationToken = default)
 	{
 		var parameters = new Dictionary<string, string>();
 
-		if (withBoard is not null)
-			parameters["withBoard"] = withBoard.ToString()!;
+		if (deleteWithBoard is not null)
+			parameters["withBoard"] = deleteWithBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"entities/{entityType.ToYandexRouteSegment()}/{projectShortId}",

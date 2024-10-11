@@ -102,7 +102,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
 
-		var issues = await YandexTrackerClient.GetIssuesFromKeysAsync([issue1.Key, issue2.Key]);
+		var issues = await YandexTrackerClient.GetIssuesFromByAsync([issue1.Key, issue2.Key]);
 
 		Assert.IsNotNull(issues);
 		Assert.AreEqual(issue1.Key, issues[0].Key);
@@ -183,11 +183,10 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000); // Чтобы компоненты точно создались в трекере
 
-		Component[] expectedComponents = [component1, component2];
-
 		var components = (await YandexTrackerClient.GetComponentsAsync()).ToArray();
 
 		Assert.IsNotNull(components);
+		// могут быть какие-то дефолтные, поэтому проверяем через any
 		Assert.IsTrue(components.Any(component => component.Id == component1.Id));
 		Assert.IsTrue(components.Any(component => component.Id == component2.Id));
 	}
@@ -252,7 +251,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.WhenAll(deleteImageAttachmentTask, deleteTxtAttachmentTask);
 
 		Assert.IsNotNull(attachments);
-		Assert.AreEqual(2, attachments.Length);
+		Assert.AreEqual(expectedAttachments.Length, attachments.Length);
 	}
 
 	[TestMethod]
@@ -300,6 +299,16 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		Assert.IsNotNull(projects);
 
 		Assert.IsTrue(projects.Any(project => project.ShortId == project1.ShortId));
+	}
+
+	[TestMethod]
+	public async Task GetMyselfAsync_ResponseIsNotNull()
+	{
+		// Arrange & Act
+		var userInfo = await YandexTrackerClient.GetMyselfAsync();
+
+		// Assert
+		Assert.IsNotNull(userInfo);
 	}
 
 	[TestMethod]

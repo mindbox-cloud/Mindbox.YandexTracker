@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 
 namespace Mindbox.YandexTracker;
 
@@ -9,7 +8,7 @@ internal static class RequestExtensions
 {
 	public static CreateIssueRequest ToCreateIssueRequest(this Issue issue)
 	{
-		var fields = new Dictionary<string, object>(issue.CustomFields)
+		var fields = new Dictionary<string, object?>(issue.CustomFields)
 		{
 			["aliases"] = issue.Aliases,
 			["project"] = issue.Project!
@@ -82,8 +81,10 @@ internal static class RequestExtensions
 	{
 		var dict = new Dictionary<string, object>();
 
-		foreach (PropertyInfo prop in filter.GetType().GetProperties())
+		for (var i = 0; i < filter.GetType().GetProperties().Length; i++)
 		{
+			var prop = filter.GetType().GetProperties()[i];
+
 			var value = prop.GetValue(filter, null);
 			if (prop.GetValue(filter, null) != null)
 			{

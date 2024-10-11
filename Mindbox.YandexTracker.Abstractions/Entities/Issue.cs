@@ -28,7 +28,7 @@ public sealed record Issue
 	public IssueStatus Status { get; init; } = null!;
 	public IssueStatus? PreviousStatus { get; init; }
 	public bool IsFavorite { get; init; }
-	public Dictionary<string, object> CustomFields { get; init; } = [];
+	public Dictionary<string, object?> CustomFields { get; init; } = [];
 
 	public override int GetHashCode()
 	{

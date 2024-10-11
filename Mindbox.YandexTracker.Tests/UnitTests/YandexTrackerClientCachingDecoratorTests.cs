@@ -10,7 +10,7 @@ using Moq;
 namespace Mindbox.YandexTracker.Tests.UnitTests;
 
 [TestClass]
-public class TemplateUnitTests
+public class YandexTrackerClientCachingDecoratorTests
 {
 	private Mock<IMemoryCache> _memoryCacheMock = null!;
 	private Mock<IYandexTrackerClient> _yandexTrackerClientMock = null!;
@@ -274,19 +274,7 @@ public class TemplateUnitTests
 	}
 
 	[TestMethod]
-	public async Task GetUserByIdAsync_ValuesTakenFromServer()
-	{
-		using var decorator = CreateYandexTrackerClientCachingDecorator();
-
-		await decorator.GetUserByIdAsync(null!);
-
-		_yandexTrackerClientMock.Verify(x => x.GetUserByIdAsync(
-			It.IsAny<string>(),
-			It.IsAny<CancellationToken>()));
-	}
-
-	[TestMethod]
-	public async Task GetIssuesByFilterAsync_EmptyCache_ValuesTakenFromServer()
+	public async Task GetUserByIdAsync_EmptyCache_ValuesTakenFromServer()
 	{
 		object? @null = null;
 		var cacheEntryMock = new Mock<ICacheEntry>();
@@ -300,9 +288,45 @@ public class TemplateUnitTests
 
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
-		await decorator.GetIssuesByFilterAsync(new IssuesFilter());
+		await decorator.GetUserByIdAsync(null!);
 
 		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Once());
+
+		_yandexTrackerClientMock.Verify(x => x.GetUserByIdAsync(
+			It.IsAny<string>(),
+			It.IsAny<CancellationToken>()));
+	}
+
+	[TestMethod]
+	public async Task GetUserByIdAsync_NotEmptyCache_ValuesTakenFromCache()
+	{
+		object? @null = null;
+		var cacheEntryMock = new Mock<ICacheEntry>();
+
+		_memoryCacheMock
+			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
+			.Returns(true);
+
+		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
+			.Returns(cacheEntryMock.Object);
+
+		using var decorator = CreateYandexTrackerClientCachingDecorator();
+
+		await decorator.GetUserByIdAsync(null!);
+
+		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
+
+		_yandexTrackerClientMock.Verify(x => x.GetUserByIdAsync(
+			It.IsAny<string>(),
+			It.IsAny<CancellationToken>()), Times.Never);
+	}
+
+	[TestMethod]
+	public async Task GetIssuesByFilterAsync_EmptyCache_ValuesTakenFromServer()
+	{
+		using var decorator = CreateYandexTrackerClientCachingDecorator();
+
+		await decorator.GetIssuesByFilterAsync(new IssuesFilter());
 
 		_yandexTrackerClientMock.Verify(x => x.GetIssuesByFilterAsync(
 			It.IsAny<IssuesFilter>(),
@@ -311,49 +335,11 @@ public class TemplateUnitTests
 	}
 
 	[TestMethod]
-	public async Task GetIssuesByFilterAsync_NotEmptyCache_ValuesTakenFromCache()
+	public async Task GetIssuesByQueryAsync_ValuesTakenFromServer()
 	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(true);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
-		using var decorator = CreateYandexTrackerClientCachingDecorator();
-
-		await decorator.GetIssuesByFilterAsync(new IssuesFilter());
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
-
-		_yandexTrackerClientMock.Verify(x => x.GetIssuesByFilterAsync(
-				It.IsAny<IssuesFilter>(),
-				It.IsAny<IssuesExpandData?>(),
-				It.IsAny<CancellationToken>()),
-			Times.Never);
-	}
-
-	[TestMethod]
-	public async Task GetIssuesByQueryAsync_EmptyCache_ValuesTakenFromServer()
-	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(false);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
 		await decorator.GetIssuesByQueryAsync(null!);
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Once());
 
 		_yandexTrackerClientMock.Verify(x => x.GetIssuesByQueryAsync(
 			It.IsAny<string>(),
@@ -362,49 +348,11 @@ public class TemplateUnitTests
 	}
 
 	[TestMethod]
-	public async Task GetIssuesByQueryAsync_NotEmptyCache_ValuesTakenFromCache()
+	public async Task GetIssuesFromKeysAsync_ValuesTakenFromServer()
 	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(true);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
-		using var decorator = CreateYandexTrackerClientCachingDecorator();
-
-		await decorator.GetIssuesByQueryAsync(null!);
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
-
-		_yandexTrackerClientMock.Verify(x => x.GetIssuesByQueryAsync(
-				It.IsAny<string>(),
-				It.IsAny<IssuesExpandData?>(),
-				It.IsAny<CancellationToken>()),
-			Times.Never);
-	}
-
-	[TestMethod]
-	public async Task GetIssuesFromKeysAsync_EmptyCache_ValuesTakenFromServer()
-	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(false);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
 		await decorator.GetIssuesFromKeysAsync([]);
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Once());
 
 		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromKeysAsync(
 			It.IsAny<IReadOnlyList<string>>(),
@@ -413,80 +361,16 @@ public class TemplateUnitTests
 	}
 
 	[TestMethod]
-	public async Task GetIssuesFromKeysAsync_NotEmptyCache_ValuesTakenFromCache()
+	public async Task GetIssuesFromQueueAsync_ValuesTakenFromServer()
 	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(true);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
-		using var decorator = CreateYandexTrackerClientCachingDecorator();
-
-		await decorator.GetIssuesFromKeysAsync([]);
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
-
-		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromKeysAsync(
-				It.IsAny<IReadOnlyList<string>>(),
-				It.IsAny<IssuesExpandData?>(),
-				It.IsAny<CancellationToken>()),
-			Times.Never);
-	}
-
-	[TestMethod]
-	public async Task GetIssuesFromQueueAsync_EmptyCache_ValuesTakenFromServer()
-	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(false);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
 		await decorator.GetIssuesFromQueueAsync(null!);
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Once());
 
 		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromQueueAsync(
 			It.IsAny<string>(),
 			It.IsAny<IssuesExpandData?>(),
 			It.IsAny<CancellationToken>()));
-	}
-
-	[TestMethod]
-	public async Task GetIssuesFromQueueAsync_NotEmptyCache_ValuesTakenFromCache()
-	{
-		object? @null = null;
-		var cacheEntryMock = new Mock<ICacheEntry>();
-
-		_memoryCacheMock
-			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
-			.Returns(true);
-
-		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
-			.Returns(cacheEntryMock.Object);
-
-		using var decorator = CreateYandexTrackerClientCachingDecorator();
-
-		await decorator.GetIssuesFromQueueAsync(null!);
-
-		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
-
-		_yandexTrackerClientMock.Verify(x => x.GetIssuesFromQueueAsync(
-				It.IsAny<string>(),
-				It.IsAny<IssuesExpandData?>(),
-				It.IsAny<CancellationToken>()),
-			Times.Never);
 	}
 
 	[TestMethod]
@@ -645,16 +529,54 @@ public class TemplateUnitTests
 	}
 
 	[TestMethod]
-	public async Task GetQueueAsync_ValuesTakenFromServer()
+	public async Task GetQueueAsync_EmptyCache_ValuesTakenFromServer()
 	{
+		object? @null = null;
+		var cacheEntryMock = new Mock<ICacheEntry>();
+
+		_memoryCacheMock
+			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
+			.Returns(false);
+
+		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
+			.Returns(cacheEntryMock.Object);
+
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
 		await decorator.GetQueueAsync(null!);
+
+		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Once());
 
 		_yandexTrackerClientMock.Verify(x => x.GetQueueAsync(
 			It.IsAny<string>(),
 			It.IsAny<QueueExpandData?>(),
 			It.IsAny<CancellationToken>()));
+	}
+
+	[TestMethod]
+	public async Task GetQueueAsync_NotEmptyCache_ValuesTakenFromCache()
+	{
+		object? @null = null;
+		var cacheEntryMock = new Mock<ICacheEntry>();
+
+		_memoryCacheMock
+			.Setup(x => x.TryGetValue(It.IsAny<object>(), out @null))
+			.Returns(true);
+
+		_memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
+			.Returns(cacheEntryMock.Object);
+
+		using var decorator = CreateYandexTrackerClientCachingDecorator();
+
+		await decorator.GetQueueAsync(null!);
+
+		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
+
+		_yandexTrackerClientMock.Verify(x => x.GetQueueAsync(
+				It.IsAny<string>(),
+				It.IsAny<QueueExpandData?>(),
+				It.IsAny<CancellationToken>()),
+			Times.Never);
 	}
 
 	[TestMethod]

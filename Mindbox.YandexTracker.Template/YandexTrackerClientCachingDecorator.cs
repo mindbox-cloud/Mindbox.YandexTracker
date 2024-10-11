@@ -76,7 +76,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		string queueKey,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_accessibleFields";
+		var cacheKey = $"{options.CacheKeyPrefix}_accessibleFields_{queueKey}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -132,18 +132,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_issues_{issuesFilter.GetHashCode()}";
-
-		return cache.GetOrCreateAsync(
-			cacheKey,
-			async entry =>
-			{
-				var result = await yandexTrackerClient.GetIssuesByFilterAsync(issuesFilter, expand, cancellationToken);
-
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
-
-				return result;
-			})!;
+		return yandexTrackerClient.GetIssuesByFilterAsync(issuesFilter, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesByQueryAsync(
@@ -151,18 +140,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_issues_{query}";
-
-		return cache.GetOrCreateAsync(
-			cacheKey,
-			async entry =>
-			{
-				var result = await yandexTrackerClient.GetIssuesByQueryAsync(query, expand, cancellationToken);
-
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
-
-				return result;
-			})!;
+		return yandexTrackerClient.GetIssuesByQueryAsync(query, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesFromKeysAsync(
@@ -170,18 +148,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_issues_{keys.GetCollectionHashCode()}";
-
-		return cache.GetOrCreateAsync(
-			cacheKey,
-			async entry =>
-			{
-				var result = await yandexTrackerClient.GetIssuesFromKeysAsync(keys, expand, cancellationToken);
-
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
-
-				return result;
-			})!;
+		return yandexTrackerClient.GetIssuesFromKeysAsync(keys, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(
@@ -189,18 +156,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_issues_{queueKey}";
-
-		return cache.GetOrCreateAsync(
-			cacheKey,
-			async entry =>
-			{
-				var result = await yandexTrackerClient.GetIssuesFromQueueAsync(queueKey, expand, cancellationToken);
-
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
-
-				return result;
-			})!;
+		return yandexTrackerClient.GetIssuesFromQueueAsync(queueKey, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(CancellationToken cancellationToken = default)
@@ -245,7 +201,8 @@ public sealed class YandexTrackerClientCachingDecorator(
 		bool? rootOnly = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_projects_{entityType}_{project.GetHashCode()}";
+		var cacheKey = $"{options.CacheKeyPrefix}_projects_{entityType}_{project.GetHashCode()}_{fields}_" +
+			$"{input}_{orderBy}_{orderAscending}_{rootOnly}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -272,14 +229,25 @@ public sealed class YandexTrackerClientCachingDecorator(
 		QueueExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.GetQueueAsync(queueKey, expand, cancellationToken);
+		var cacheKey = $"{options.CacheKeyPrefix}_queues_{queueKey}_{expand}";
+
+		return cache.GetOrCreateAsync(
+			cacheKey,
+			async entry =>
+			{
+				var result = await yandexTrackerClient.GetQueueAsync(queueKey, expand, cancellationToken);
+
+				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+
+				return result;
+			})!;
 	}
 
 	public Task<IReadOnlyList<Queue>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CacheKeyPrefix}_queues";
+		var cacheKey = $"{options.CacheKeyPrefix}_queues_{expand}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -327,7 +295,18 @@ public sealed class YandexTrackerClientCachingDecorator(
 
 	public Task<UserDetailedInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.GetUserByIdAsync(userId, cancellationToken);
+		var cacheKey = $"{options.CacheKeyPrefix}_users_{userId}";
+
+		return cache.GetOrCreateAsync(
+			cacheKey,
+			async entry =>
+			{
+				var result = await yandexTrackerClient.GetUserByIdAsync(userId, cancellationToken);
+
+				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+
+				return result;
+			})!;
 	}
 
 	public Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)

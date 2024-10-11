@@ -85,6 +85,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// </remarks>
 	Task<IReadOnlyList<Component>> GetComponentsAsync(CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/post-component"/>
+	/// </remarks>
 	Task<Component> CreateComponentAsync(
 		string componentName,
 		string queueKey,

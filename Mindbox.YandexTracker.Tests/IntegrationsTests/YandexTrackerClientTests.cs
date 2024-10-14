@@ -45,7 +45,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Arrange
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -73,13 +73,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -98,13 +98,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -126,19 +126,19 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName(),
 		});
 
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = summary,
 		});
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -163,19 +163,19 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var summary2 = GetUniqueName();
 		var issue1 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = summary1
 		});
 
 		var issue2 = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = summary2
 		});
 
 		await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -213,7 +213,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -234,7 +234,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.Delay(1000); // Чтобы компоненты и задача точно создались в трекере
 
 		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key))
-			.OrderBy(comment => comment.CreatedAt)
+			.OrderBy(comment => comment.CreatedAtUtc)
 			.ToArray();
 
 		Assert.IsNotNull(comments);
@@ -248,7 +248,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
-			Queue = TestQueueKey,
+			QueueKey = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 

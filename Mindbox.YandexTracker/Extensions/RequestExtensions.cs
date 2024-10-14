@@ -18,13 +18,13 @@ internal static class RequestExtensions
 
 		return new CreateIssueRequest
 		{
-			Queue = issue.Queue,
+			Queue = issue.QueueKey,
 			Summary = issue.Summary,
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
 			Fields = fields,
 			Followers = new Collection<string>(issue.Followers.Select(follower => follower.Id).ToList()),
-			Parent = issue.Parent,
+			Parent = issue.ParentKey,
 			Priority = issue.Priority,
 			Sprints = issue.Sprints,
 			Type = issue.Type,
@@ -124,14 +124,14 @@ internal static class RequestExtensions
 					? new Collection<string>(project.Clients.Select(client => client.Id).ToList())
 					: null,
 			Description = project.Description,
-			End = project.End,
+			End = project.EndUtc,
 			EntityStatus = project.Status,
 			Followers = project.Followers is not null
 					? new Collection<string>(project.Followers.Select(client => client.Id).ToList())
 					: null,
 			LeadId = project.Lead?.Id,
 			ParentEntityId = project.ParentId,
-			Start = project.Start,
+			Start = project.StartUtc,
 			Tags = project.Tags,
 			TeamAccess = project.TeamAccess,
 			TeamUsers = project.TeamUsers is not null

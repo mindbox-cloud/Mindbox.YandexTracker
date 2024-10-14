@@ -31,12 +31,12 @@ public sealed record Project
 	/// <summary>
 	/// Дата и время создания проекта
 	/// </summary>
-	public DateTime CreatedAt { get; init; }
+	public DateTime CreatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Дата последнего обновления сущности
 	/// </summary>
-	public DateTime UpdatedAt { get; init; }
+	public DateTime UpdatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Название проекта
@@ -81,12 +81,12 @@ public sealed record Project
 	/// <summary>
 	/// Дата начала
 	/// </summary>
-	public DateTime? Start { get; init; }
+	public DateTime? StartUtc { get; init; }
 
 	/// <summary>
 	/// Дедлайн
 	/// </summary>
-	public DateTime? End { get; init; }
+	public DateTime? EndUtc { get; init; }
 
 	/// <summary>
 	/// Доступ
@@ -115,9 +115,17 @@ public sealed record Project
 
 	public override int GetHashCode()
 	{
-		var hashCodePart1 = HashCode.Combine(Id, ShortId, ProjectType, CreatedBy, CreatedAt, UpdatedAt, Summary, Description);
+		var hashCodePart1 = HashCode.Combine(
+			Id,
+			ShortId,
+			ProjectType,
+			CreatedBy,
+			CreatedAtUtc,
+			UpdatedAtUtc,
+			Summary,
+			Description);
 
-		var hashCodePart2 = HashCode.Combine(Author, Lead, Start, End, TeamAccess, Status, ParentId);
+		var hashCodePart2 = HashCode.Combine(Author, Lead, StartUtc, EndUtc, TeamAccess, Status, ParentId);
 
 		var collectionHashCode = 0;
 

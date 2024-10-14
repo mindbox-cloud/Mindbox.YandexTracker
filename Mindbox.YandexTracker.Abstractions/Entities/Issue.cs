@@ -17,7 +17,7 @@ public sealed record Issue
 	/// <summary>
 	/// Дата и время последнего добавленного комментария
 	/// </summary>
-	public DateTime? LastCommentUpdatedAt { get; init; }
+	public DateTime? LastCommentUpdatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Название задачи
@@ -25,12 +25,12 @@ public sealed record Issue
 	public string Summary { get; init; } = default!;
 
 	/// <summary>
-	/// Объект с информацией о родительской задаче
+	/// Ключ родительской задачи
 	/// </summary>
-	public string? Parent { get; init; }
+	public string? ParentKey { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о последнем сотруднике, изменявшим задачу
+	/// Информация о последнем сотруднике, изменявшим задачу
 	/// </summary>
 	public UserShortInfo UpdatedBy { get; init; } = null!;
 
@@ -52,7 +52,7 @@ public sealed record Issue
 	/// <summary>
 	/// Дата и время создания задачи
 	/// </summary>
-	public DateTime CreatedAt { get; init; }
+	public DateTime CreatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Массив с информацией об альтернативных ключах задачи
@@ -60,17 +60,17 @@ public sealed record Issue
 	public Collection<string> Aliases { get; init; } = [];
 
 	/// <summary>
-	/// Массив объектов с информацией о спринте
+	/// Массив с информацией о спринте
 	/// </summary>
 	public Collection<string> Sprints { get; init; } = [];
 
 	/// <summary>
-	/// Массив объектов с информацией о наблюдателях задачи
+	/// Массив с информацией о наблюдателях задачи
 	/// </summary>
 	public Collection<UserShortInfo> Followers { get; init; } = [];
 
 	/// <summary>
-	/// Объект с информацией о создателе задачи
+	/// Информация о создателе задачи
 	/// </summary>
 	public UserShortInfo CreatedBy { get; init; } = null!;
 
@@ -80,24 +80,24 @@ public sealed record Issue
 	public int Votes { get; init; }
 
 	/// <summary>
-	/// Объект с информацией об исполнителе задачи
+	/// Информация об исполнителе задачи
 	/// </summary>
 	public UserShortInfo? Assignee { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о авторе задачи
+	/// Информация о авторе задачи
 	/// </summary>
 	public UserShortInfo? Author { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о проекте задачи
+	/// Информация о проекте задачи
 	/// </summary>
 	public string? Project { get; init; }
 
 	/// <summary>
-	/// Очередь задачи
+	/// Ключ очереди задачи
 	/// </summary>
-	public required string Queue { get; init; } = null!;
+	public required string QueueKey { get; init; } = null!;
 
 	/// <summary>
 	/// Дата и время последнего обновления задачи
@@ -119,65 +119,13 @@ public sealed record Issue
 	/// true — пользователь добавил задачу в избранное;
 	/// false — задача не добавлена в избранное.
 	/// </summary>
+	/// <remarks>
+	/// Значение может меняться в зависимости от пользователя, от имени которого выполняется запрос.
+	/// </remarks>
 	public bool IsFavorite { get; init; }
 
 	/// <summary>
 	/// Кастомные поля задачи
 	/// </summary>
 	public Dictionary<string, object?> CustomFields { get; init; } = [];
-
-	public override int GetHashCode()
-	{
-		var hashCodePart1 = HashCode.Combine(
-			Key,
-			LastCommentUpdatedAt,
-			Summary,
-			Parent,
-			UpdatedBy,
-			Description,
-			Type,
-			Priority
-		);
-
-		var hashCodePart2 = HashCode.Combine(
-			CreatedAt,
-			CreatedBy,
-			Votes,
-			Assignee,
-			Author,
-			Project,
-			Queue,
-			UpdatedAt
-		);
-
-		var hashCodePart3 = HashCode.Combine(
-			Status,
-			PreviousStatus,
-			IsFavorite
-		);
-
-		var collectionHashCode = 0;
-
-		foreach (var alias in Aliases)
-		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, alias.GetHashCode(StringComparison.InvariantCulture));
-		}
-
-		foreach (var sprint in Sprints)
-		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, sprint.GetHashCode(StringComparison.InvariantCulture));
-		}
-
-		foreach (var follower in Followers)
-		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, follower.GetHashCode());
-		}
-
-		foreach (var field in CustomFields)
-		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, field.Key, field.Value?.GetHashCode());
-		}
-
-		return HashCode.Combine(hashCodePart1, hashCodePart2, hashCodePart3, collectionHashCode);
-	}
 }

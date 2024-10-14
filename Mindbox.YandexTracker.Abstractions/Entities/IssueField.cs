@@ -49,18 +49,18 @@ public sealed record IssueField
 	public bool Suggest { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о допустимых значениях поля
+	/// Информация о допустимых значениях поля
 	/// </summary>
 	public OptionsProviderInfo? OptionsProvider { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о классе языка запроса.
+	/// Информация о классе языка запроса.
 	/// </summary>
 	/// <remarks>Класс невозможно изменить с помощью API</remarks>
 	public string? QueryProvider { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о классе поисковой подсказки.
+	/// Информация о классе поисковой подсказки.
 	/// </summary>
 	/// <remarks>Класс подсказки невозможно изменить с помощью API.</remarks>
 	public string? SuggestProvider { get; init; }

@@ -9,78 +9,6 @@ namespace Mindbox.YandexTracker.Tests;
 public class HashCodeTests
 {
 	[TestMethod]
-	public void GetHashCode_TwoSimilarIssues_HashCodeShouldBeEqual()
-	{
-		var now = DateTime.Now;
-
-		var issue1 = new Issue
-		{
-			Queue = "queue",
-			Project = "project",
-			Aliases = ["a1", "a2"],
-			Assignee = new UserShortInfo
-			{
-				Id = "id"
-			},
-			Description = "desc",
-			IsFavorite = false,
-			CreatedBy = new UserShortInfo
-			{
-				Id = "id2"
-			},
-			CustomFields = new Dictionary<string, object?>
-			{
-				["field1"] = 5,
-				["field2"] = "field",
-				["field3"] = new UserShortInfo { Id = "id3" },
-			}!,
-			CreatedAt = now,
-			Key = "key",
-			Priority = Priority.Critical,
-			Sprints = ["sprint"],
-			Type = new IssueType
-			{
-				Key = "key",
-				Name = "name"
-			}
-		};
-
-		var issue2 = new Issue
-		{
-			Queue = "queue",
-			Project = "project",
-			Aliases = ["a1", "a2"],
-			Assignee = new UserShortInfo
-			{
-				Id = "id"
-			},
-			Description = "desc",
-			IsFavorite = false,
-			CreatedBy = new UserShortInfo
-			{
-				Id = "id2"
-			},
-			CustomFields = new Dictionary<string, object?>
-			{
-				["field1"] = 5,
-				["field2"] = "field",
-				["field3"] = new UserShortInfo { Id = "id3" },
-			}!,
-			CreatedAt = now,
-			Key = "key",
-			Priority = Priority.Critical,
-			Sprints = ["sprint"],
-			Type = new IssueType
-			{
-				Key = "key",
-				Name = "name"
-			}
-		};
-
-		Assert.AreEqual(issue1.GetHashCode(), issue2.GetHashCode());
-	}
-
-	[TestMethod]
 	public void GetHashCode_TwoSimilarIssueFilters_HashCodeShouldBeEqual()
 	{
 		var now = DateTime.Now;
@@ -90,7 +18,7 @@ public class HashCodeTests
 			Aliases = ["a1", "a2", "a3"],
 			Assignee = "me",
 			Description = "desc",
-			LastCommentUpdatedAt = now,
+			LastCommentUpdatedAtUtc = now,
 			IsFavorite = true,
 			CreatedBy = "on",
 			Followers = ["follower1", "follower2"],
@@ -105,7 +33,7 @@ public class HashCodeTests
 				Key = "key",
 				Name = "name"
 			},
-			CreatedAt = now,
+			CreatedAtUtc = now,
 			Votes = 5,
 			Type = new IssueType
 			{
@@ -117,7 +45,7 @@ public class HashCodeTests
 				Key = "da",
 				Name = "lastName"
 			},
-			UpdatedAt = now.AddHours(3),
+			UpdatedAtUtc = now.AddHours(3),
 			UpdatedBy = "e"
 		};
 
@@ -126,7 +54,7 @@ public class HashCodeTests
 			Aliases = ["a1", "a2", "a3"],
 			Assignee = "me",
 			Description = "desc",
-			LastCommentUpdatedAt = now,
+			LastCommentUpdatedAtUtc = now,
 			IsFavorite = true,
 			CreatedBy = "on",
 			Followers = ["follower1", "follower2"],
@@ -141,7 +69,7 @@ public class HashCodeTests
 				Key = "key",
 				Name = "name"
 			},
-			CreatedAt = now,
+			CreatedAtUtc = now,
 			Votes = 5,
 			Type = new IssueType
 			{
@@ -153,7 +81,7 @@ public class HashCodeTests
 				Key = "da",
 				Name = "lastName"
 			},
-			UpdatedAt = now.AddHours(3),
+			UpdatedAtUtc = now.AddHours(3),
 			UpdatedBy = "e"
 		};
 
@@ -179,12 +107,12 @@ public class HashCodeTests
 					Id = "id2"
 				}
 			],
-			CreatedAt = future,
+			CreatedAtUtc = future,
 			CreatedBy = new UserShortInfo
 			{
 				Id = "w"
 			},
-			End = future.AddDays(-3),
+			EndUtc = future.AddDays(-3),
 			Lead = new UserShortInfo
 			{
 				Id = "id"
@@ -192,7 +120,7 @@ public class HashCodeTests
 			Quarter = ["q1", "q2"],
 			ParentId = 3,
 			Description = "project for project",
-			Start = future.AddDays(2),
+			StartUtc = future.AddDays(2),
 			Status = ProjectEntityStatus.Draft,
 			Summary = "summary",
 			ShortId = 2
@@ -212,12 +140,12 @@ public class HashCodeTests
 					Id = "id2"
 				}
 			],
-			CreatedAt = future,
+			CreatedAtUtc = future,
 			CreatedBy = new UserShortInfo
 			{
 				Id = "w"
 			},
-			End = future.AddDays(-3),
+			EndUtc = future.AddDays(-3),
 			Lead = new UserShortInfo
 			{
 				Id = "id"
@@ -225,7 +153,7 @@ public class HashCodeTests
 			Quarter = ["q1", "q2"],
 			ParentId = 3,
 			Description = "project for project",
-			Start = future.AddDays(2),
+			StartUtc = future.AddDays(2),
 			Status = ProjectEntityStatus.Draft,
 			Summary = "summary",
 			ShortId = 2

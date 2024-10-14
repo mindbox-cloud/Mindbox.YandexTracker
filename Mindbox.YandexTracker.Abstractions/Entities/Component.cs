@@ -16,9 +16,9 @@ public sealed record Component
 	public required string Name { get; init; }
 
 	/// <summary>
-	/// Объект с информацией об очереди компонента
+	/// Ключ очереди
 	/// </summary>
-	public string? Queue { get; init; }
+	public string? QueueKey { get; init; }
 
 	/// <summary>
 	/// Текстовое описание компонента
@@ -33,7 +33,7 @@ public sealed record Component
 	public required bool AssignAuto { get; init; }
 
 	/// <summary>
-	/// Блок с информацией о владельце компонента
+	/// Информация о владельце компонента
 	/// </summary>
 	public UserShortInfo? Lead { get; init; }
 }

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 namespace Mindbox.YandexTracker;
 
 /// <summary>
-/// Комментарий
+/// Комментарий к задаче
 /// </summary>
 public sealed record Comment
 {
@@ -20,24 +20,24 @@ public sealed record Comment
 	public required string Text { get; init; }
 
 	/// <summary>
-	/// Объект с информацией о создателе комментария
+	/// Информация о создателе комментария
 	/// </summary>
 	public UserShortInfo CreatedBy { get; init; } = null!;
 
 	/// <summary>
-	/// Объект с информацией о сотруднике, внесшем последнее изменение в комментарий
+	/// Информация о сотруднике, внесшем последнее изменение в комментарий
 	/// </summary>
 	public UserShortInfo? UpdatedBy { get; init; }
 
 	/// <summary>
 	/// Дата и время создания комментария
 	/// </summary>
-	public DateTime CreatedAt { get; init; }
+	public DateTime CreatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Дата и время обновления комментария
 	/// </summary>
-	public DateTime? UpdatedAt { get; init; }
+	public DateTime? UpdatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Вложения
@@ -55,12 +55,12 @@ public sealed record Comment
 	public CommentTransportType TransportType { get; init; }
 
 	/// <summary>
-	/// Блок с информацией о пользователях, которые призваны в комментарии
+	/// Массив с информацией о пользователях, которые призваны в комментарии
 	/// </summary>
 	public Collection<string> Summonees { get; init; } = [];
 
 	/// <summary>
-	/// Блок с информацией о рассылках, которые призваны в комментарии
+	/// Массив с информацией о рассылках, которые призваны в комментарии
 	/// </summary>
 	public Collection<string> MaillistSummonees { get; init; } = [];
 }

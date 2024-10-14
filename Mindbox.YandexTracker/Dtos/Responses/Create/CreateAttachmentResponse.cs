@@ -31,5 +31,5 @@ internal sealed record CreateAttachmentResponse
 	public int Size { get; init; }
 
 	[DataMember(Name = "metadata")]
-	public AttachmentDataDto? Metadata { get; init; }
+	public AttachmentMetadataDto? Metadata { get; init; }
 }

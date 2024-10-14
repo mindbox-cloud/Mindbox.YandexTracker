@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
@@ -40,18 +41,11 @@ internal sealed record GetQueuesResponse
 	public Collection<FieldInfo> Versions { get; init; } = [];
 
 	[DataMember(Name = "workflows")]
-	public WorkflowInfoDto? Workflows { get; init; }
+	public Dictionary<string, Collection<FieldInfo>> Workflows { get; init; } = [];
 
 	[DataMember(Name = "issueTypesConfig")]
 	public Collection<IssueTypeConfigDto> IssueTypesConfigDto { get; init; } = [];
 
 	[DataMember(Name = "denyVoting")]
 	public bool DenyVoting { get; init; }
-}
-
-[DataContract]
-internal class WorkflowInfoDto
-{
-	[DataMember(Name = "dev")]
-	public Collection<FieldInfo> Fields { get; init; } = [];
 }

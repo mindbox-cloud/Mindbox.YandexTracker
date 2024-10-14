@@ -34,7 +34,7 @@ public sealed record IssueStatus
 	public string Description { get; init; } = null!;
 
 	/// <summary>
-	/// Тип задачи
+	/// Тип статуса задачи
 	/// </summary>
 	[DataMember(Name = "type")]
 	[JsonConverter(typeof(JsonStringEnumConverter))]

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 namespace Mindbox.YandexTracker;
 
 /// <summary>
-/// Статус задачи
+/// Тип статуса задачи
 /// </summary>
 [DataContract]
 public enum IssueStatusType

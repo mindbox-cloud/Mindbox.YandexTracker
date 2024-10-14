@@ -11,7 +11,7 @@ public sealed record IssuesFilter
 	/// Дата и время последнего добавленного комментария
 	/// </summary>
 	[DataMember(EmitDefaultValue = false, Name = "lastCommentUpdatedAt")]
-	public DateTime? LastCommentUpdatedAt { get; init; }
+	public DateTime? LastCommentUpdatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Название задачи
@@ -65,7 +65,7 @@ public sealed record IssuesFilter
 	/// Дата и время создания задачи
 	/// </summary>
 	[DataMember(EmitDefaultValue = false, Name = "createdAt")]
-	public DateTime? CreatedAt { get; init; }
+	public DateTime? CreatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Массив идентификаторов наблюдателей задачи
@@ -107,7 +107,7 @@ public sealed record IssuesFilter
 	/// Дата и время последнего обновления задачи
 	/// </summary>
 	[DataMember(EmitDefaultValue = false, Name = "updatedAt")]
-	public DateTime? UpdatedAt { get; init; }
+	public DateTime? UpdatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Статус задачи
@@ -132,21 +132,21 @@ public sealed record IssuesFilter
 	public override int GetHashCode()
 	{
 		var hashCodePart1 = HashCode.Combine(
-			LastCommentUpdatedAt,
+			LastCommentUpdatedAtUtc,
 			Summary,
 			Parent,
 			UpdatedBy,
 			Description,
 			Type,
 			Priority,
-			CreatedAt);
+			CreatedAtUtc);
 
 		var hashCodePart2 = HashCode.Combine(
 			CreatedBy,
 			Votes,
 			Assignee,
 			Project,
-			UpdatedAt,
+			UpdatedAtUtc,
 			Status,
 			PreviousStatus,
 			IsFavorite);

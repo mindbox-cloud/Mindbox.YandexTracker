@@ -20,12 +20,12 @@ public sealed record Attachment
 	/// <summary>
 	/// Адрес для скачивания файла
 	/// </summary>
-	public required string Content { get; init; }
+	public required string ContentUrl { get; init; }
 
 	/// <summary>
 	/// Адрес для скачивания превью
 	/// </summary>
-	public required string Thumbnail { get; init; }
+	public required string ThumbnailUrl { get; init; }
 
 	/// <summary>
 	/// Создатель файла
@@ -35,7 +35,7 @@ public sealed record Attachment
 	/// <summary>
 	/// Дата создания файла
 	/// </summary>
-	public required DateTime CreatedAt { get; init; }
+	public required DateTime CreatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Тип файла
@@ -47,18 +47,21 @@ public sealed record Attachment
 	/// <summary>
 	/// Размер файла в байтах
 	/// </summary>
-	public int Size { get; init; }
+	public int SizeBytes { get; init; }
 
 	/// <summary>
 	/// Объект с метаданными файла
 	/// </summary>
-	public AttachmentData? Metadata { get; init; }
+	public AttachmentMetadata? Metadata { get; init; }
 }
 
-public sealed record AttachmentData
+/// <summary>
+/// Объект с метаданными файла
+/// </summary>
+public sealed record AttachmentMetadata
 {
 	/// <summary>
-	/// Геометрический размер изображения
+	/// Геометрический размер изображения (ширина x высота в пикселях)
 	/// </summary>
-	public required string Size { get; init; }
+	public required string GeometricSize { get; init; }
 }

@@ -103,13 +103,13 @@ public sealed record UserDetailedInfo
 	/// Дата и время первой авторизации пользователя
 	/// </summary>
 	[DataMember(Name = "firstLoginDate")]
-	public DateTime FirstLoginDate { get; init; }
+	public DateTime FirstLoginDateUtc { get; init; }
 
 	/// <summary>
 	/// Дата и время последней авторизации пользователя
 	/// </summary>
 	[DataMember(Name = "lastLoginDate")]
-	public DateTime LastLoginDate { get; init; }
+	public DateTime LastLoginDateUtc { get; init; }
 
 	/// <summary>
 	/// Способ добавления пользователя:

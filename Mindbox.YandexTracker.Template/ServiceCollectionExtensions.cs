@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddYandexTrackerClient(
 		this IServiceCollection services,
 		YandexTrackerClientOptions configureOptions,
-		YandexTrackerClientCachingDecoratorOptions? decoratorOptions)
+		YandexTrackerClientCachingDecoratorOptions? decoratorOptions = null)
 	{
 		services = services
 			.AddHttpClient()

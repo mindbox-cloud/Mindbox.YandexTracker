@@ -124,7 +124,7 @@ public sealed record Issue
 	/// <summary>
 	/// Кастомные поля задачи
 	/// </summary>
-	public Dictionary<string, object> CustomFields { get; init; } = [];
+	public Dictionary<string, object?> CustomFields { get; init; } = [];
 
 	public override int GetHashCode()
 	{

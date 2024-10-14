@@ -22,7 +22,7 @@ internal static class RequestExtensions
 			Summary = issue.Summary,
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
-			Fields = fields!,
+			Fields = fields,
 			Followers = new Collection<string>(issue.Followers.Select(follower => follower.Id).ToList()),
 			Parent = issue.Parent,
 			Priority = issue.Priority,

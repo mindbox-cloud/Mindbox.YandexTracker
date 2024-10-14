@@ -17,6 +17,7 @@ Tags, Components, Users необходимую для переноса анал�
 - Получение и создание компонентов очереди.
 - Получение, создание и удаление вложений.
 - Получение пользователей, тегов, резолюций, типов и статусов задач, а также списка доступных полей очереди.
+- Возможность кэширования следующих сущностей: пользователей, проектов, очередей, тегов, резолюций, возможных полей для очереди, компонентов, статусов задач и типов задач.
 
 Данный пакет необходим для переноса задач с их содержимым из Github'а в Яндекс Трекер.
 
@@ -32,7 +33,26 @@ Tags, Components, Users необходимую для переноса анал�
 services.AddYandexTrackerClient(new YandexTrackerClientOptions
 {
     Organization = "your_organization_id",
-    Token = "your_private_token";
+    OAuthToken = "your_private_token";
 }, 
-new YandexTrackerClientCachingDecoratorOptions(),
+new YandexTrackerClientCachingDecoratorOptions 
+{
+    CacheKeyPrefix = "cache_key_prefix", // "MindboxYandexTrackerClientCache" по умолчанию
+    TTLInMinutes = your_ttl // 2 минуты по умолчанию
+},
 enableRarelyChaningDataCaching: false);
+```
+
+При регистрации клиента с кэшированием в IoC-контейнере:
+```csharp
+services.AddYandexTrackerClient(new YandexTrackerClientOptions
+{
+    Organization = "your_organization_id",
+    OAuthToken = "your_private_token";
+}, 
+new YandexTrackerClientCachingDecoratorOptions
+{
+    CacheKeyPrefix = "cache_key_prefix", // "MindboxYandexTrackerClientCache" по умолчанию
+    TTLInMinutes = your_ttl // 2 минуты по умолчанию
+},
+enableRarelyChaningDataCaching: true);```

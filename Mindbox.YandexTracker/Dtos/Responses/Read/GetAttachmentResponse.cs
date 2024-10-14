@@ -31,11 +31,11 @@ internal sealed record GetAttachmentResponse
 	public int Size { get; init; }
 
 	[DataMember(Name = "metadata")]
-	public AttachmentDataDto? Metadata { get; init; }
+	public AttachmentMetadataDto? Metadata { get; init; }
 }
 
 [DataContract]
-internal class AttachmentDataDto
+internal class AttachmentMetadataDto
 {
 	[DataMember(Name = "size")]
 	public required string Size { get; init; }

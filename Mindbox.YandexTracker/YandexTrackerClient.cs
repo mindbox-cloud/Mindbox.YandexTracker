@@ -169,11 +169,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	public async Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
-		IReadOnlyList<string> keys,
+		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentNullException.ThrowIfNull(keys);
+		ArgumentNullException.ThrowIfNull(issueKeys);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -190,7 +190,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var request = new GetIssuesFromKeysRequest
 		{
-			Keys = new Collection<string>([.. keys])
+			Keys = new Collection<string>([.. issueKeys])
 		};
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(

@@ -93,6 +93,14 @@ internal static class ResponseExtensions
 		IReadOnlyDictionary<string, IssueType> issueTypeInfos,
 		IReadOnlyDictionary<string, Resolution> resolutionInfos)
 	{
+		var workflows = value.Workflows.Count > 0
+			? (value.Workflows
+				.Select(x => x.Value)
+				.Select(value => value.Select(field => field.ToIssueType(issueTypeInfos)))
+				.Aggregate((x, y) => x.Concat(y))
+				.ToList())
+			: [];
+
 		return new Queue
 		{
 			Id = value.Id,
@@ -107,10 +115,7 @@ internal static class ResponseExtensions
 			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
 				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
-			Workflows = value.Workflows is not null
-				? new Collection<IssueType>(
-					value.Workflows.Fields.Select(field => field.ToIssueType(issueTypeInfos)).ToList())
-				: [],
+			Workflows = new Collection<IssueType>(workflows),
 			DenyVoting = value.DenyVoting
 		};
 	}
@@ -128,14 +133,14 @@ internal static class ResponseExtensions
 		return new Issue
 		{
 			Key = value.Key,
-			LastCommentUpdatedAt = value.LastCommentUpdatedAt,
+			LastCommentUpdatedAtUtc = value.LastCommentUpdatedAt,
 			Summary = value.Summary,
-			Parent = value.Parent?.Key,
+			ParentKey = value.Parent?.Key,
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
 			Description = value.Description,
 			Type = value.Type.ToIssueType(issueTypeInfos),
 			Priority = value.Priority.ToPriority(),
-			CreatedAt = value.CreatedAt,
+			CreatedAtUtc = value.CreatedAt,
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
 			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
@@ -143,7 +148,7 @@ internal static class ResponseExtensions
 			Votes = value.Votes,
 			Assignee = value.Assignee?.ToUserInfo(),
 			Project = value.Project?.Id,
-			Queue = value.Queue.Key!,
+			QueueKey = value.Queue.Key!,
 			UpdatedAt = value.UpdatedAt,
 			Status = value.Status.ToIssueStatus(issueStatusInfos),
 			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
@@ -159,14 +164,14 @@ internal static class ResponseExtensions
 		return new Issue
 		{
 			Key = value.Key,
-			LastCommentUpdatedAt = value.LastCommentUpdatedAt,
+			LastCommentUpdatedAtUtc = value.LastCommentUpdatedAt,
 			Summary = value.Summary,
-			Parent = value.Parent?.Key,
+			ParentKey = value.Parent?.Key,
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
 			Description = value.Description,
 			Type = value.Type.ToIssueType(issueTypeInfos),
 			Priority = value.Priority.ToPriority(),
-			CreatedAt = value.CreatedAt,
+			CreatedAtUtc = value.CreatedAt,
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
 			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
@@ -174,7 +179,7 @@ internal static class ResponseExtensions
 			Votes = value.Votes,
 			Assignee = value.Assignee?.ToUserInfo(),
 			Project = value.Project?.Id,
-			Queue = value.Queue.Key!,
+			QueueKey = value.Queue.Key!,
 			UpdatedAt = value.UpdatedAt,
 			Status = value.Status.ToIssueStatus(issueStatusInfos),
 			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
@@ -188,7 +193,7 @@ internal static class ResponseExtensions
 		{
 			Id = value.Id,
 			Name = value.Name,
-			Queue = value.Queue.Key,
+			QueueKey = value.Queue.Key,
 			Description = value.Description,
 			AssignAuto = value.AssignAuto,
 			Lead = value.Lead?.ToUserInfo()
@@ -202,7 +207,7 @@ internal static class ResponseExtensions
 			AssignAuto = value.AssignAuto,
 			Name = value.Name,
 			Id = value.Id,
-			Queue = value.Queue?.Key
+			QueueKey = value.Queue?.Key
 		};
 	}
 
@@ -212,14 +217,14 @@ internal static class ResponseExtensions
 		{
 			Id = value.Id,
 			Name = value.Name,
-			Content = value.Content,
-			Thumbnail = value.Thumbnail,
+			ContentUrl = value.Content,
+			ThumbnailUrl = value.Thumbnail,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
-			CreatedAt = value.CreatedAt,
+			CreatedAtUtc = value.CreatedAt,
 			MimeType = value.Mimetype,
-			Size = value.Size,
+			SizeBytes = value.Size,
 			Metadata = value.Metadata is not null
-				? new AttachmentData { Size = value.Metadata.Size }
+				? new AttachmentMetadata { GeometricSize = value.Metadata.Size }
 				: null
 		};
 	}
@@ -232,8 +237,8 @@ internal static class ResponseExtensions
 			Text = value.Text,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
-			CreatedAt = value.CreatedAt,
-			UpdatedAt = value.UpdatedAt,
+			CreatedAtUtc = value.CreatedAt,
+			UpdatedAtUtc = value.UpdatedAt,
 			Attachments = new Collection<string>(value.Attachments.Select(dto => dto.Id).ToList()),
 			CommentType = value.Type,
 			TransportType = value.TransportType
@@ -248,8 +253,8 @@ internal static class ResponseExtensions
 			Text = value.Text,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
-			CreatedAt = value.CreatedAt,
-			UpdatedAt = value.UpdatedAt,
+			CreatedAtUtc = value.CreatedAt,
+			UpdatedAtUtc = value.UpdatedAt,
 			Attachments = [],
 			CommentType = value.Type,
 			TransportType = value.TransportType
@@ -262,14 +267,14 @@ internal static class ResponseExtensions
 		{
 			Id = value.Id,
 			Name = value.Name,
-			Content = value.Content,
-			Thumbnail = value.Thumbnail,
+			ContentUrl = value.Content,
+			ThumbnailUrl = value.Thumbnail,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
-			CreatedAt = value.CreatedAt,
+			CreatedAtUtc = value.CreatedAt,
 			MimeType = value.Mimetype,
-			Size = value.Size,
+			SizeBytes = value.Size,
 			Metadata = value.Metadata is not null
-				? new AttachmentData { Size = value.Metadata.Size }
+				? new AttachmentMetadata { GeometricSize = value.Metadata.Size }
 				: null
 		};
 	}
@@ -313,8 +318,8 @@ internal static class ResponseExtensions
 				ShortId = projectValue.ShortId,
 				ProjectType = projectValue.ProjectType,
 				CreatedBy = projectValue.CreatedBy.ToUserInfo(),
-				CreatedAt = projectValue.CreatedAt,
-				UpdatedAt = projectValue.UpdatedAt,
+				CreatedAtUtc = projectValue.CreatedAt,
+				UpdatedAtUtc = projectValue.UpdatedAt,
 				Summary = (string?)summary,
 				Description = (string?)description,
 				Author = ((FieldInfo?)author)?.ToUserInfo(),
@@ -331,8 +336,8 @@ internal static class ResponseExtensions
 				Tags = tags is not null
 					? new Collection<string>((List<string>)tags)
 					: null,
-				Start = (DateTime?)start,
-				End = (DateTime?)end,
+				StartUtc = (DateTime?)start,
+				EndUtc = (DateTime?)end,
 				TeamAccess = (bool?)teamAccess,
 				Status = ((string?)status)?.ToProjectStatus(),
 				Quarter = quarter is not null
@@ -355,8 +360,8 @@ internal static class ResponseExtensions
 			ShortId = value.ShortId,
 			ProjectType = value.ProjectEntityType,
 			CreatedBy = value.CreatedBy.ToUserInfo(),
-			CreatedAt = value.CreatedAt,
-			UpdatedAt = value.UpdatedAt
+			CreatedAtUtc = value.CreatedAt,
+			UpdatedAtUtc = value.UpdatedAt
 		};
 	}
 

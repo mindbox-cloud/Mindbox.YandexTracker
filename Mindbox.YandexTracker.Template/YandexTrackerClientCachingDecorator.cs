@@ -9,7 +9,7 @@ namespace Mindbox.YandexTracker.Template;
 public sealed class YandexTrackerClientCachingDecorator(
 	IYandexTrackerClient yandexTrackerClient,
 	IMemoryCache cache,
-	YandexTrackerClientCachingDecoratorOptions options) : IYandexTrackerClient
+	YandexTrackerClientCachingOptions options) : IYandexTrackerClient
 {
 	public Task<Attachment> CreateAttachmentAsync(
 		string issueKey,
@@ -84,7 +84,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetAccessibleFieldsForIssueAsync(queueKey, cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -135,7 +135,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetComponentsAsync(cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -166,11 +166,11 @@ public sealed class YandexTrackerClientCachingDecorator(
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesByKeysAsync(
-		IReadOnlyList<string> keys,
+		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		return yandexTrackerClient.GetIssuesByKeysAsync(keys, expand, cancellationToken);
+		return yandexTrackerClient.GetIssuesByKeysAsync(issueKeys, expand, cancellationToken);
 	}
 
 	public Task<IReadOnlyList<Issue>> GetIssuesFromQueueAsync(
@@ -191,7 +191,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetIssueStatusesAsync(cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -207,7 +207,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetIssueTypesAsync(cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -240,7 +240,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 					rootOnly,
 					cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -259,7 +259,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetQueueAsync(queueKey, expand, cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -277,7 +277,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetQueuesAsync(expand, cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -293,7 +293,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetResolutionsAsync(cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -309,7 +309,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetTagsAsync(queueKey, cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -325,7 +325,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetUserByIdAsync(userId, cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;
@@ -341,7 +341,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			{
 				var result = await yandexTrackerClient.GetUsersAsync(cancellationToken);
 
-				entry.SetAbsoluteExpiration(options.TTLInMinutes);
+				entry.SetAbsoluteExpiration(options.Ttl);
 
 				return result;
 			})!;

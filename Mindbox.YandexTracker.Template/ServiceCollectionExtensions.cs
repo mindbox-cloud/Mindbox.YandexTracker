@@ -4,11 +4,11 @@ namespace Mindbox.YandexTracker.Template;
 
 public static class ServiceCollectionExtensions
 {
+
 	public static IServiceCollection AddYandexTrackerClient(
 		this IServiceCollection services,
 		YandexTrackerClientOptions configureOptions,
-		YandexTrackerClientCachingDecoratorOptions decoratorOptions,
-		bool enableRarelyChaningDataCaching)
+		YandexTrackerClientCachingOptions? cashingOptions = null)
 	{
 		services = services
 			.AddHttpClient()
@@ -17,16 +17,16 @@ public static class ServiceCollectionExtensions
 			{
 				option.OAuthToken = configureOptions.OAuthToken;
 				option.Organization = configureOptions.Organization;
-			})
-			.Configure<YandexTrackerClientCachingDecoratorOptions>(option =>
-			{
-				option.TTLInMinutes = decoratorOptions.TTLInMinutes;
-				option.CacheKeyPrefix = decoratorOptions.CacheKeyPrefix;
 			});
 
-		if (enableRarelyChaningDataCaching)
+		if (cashingOptions is not null)
 		{
 			services = services
+				.Configure<YandexTrackerClientCachingOptions>(option =>
+				{
+					option.Ttl = cashingOptions.Ttl;
+					option.CacheKeyPrefix = cashingOptions.CacheKeyPrefix;
+				})
 				.AddScoped<YandexTrackerClient>()
 				.AddScoped<IYandexTrackerClient, YandexTrackerClientCachingDecorator>();
 		}

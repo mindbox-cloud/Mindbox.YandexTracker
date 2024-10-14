@@ -847,6 +847,6 @@ public class YandexTrackerClientCachingDecoratorTests
 		return new YandexTrackerClientCachingDecorator(
 			_yandexTrackerClientMock.Object,
 			_memoryCacheMock.Object,
-			new YandexTrackerClientCachingDecoratorOptions());
+			new YandexTrackerClientCachingOptions());
 	}
 }

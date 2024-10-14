@@ -3,12 +3,12 @@ using System;
 namespace Mindbox.YandexTracker;
 
 /// <summary>
-/// Файл, прикрепленный к задаче
+/// Файл/вложение, прикрепленный к задаче.
 /// </summary>
 public sealed record Attachment
 {
 	/// <summary>
-	/// Идентификатор файла
+	/// Идентификатор вложения.
 	/// </summary>
 	public required string Id { get; init; }
 
@@ -28,20 +28,21 @@ public sealed record Attachment
 	public required string ThumbnailUrl { get; init; }
 
 	/// <summary>
-	/// Создатель файла
+	/// Создатель вложения.
 	/// </summary>
 	public required UserShortInfo CreatedBy { get; init; }
 
 	/// <summary>
-	/// Дата создания файла
+	/// Дата и время создания файла в UTC.
 	/// </summary>
 	public required DateTime CreatedAtUtc { get; init; }
 
 	/// <summary>
 	/// Тип файла
 	/// </summary>
-	/// <value>text/plain
-	/// <br/>image/png</value>
+	/// <value>
+	/// text/plain, image/png и т.д.
+	/// </value>
 	public string MimeType { get; init; } = null!;
 
 	/// <summary>

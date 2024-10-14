@@ -1,10 +1,9 @@
 # Mindbox.YandexTracker
 
+
+`Mindbox.YandexTracker` — это библиотека для взаимодействия с API Яндекс.Трекера.
+
 **Ответственный трайб:** Framework
-
-## Описание
-
-`Mindbox.YandexTracker` — это библиотека для взаимодействия с API Яндекс.Трекера
 
 ## Зачем использовать
 
@@ -16,15 +15,10 @@
 - Получение и создание компонентов очереди.
 - Получение, создание и удаление вложений.
 - Получение пользователей, тегов, резолюций, типов и статусов задач, а также списка доступных полей очереди.
-- Возможность кэширования следующих сущностей: пользователей, проектов, очередей, тегов, резолюций, возможных полей для очереди, компонентов, статусов задач и типов задач.
 
 ## Как использовать
 
 Для работы с библиотекой необходимо зарегистрировать `YandexTrackerClient` в вашем IoC-контейнере, используя сборку `Mindbox.YandexTracker.Template`.
-
-### Пример использования
-
-Пример регистрации клиента в IoC-контейнере:
 
 ```csharp
 services.AddYandexTrackerClient(new YandexTrackerClientOptions
@@ -34,7 +28,10 @@ services.AddYandexTrackerClient(new YandexTrackerClientOptions
 });
 ```
 
-При регистрации клиента с кэшированием в IoC-контейнере:
+Есть возможность использовать кеширование запросов к API Яндекс.Трекера для редко изменяемых, но часто используемых 
+данных (список статусов, типов задач, пользователей и т.д.). Для включения кэширования необходимо при регистрации клиента
+в IoC указать настройки кэширования. В настройках кэширования можно задать TTl в минутах.
+
 ```csharp
 services.AddYandexTrackerClient(new YandexTrackerClientOptions
 {
@@ -43,6 +40,6 @@ services.AddYandexTrackerClient(new YandexTrackerClientOptions
 }, 
 new YandexTrackerClientCachingDecoratorOptions
 {
-    CacheKeyPrefix = "cache_key_prefix", // "MindboxYandexTrackerClientCache" по умолчанию
-    TTLInMinutes = your_ttl // 2 минуты по умолчанию
-});```
+    TTL = your_ttl // 2 минуты по умолчанию
+});
+```

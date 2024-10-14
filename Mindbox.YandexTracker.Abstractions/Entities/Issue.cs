@@ -15,7 +15,7 @@ public sealed record Issue
 	public string Key { get; init; } = null!;
 
 	/// <summary>
-	/// Дата и время последнего добавленного комментария
+	/// Дата и время последнего добавленного комментария в UTC.
 	/// </summary>
 	public DateTime? LastCommentUpdatedAtUtc { get; init; }
 
@@ -60,12 +60,12 @@ public sealed record Issue
 	public Collection<string> Aliases { get; init; } = [];
 
 	/// <summary>
-	/// Массив с информацией о спринте
+	/// Спринты, в которые добавлена задача.
 	/// </summary>
 	public Collection<string> Sprints { get; init; } = [];
 
 	/// <summary>
-	/// Массив с информацией о наблюдателях задачи
+	/// Пользователи, наблюдающие за задачей.
 	/// </summary>
 	public Collection<UserShortInfo> Followers { get; init; } = [];
 
@@ -80,12 +80,12 @@ public sealed record Issue
 	public int Votes { get; init; }
 
 	/// <summary>
-	/// Информация об исполнителе задачи
+	/// Исполнитель задачи.
 	/// </summary>
 	public UserShortInfo? Assignee { get; init; }
 
 	/// <summary>
-	/// Информация о авторе задачи
+	/// Автор задачи.
 	/// </summary>
 	public UserShortInfo? Author { get; init; }
 
@@ -100,7 +100,7 @@ public sealed record Issue
 	public required string QueueKey { get; init; } = null!;
 
 	/// <summary>
-	/// Дата и время последнего обновления задачи
+	/// Дата и время последнего обновления задачи в UTC.
 	/// </summary>
 	public DateTime UpdatedAt { get; init; }
 

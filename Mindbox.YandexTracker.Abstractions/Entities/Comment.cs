@@ -20,27 +20,27 @@ public sealed record Comment
 	public required string Text { get; init; }
 
 	/// <summary>
-	/// Информация о создателе комментария
+	/// Автор комментария.
 	/// </summary>
 	public UserShortInfo CreatedBy { get; init; } = null!;
 
 	/// <summary>
-	/// Информация о сотруднике, внесшем последнее изменение в комментарий
+	/// Пользователь, который внес последнее изменение в комментарий.
 	/// </summary>
 	public UserShortInfo? UpdatedBy { get; init; }
 
 	/// <summary>
-	/// Дата и время создания комментария
+	/// Дата и время создания комментария в UTC.
 	/// </summary>
 	public DateTime CreatedAtUtc { get; init; }
 
 	/// <summary>
-	/// Дата и время обновления комментария
+	/// Дата и время обновления комментария в UTC.
 	/// </summary>
 	public DateTime? UpdatedAtUtc { get; init; }
 
 	/// <summary>
-	/// Вложения
+	/// Вложения, связанные с комментарием.
 	/// </summary>
 	public Collection<string> Attachments { get; init; } = [];
 
@@ -55,12 +55,12 @@ public sealed record Comment
 	public CommentTransportType TransportType { get; init; }
 
 	/// <summary>
-	/// Массив с информацией о пользователях, которые призваны в комментарии
+	/// Список пользователей, которые призваны в комментарии.
 	/// </summary>
 	public Collection<string> Summonees { get; init; } = [];
 
 	/// <summary>
-	/// Массив с информацией о рассылках, которые призваны в комментарии
+	/// Список рассылок, которые призваны в комментарии.
 	/// </summary>
 	public Collection<string> MaillistSummonees { get; init; } = [];
 }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Mindbox.YandexTracker;
 
+/// <summary>
+/// Клиент для взаимодействия с API Яндекс.Трекера.
+/// </summary>
 public interface IYandexTrackerClient : IDisposable
 {
 	/// <remarks>

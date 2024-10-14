@@ -9,11 +9,12 @@ internal static class CollectionExtensions
 	{
 		var hashCode = 0;
 
-		foreach (var item in collection)
+		for (var i = 0; i < collection.Count; i++)
 		{
+			var item = collection[i];
 			hashCode = HashCode.Combine(hashCode, item);
 		}
 
 		return hashCode;
-	} 
+	}
 }

@@ -603,7 +603,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				HttpMethod.Post,
 				payload: request,
 				cancellationToken: cancellationToken))
-			.ToQueueLocalField();
+			.ToQueueLocalField() with { FieldName = queueLocalField.FieldName }; // название возращается только на русском
 	}
 
 	public async Task<IReadOnlyList<CategoryShortInfo>> GetFieldCategoriesAsync(CancellationToken cancellationToken = default)

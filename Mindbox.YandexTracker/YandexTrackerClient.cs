@@ -588,6 +588,34 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	public async Task<QueueLocalField> CreateLocalFieldInQueueAsync(
+		string queueKey,
+		QueueLocalField queueLocalField,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentNullException.ThrowIfNull(queueLocalField);
+
+		var request = queueLocalField.ToCreateQueueLocalFieldRequest();
+
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateQueueLocalFieldResponse>(
+				$"queues/{queueKey}/localFields",
+				HttpMethod.Post,
+				payload: request,
+				cancellationToken: cancellationToken))
+			.ToQueueLocalField();
+	}
+
+	public async Task<IReadOnlyList<CategoryShortInfo>> GetFieldCategoriesAsync(CancellationToken cancellationToken = default)
+	{
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetFieldCategoriesResponse>(
+				"fields/categories",
+				HttpMethod.Get,
+				cancellationToken: cancellationToken))
+			.Select(dto => dto.ToCategory())
+			.ToList();
+	}
+
 	public async Task<Queue> CreateQueueAsync(
 		Queue queue,
 		CancellationToken cancellationToken = default)

@@ -253,4 +253,11 @@ public interface IYandexTrackerClient : IDisposable
 
 	Task<IReadOnlyList<IssueStatus>> GetIssueStatusesAsync(
 		CancellationToken cancellationToken = default);
+
+	Task<QueueLocalField> CreateLocalFieldInQueueAsync(
+		string queueKey,
+		QueueLocalField queueLocalField,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<CategoryShortInfo>> GetFieldCategoriesAsync(CancellationToken cancellationToken = default);
 }

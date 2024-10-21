@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -66,6 +67,40 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		{
 			await YandexTrackerClient.GetIssueAsync(notExistedIssueKey);
 		});
+	}
+
+	[TestMethod]
+	public async Task GetFieldCategoriesAsync_ResponseIsNotNullAndContainsSomeCategories()
+	{
+		var categories = await YandexTrackerClient.GetFieldCategoriesAsync();
+
+		Assert.IsNotNull(categories);
+		Assert.IsTrue(categories.Any());
+	}
+
+	[TestMethod]
+	public async Task CreateLocalFieldInQueueAsync_ValidRequest_ShouldCreatedLocalField()
+	{
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
+
+		var localField = new QueueLocalField
+		{
+			Id = "someId",
+			FieldName = new QueueLocalFieldName()
+			{
+				En = "eng222",
+				Ru = "ru222"
+			},
+			CategoryId = firstCategory.Id,
+			FieldType = QueueLocalFieldType.DateFieldType
+		};
+
+		await Task.Delay(1000); // Чтобы поле точно создалось в трекере
+
+		var response = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, localField);
+
+		Assert.IsNotNull(response);
+		Assert.IsTrue(response.Id.EndsWith(localField.Id, StringComparison.InvariantCulture));
 	}
 
 	[TestMethod]

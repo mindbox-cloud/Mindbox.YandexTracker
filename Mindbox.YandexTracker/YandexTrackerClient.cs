@@ -588,6 +588,37 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	public async Task<QueueLocalField> CreateLocalFieldInQueueAsync(
+		string queueKey,
+		QueueLocalField queueLocalField,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentNullException.ThrowIfNull(queueLocalField);
+
+		var request = queueLocalField.ToCreateQueueLocalFieldRequest();
+
+		var result = (await ExecuteYandexTrackerApiRequestAsync<CreateQueueLocalFieldResponse>(
+			$"queues/{queueKey}/localFields",
+			HttpMethod.Post,
+			payload: request,
+			cancellationToken: cancellationToken));
+
+		// API Трекера возвращает название поля только на русском, а английские не возвращает
+		// поэтому возьмем название as-is из заапроса
+		return result.ToQueueLocalField() with { FieldName = queueLocalField.FieldName };
+	}
+
+	public async Task<IReadOnlyList<CategoryShortInfo>> GetFieldCategoriesAsync(CancellationToken cancellationToken = default)
+	{
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetFieldCategoriesResponse>(
+				"fields/categories",
+				HttpMethod.Get,
+				cancellationToken: cancellationToken))
+			.Select(dto => dto.ToCategory())
+			.ToList();
+	}
+
 	public async Task<Queue> CreateQueueAsync(
 		Queue queue,
 		CancellationToken cancellationToken = default)

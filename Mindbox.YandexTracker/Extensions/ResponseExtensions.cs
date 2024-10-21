@@ -261,6 +261,46 @@ internal static class ResponseExtensions
 		};
 	}
 
+	public static CategoryShortInfo ToCategory(this GetFieldCategoriesResponse value)
+	{
+		return new CategoryShortInfo
+		{
+			Id = value.Id,
+			Name = value.Name
+		};
+	}
+
+	public static QueueLocalField ToQueueLocalField(this CreateQueueLocalFieldResponse value)
+	{
+		return new QueueLocalField
+		{
+			Id = value.Id,
+			Description = value.Description,
+			Readonly = value.Readonly,
+			CategoryId = value.Category.Id,
+			SerialNumberInFieldsOrganization = value.Order,
+			FieldName = new QueueLocalFieldName // возвращается только поле на русском
+			{
+				Ru = value.Name,
+				En = string.Empty
+			},
+			FieldType = value.Schema.ToQueueLocalFieldType()
+		};
+	}
+
+	public static QueueLocalFieldType ToQueueLocalFieldType(this SchemaInfoDto value) => value.Type switch
+	{
+		"uri" => QueueLocalFieldType.UriFieldType,
+		"user" => QueueLocalFieldType.UserFieldType,
+		"integer" => QueueLocalFieldType.IntegerFieldType,
+		"float" => QueueLocalFieldType.FloatFieldType,
+		"date" => QueueLocalFieldType.DateFieldType,
+		"datetime" => QueueLocalFieldType.DateTimeFieldType,
+		"string" => QueueLocalFieldType.StringFieldType,
+		"text" => QueueLocalFieldType.TextFieldType,
+		_ => throw new ArgumentOutOfRangeException(value.Type)
+	};
+
 	public static Attachment ToAttachment(this CreateAttachmentResponse value)
 	{
 		return new Attachment

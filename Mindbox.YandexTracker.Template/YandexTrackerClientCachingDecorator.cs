@@ -197,6 +197,30 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	public Task<QueueLocalField> CreateLocalFieldInQueueAsync(
+		string queueKey,
+		QueueLocalField queueLocalField,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.CreateLocalFieldInQueueAsync(queueKey, queueLocalField, cancellationToken);
+	}
+
+	public Task<IReadOnlyList<CategoryShortInfo>> GetFieldCategoriesAsync(CancellationToken cancellationToken = default)
+	{
+		var cacheKey = $"{options.CacheKeyPrefix}_localFieldCategories";
+
+		return cache.GetOrCreateAsync(
+			cacheKey,
+			async entry =>
+			{
+				var result = await yandexTrackerClient.GetFieldCategoriesAsync(cancellationToken);
+
+				entry.SetAbsoluteExpiration(options.Ttl);
+
+				return result;
+			})!;
+	}
+
 	public Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(CancellationToken cancellationToken = default)
 	{
 		var cacheKey = $"{options.CacheKeyPrefix}_issueTypes";

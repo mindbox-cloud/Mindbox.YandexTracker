@@ -77,6 +77,33 @@ internal static class RequestExtensions
 		};
 	}
 
+	public static CreateQueueLocalFieldRequest ToCreateQueueLocalFieldRequest(this QueueLocalField field)
+	{
+		return new CreateQueueLocalFieldRequest
+		{
+			Id = field.Id,
+			Name = field.FieldName,
+			CategoryId = field.CategoryId,
+			Description = field.Description,
+			Type = field.FieldType,
+			OptionsProvider = field.OptionsProvider?.ToDto(),
+			Readonly = field.Readonly,
+			Container = field.Container,
+			Order = field.SerialNumberInFieldsOrganization,
+			Hidden = field.Hidden,
+			Visible = field.Visible
+		};
+	}
+
+	private static OptionsProviderInfoDto ToDto(this OptionsProviderInfo value)
+	{
+		return new OptionsProviderInfoDto
+		{
+			Type = value.Type,
+			Values = value.Values
+		};
+	}
+
 	public static Dictionary<string, object> ToDictionary(this IssuesFilter filter)
 	{
 		var dict = new Dictionary<string, object>();

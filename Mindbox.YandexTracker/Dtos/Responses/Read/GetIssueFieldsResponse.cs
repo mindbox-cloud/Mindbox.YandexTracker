@@ -59,6 +59,9 @@ internal class SchemaInfoDto
 	[DataMember(Name = "type")]
 	public required string Type { get; init; }
 
+	[DataMember(EmitDefaultValue = false, Name = "items")]
+	public string? Items { get; init; }
+
 	[DataMember(Name = "required")]
 	public bool Required { get; init; }
 }

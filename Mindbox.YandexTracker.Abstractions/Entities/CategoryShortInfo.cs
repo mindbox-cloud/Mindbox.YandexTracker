@@ -8,10 +8,10 @@ public sealed record CategoryShortInfo
 	/// <summary>
 	/// Идентификатор категории поля
 	/// </summary>
-	public string Id { get; init; } = string.Empty;
+	public required string Id { get; init; }
 
 	/// <summary>
 	/// Название категории
 	/// </summary>
-	public string Name { get; init; } = string.Empty;
+	public required string Name { get; init; }
 }

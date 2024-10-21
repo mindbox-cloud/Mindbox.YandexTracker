@@ -7,18 +7,18 @@ public sealed record QueueLocalField
 	/// <summary>
 	/// Идентификатор локального поля
 	/// </summary>
-	public string Id { get; init; } = string.Empty;
+	public required string Id { get; init; }
 
 	/// <summary>
 	/// Идентификатор категории поля
 	/// <see href="https://tracker.yandex.ru/admin/fields" />
 	/// </summary>
-	public string CategoryId { get; init; } = string.Empty;
+	public required string CategoryId { get; init; }
 
 	/// <summary>
 	/// Название локального поля
 	/// </summary>
-	public QueueLocalFieldName FieldName { get; init; } = null!;
+	public required QueueLocalFieldName FieldName { get; init; }
 
 	/// <summary>
 	/// Тип локального поля
@@ -34,7 +34,7 @@ public sealed record QueueLocalField
 	/// Порядковый номер в списке полей организации
 	/// <see href="https://tracker.yandex.ru/admin/fields" />
 	/// </summary>
-	public int? SerialNumberInFieldsOrganization { get; init; }
+	public int SerialNumberInFieldsOrganization { get; init; }
 
 	/// <summary>
 	/// Описание локального поля
@@ -46,21 +46,21 @@ public sealed record QueueLocalField
 	/// true - нельзя изменить;
 	/// false - можно изменить
 	/// </summary>
-	public bool? Readonly { get; init; }
+	public bool Readonly { get; init; }
 
 	/// <summary>
 	/// Признак отображения поля в интерфейсе:
 	/// true - всегда отображать поле в интерфейсе
 	/// false - не отображать поле в интерфейсе
 	/// </summary>
-	public bool? Visible { get; init; }
+	public bool Visible { get; init; }
 
 	/// <summary>
 	/// Признак видимости поля в интерфейсе:
 	/// true — скрывать поле даже в том случае, если оно заполнено;
 	/// false — не скрывать поле
 	/// </summary>
-	public bool? Hidden { get; init; }
+	public bool Hidden { get; init; }
 
 	/// <summary>
 	/// Признак возможности указать в поле одновременно несколько значений (например, как в поле Теги):

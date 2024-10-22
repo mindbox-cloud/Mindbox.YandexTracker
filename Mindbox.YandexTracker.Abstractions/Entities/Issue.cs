@@ -132,7 +132,7 @@ public sealed record Issue
 	/// <summary>
 	/// Кастомные поля задачи
 	/// </summary>
-	internal Dictionary<string, object?> CustomFields { get; init; } = [];
+	internal Dictionary<string, object> CustomFields { get; init; } = [];
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
@@ -140,18 +140,15 @@ public sealed record Issue
 	/// </remarks>
 	public T? GetCustomField<T>(string customFieldId)
 	{
-		if (CustomFields[customFieldId] is string jsonString)
+		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+
+		if (!CustomFields.TryGetValue(customFieldId, out var value))
 		{
-			return JsonSerializer.Deserialize<T?>(jsonString);
+			return default;
 		}
 
-		if (CustomFields[customFieldId] is null) return default;
-
-		// JsonSerializer.Deserialize не может определиться с перегрузкой, т.к. значение словаря CustomFields - object, поэтому
-		// сначала происходит каст в json
-		var json = JsonSerializer.Serialize(CustomFields[customFieldId]);
-		return JsonSerializer.Deserialize<T?>(json);
-
+		var json = JsonSerializer.Serialize(value);
+		return JsonSerializer.Deserialize<T>(json);
 	}
 
 	/// <remarks>
@@ -160,7 +157,10 @@ public sealed record Issue
 	/// </remarks>
 	public void SetCustomField<T>(string customFieldId, T value)
 	{
-		CustomFields[customFieldId] = value;
+		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+		ArgumentNullException.ThrowIfNull(value);
+
+		CustomFields[customFieldId] = JsonSerializer.Serialize(value);
 	}
 
 	public IReadOnlyList<string> GetCustomFieldsKeys()

@@ -76,5 +76,5 @@ internal sealed record CreateIssueResponse
 	public bool IsFavorite { get; init; }
 
 	[JsonExtensionData]
-	public Dictionary<string, object?> CustomFields { get; init; } = [];
+	public Dictionary<string, object> CustomFields { get; init; } = [];
 }

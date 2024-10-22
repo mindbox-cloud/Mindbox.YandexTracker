@@ -14,7 +14,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <VersionMajor>0</VersionMajor>
-    <VersionMinor>8</VersionMinor>
+    <VersionMinor>9</VersionMinor>
     <BuildNumber>$(BuildNumber)</BuildNumber>
     <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
     <PackageVersion>$(VersionMajor).$(VersionMinor).$(BuildNumber)$(VersionTag)</PackageVersion>

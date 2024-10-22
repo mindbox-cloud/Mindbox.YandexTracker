@@ -79,6 +79,39 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	public async Task CreateIssueAsync_CustomFields_ShouldCreatedIssueWithCustomFields()
+	{
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
+
+		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new QueueLocalField
+		{
+			Id = "customFields",
+			CategoryId = firstCategory.Id,
+			FieldName = new QueueLocalFieldName
+			{
+				En = "customFields",
+				Ru = "Кастомное поле"
+			},
+			FieldType = QueueLocalFieldType.StringFieldType
+		});
+
+		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		{
+			QueueKey = TestQueueKey,
+			Summary = GetUniqueName(),
+			CustomFields = new()
+			{
+				{ customField.Id, "field1" }
+			}
+		});
+
+		var response = await YandexTrackerClient.GetIssueAsync(issue.Key);
+
+		Assert.IsNotNull(response);
+		Assert.IsTrue(response.CustomFields.ContainsKey(customField.Id));
+	}
+
+	[TestMethod]
 	public async Task CreateLocalFieldInQueueAsync_ValidRequest_ShouldCreatedLocalField()
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;

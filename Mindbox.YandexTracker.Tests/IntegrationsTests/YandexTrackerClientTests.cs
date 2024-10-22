@@ -79,7 +79,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task CreateIssueAsync_CustomFields_ShouldCreatedIssueWithTags()
+	public async Task CreateIssueAsync_CustomFields_ShouldCreatedIssueWithCustomFields()
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
 

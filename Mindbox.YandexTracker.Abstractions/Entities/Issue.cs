@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+
+[assembly: InternalsVisibleTo("Mindbox.YandexTracker")]
 
 namespace Mindbox.YandexTracker;
 
@@ -127,5 +132,41 @@ public sealed record Issue
 	/// <summary>
 	/// Кастомные поля задачи
 	/// </summary>
-	public Dictionary<string, object?> CustomFields { get; init; } = [];
+	internal Dictionary<string, object?> CustomFields { get; init; } = [];
+
+	/// <remarks>
+	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
+	/// названии, которое будет совпадать с id
+	/// </remarks>
+	public T? GetCustomField<T>(string customFieldId)
+	{
+		if (CustomFields[customFieldId] is string jsonString)
+		{
+			return JsonSerializer.Deserialize<T?>(jsonString);
+		}
+
+		if (CustomFields[customFieldId] is null) return default;
+
+		// JsonSerializer.Deserialize не может определиться с перегрузкой, т.к. значение словаря CustomFields - object, поэтому
+		// сначала происходит каст в json
+		var json = JsonSerializer.Serialize(CustomFields[customFieldId]);
+		return JsonSerializer.Deserialize<T?>(json);
+
+	}
+
+	/// <remarks>
+	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
+	/// названии, которое будет совпадать с id
+	/// </remarks>
+	public void SetCustomField<T>(string customFieldId, T value)
+	{
+		CustomFields[customFieldId] = value;
+	}
+
+	public IReadOnlyList<string> GetCustomFieldsKeys()
+	{
+		return CustomFields
+			.Select(pair => pair.Key)
+			.ToList();
+	}
 }

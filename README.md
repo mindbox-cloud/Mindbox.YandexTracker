@@ -22,16 +22,16 @@
 
 ```csharp
 services.AddOptions<YandexTrackerClientOptions>().Bind(configuration.GetSection("YandexTracker"));
-services.AddYandexTrackerClient();
+services.AddYandexTrackerClient(enableCaching: false);
 ```
 
 Есть возможность использовать кеширование запросов к API Яндекс.Трекера для редко изменяемых, но часто используемых 
 данных (список статусов, типов задач, пользователей и т.д.). Для включения кэширования необходимо при регистрации клиента
-использовать метод `AddYandexTrackerClientCachingDecorator` и дополнительно зарегистрировать `YandexTrackerClientCachingOptions`.
-В настройках кэширования можно задать TTl в минутах (2 минуты по умолчанию).
+передать `enableCaching=true` и дополнительно зарегистрировать `YandexTrackerClientCachingOptions`.
+В настройках кэширования можно задать TTl (2 минуты по умолчанию).
 
 ```csharp
 services.AddOptions<YandexTrackerClientOptions>().Bind(configuration.GetSection("YandexTracker"));
 services.AddOptions<YandexTrackerClientCachingOptions>().Bind(configuration.GetSection("YandexTracker"));
-services.AddYandexTrackerClientCachingDecorator();
+services.AddYandexTrackerClient(enableCaching: true);
 ```

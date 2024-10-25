@@ -347,6 +347,44 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	public async Task CreateTemporaryAttachmentAsync_SomeTemporaryFiles_ResponseIsNotNullAndNotEmptyAndCommentsHasAttachments()
+	{
+		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		{
+			QueueKey = TestQueueKey,
+			Summary = GetUniqueName()
+		});
+
+		await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
+		await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
+
+		var imageAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(imageFile, "pepe.png");
+		var textAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(txtFile, "info.txt");
+
+		await YandexTrackerClient.CreateCommentAsync(issue.Key, new Comment
+		{
+			Text = "This comment has image",
+			Attachments = [imageAttachment.Id]
+		});
+
+		await YandexTrackerClient.CreateCommentAsync(issue.Key, new Comment
+		{
+			Text = "This comment has file",
+			Attachments = [textAttachment.Id]
+		});
+
+		await Task.Delay(1000); // Чтобы комментарии точно создались в трекере
+
+		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key, CommentExpandData.Attachments))
+			.ToList();
+
+		Assert.IsNotNull(comments);
+		Assert.AreEqual(2, comments.Count);
+		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments[0]);
+		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments[0]);
+	}
+
+	[TestMethod]
 	public async Task GetTagsAsync_ResponseIsNotNull()
 	{
 		var response = await YandexTrackerClient.GetTagsAsync(TestQueueKey);

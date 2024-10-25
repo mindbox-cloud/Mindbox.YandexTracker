@@ -38,6 +38,19 @@ public class YandexTrackerClientCachingDecoratorTests
 	}
 
 	[TestMethod]
+	public async Task CreateTemporaryAttachmentAsync_ValuesTakenFromServer()
+	{
+		using var decorator = CreateYandexTrackerClientCachingDecorator();
+
+		await decorator.CreateTemporaryAttachmentAsync(null!, null!);
+
+		_yandexTrackerClientMock.Verify(x => x.CreateTemporaryAttachmentAsync(
+			It.IsAny<Stream>(),
+			It.IsAny<string>(),
+			It.IsAny<CancellationToken>()));
+	}
+
+	[TestMethod]
 	public async Task CreateCommentAsync_ValuesTakenFromServer()
 	{
 		using var decorator = CreateYandexTrackerClientCachingDecorator();

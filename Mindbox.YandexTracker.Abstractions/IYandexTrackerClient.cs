@@ -148,6 +148,14 @@ public interface IYandexTrackerClient : IDisposable
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/issues/temp-attachment"/>
+	/// </remarks>
+	Task<Attachment> CreateTemporaryAttachmentAsync(
+		Stream fileStream,
+		string? newFileName = null,
+		CancellationToken cancellationToken = default);
+
+	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/delete-attachment"/>
 	/// </remarks>
 	Task DeleteAttachmentAsync(

@@ -429,6 +429,25 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToAttachment();
 	}
 
+	public async Task<Attachment> CreateTemporaryAttachmentAsync(
+		Stream fileStream,
+		string? newFileName = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(fileStream);
+
+		using var form = new MultipartFormDataContent();
+		using var fileContent = new StreamContent(fileStream);
+		form.Add(fileContent, "file", newFileName ?? "file");
+
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
+				$"attachments",
+				HttpMethod.Post,
+				payload: form,
+				cancellationToken: cancellationToken))
+			.ToAttachment();
+	}
+
 	public async Task<IReadOnlyList<string>> GetTagsAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default)

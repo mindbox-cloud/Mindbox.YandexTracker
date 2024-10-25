@@ -799,7 +799,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			{
 				errorMessage = "Unknown error";
 			}
-			throw new InvalidOperationException($"Request was not successful: {response.StatusCode} : {errorMessage}");
+			throw new YandexTrackerException(
+				$"Request was not successful: {response.StatusCode} : {errorMessage}",
+				response.StatusCode);
 		}
 
 		static async Task CheckRateLimitExceededAsync(
@@ -815,8 +817,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			var retryPeriod = TimeSpan.FromSeconds(retrySeconds + 1);
 			if (retryPeriod.TotalSeconds > TimeSpan.FromMinutes(1).TotalSeconds)
 			{
-				var noRetryException = new YandexTrackerRetryLimitExceededException(
-					"YandexTracker rate limit reached. Too long wait for next try.");
+				var noRetryException = new YandexTrackerException(
+					"YandexTracker rate limit reached. Too long wait for next try.",
+					response.StatusCode);
 				noRetryException.Data.Add("Retry-After", retrySeconds);
 
 				throw noRetryException;

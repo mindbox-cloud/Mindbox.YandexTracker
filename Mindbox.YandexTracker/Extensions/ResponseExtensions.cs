@@ -122,7 +122,7 @@ internal static class ResponseExtensions
 
 	public static UserShortInfo ToUserInfo(this FieldInfo value)
 	{
-		return new UserShortInfo { Id = value.Id! };
+		return new UserShortInfo { Id = value.Id, Display = value.Display };
 	}
 
 	public static Issue ToIssue(
@@ -153,6 +153,8 @@ internal static class ResponseExtensions
 			Status = value.Status.ToIssueStatus(issueStatusInfos),
 			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
 			IsFavorite = value.IsFavorite,
+			Start = value.Start,
+			Tags = value.Tags,
 			CustomFields = value.Fields
 		};
 	}

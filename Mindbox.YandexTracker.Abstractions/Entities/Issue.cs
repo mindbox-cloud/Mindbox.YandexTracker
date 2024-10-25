@@ -130,6 +130,16 @@ public sealed record Issue
 	public bool IsFavorite { get; init; }
 
 	/// <summary>
+	/// Дата начала работы над задачей.
+	/// </summary>
+	public DateOnly? Start { get; init; }
+
+	/// <summary>
+	/// Текстовые метки, которые облегчают поиск и сортировку задач.
+	/// </summary>
+	public IReadOnlyCollection<string> Tags { get; init; } = [];
+
+	/// <summary>
 	/// Кастомные поля задачи
 	/// </summary>
 	internal Dictionary<string, object> CustomFields { get; init; } = [];

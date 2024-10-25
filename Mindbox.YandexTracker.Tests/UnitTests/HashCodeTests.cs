@@ -28,11 +28,7 @@ public class HashCodeTests
 			Priority = Priority.Minor,
 			Sprints = ["sp1"],
 			Parent = "par1",
-			Status = new IssueStatus
-			{
-				Key = "key",
-				Name = "name"
-			},
+			Status = "key",
 			CreatedAtUtc = now,
 			Votes = 5,
 			Type = new IssueType
@@ -64,11 +60,7 @@ public class HashCodeTests
 			Priority = Priority.Minor,
 			Sprints = ["sp1"],
 			Parent = "par1",
-			Status = new IssueStatus
-			{
-				Key = "key",
-				Name = "name"
-			},
+			Status = "key",
 			CreatedAtUtc = now,
 			Votes = 5,
 			Type = new IssueType
@@ -97,25 +89,29 @@ public class HashCodeTests
 		{
 			Author = new UserShortInfo
 			{
-				Id = "id"
+				Id = "id",
+				Display = "display"
 			},
 			Id = "5",
 			ChecklistIds = ["ch1", "ch2"],
 			Clients = [
 				new()
 				{
-					Id = "id2"
+					Id = "id2",
+					Display = "display2"
 				}
 			],
 			CreatedAtUtc = future,
 			CreatedBy = new UserShortInfo
 			{
-				Id = "w"
+				Id = "w",
+				Display = "displayw"
 			},
 			EndUtc = future.AddDays(-3),
 			Lead = new UserShortInfo
 			{
-				Id = "id"
+				Id = "id",
+				Display = "display"
 			},
 			Quarter = ["q1", "q2"],
 			ParentId = 3,
@@ -130,25 +126,29 @@ public class HashCodeTests
 		{
 			Author = new UserShortInfo
 			{
-				Id = "id"
+				Id = "id",
+				Display = "display"
 			},
 			Id = "5",
 			ChecklistIds = ["ch1", "ch2"],
 			Clients = [
 				new()
 				{
-					Id = "id2"
+					Id = "id2",
+					Display = "display2"
 				}
 			],
 			CreatedAtUtc = future,
 			CreatedBy = new UserShortInfo
 			{
-				Id = "w"
+				Id = "w",
+				Display = "displayw"
 			},
 			EndUtc = future.AddDays(-3),
 			Lead = new UserShortInfo
 			{
-				Id = "id"
+				Id = "id",
+				Display = "display"
 			},
 			Quarter = ["q1", "q2"],
 			ParentId = 3,

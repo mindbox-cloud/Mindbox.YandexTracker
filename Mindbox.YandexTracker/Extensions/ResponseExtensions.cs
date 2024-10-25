@@ -154,7 +154,8 @@ internal static class ResponseExtensions
 			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
 			IsFavorite = value.IsFavorite,
 			Start = value.Start,
-			Tags = value.Tags
+			Tags = value.Tags,
+			CustomFields = value.Fields
 		};
 	}
 
@@ -185,7 +186,8 @@ internal static class ResponseExtensions
 			UpdatedAt = value.UpdatedAt,
 			Status = value.Status.ToIssueStatus(issueStatusInfos),
 			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
-			IsFavorite = value.IsFavorite
+			IsFavorite = value.IsFavorite,
+			CustomFields = value.CustomFields
 		};
 	}
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -82,5 +82,5 @@ internal sealed record GetIssueResponse
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 
 	[JsonExtensionData]
-	public Dictionary<string, object> Fields { get; init; } = [];
+	public Dictionary<string, object?> Fields { get; init; } = [];
 }

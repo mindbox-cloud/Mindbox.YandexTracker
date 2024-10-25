@@ -113,7 +113,7 @@ public sealed record IssuesFilter
 	/// Статус задачи
 	/// </summary>
 	[DataMember(EmitDefaultValue = false, Name = "status")]
-	public IssueStatus? Status { get; init; }
+	public string? Status { get; init; }
 
 	/// <summary>
 	/// Предыдущий статус задачи

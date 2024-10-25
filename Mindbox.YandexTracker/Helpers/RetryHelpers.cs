@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,13 +26,13 @@ internal static class RetryHelpers
 			}
 			catch (Exception e)
 			{
-				if (e is YandexTrackerRetryLimitExceededException)
+				if (e is YandexTrackerException { StatusCode: HttpStatusCode.TooManyRequests })
 				{
 					throw;
 				}
 				if (num > retryCount)
 				{
-					throw new YandexTrackerException($"{retryCount} error responses in a row.", e);
+					throw;
 				}
 			}
 

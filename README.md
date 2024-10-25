@@ -18,28 +18,20 @@
 
 ## Как использовать
 
-Для работы с библиотекой необходимо зарегистрировать `YandexTrackerClient` в вашем IoC-контейнере, используя сборку `Mindbox.YandexTracker.Template`.
+Для работы с библиотекой необходимо зарегистрировать `YandexTrackerClient` и `YandexTrackerClientOptions` в вашем IoC-контейнере, используя сборку `Mindbox.YandexTracker.Template`.
 
 ```csharp
-services.AddYandexTrackerClient(new YandexTrackerClientOptions
-{
-    Organization = "your_organization_id",
-    OAuthToken = "your_private_token";
-});
+services.AddOptions<YandexTrackerClientOptions>().Bind(configuration.GetSection("YandexTracker"));
+services.AddYandexTrackerClient();
 ```
 
 Есть возможность использовать кеширование запросов к API Яндекс.Трекера для редко изменяемых, но часто используемых 
 данных (список статусов, типов задач, пользователей и т.д.). Для включения кэширования необходимо при регистрации клиента
-в IoC указать настройки кэширования. В настройках кэширования можно задать TTl в минутах.
+использовать метод `AddYandexTrackerClientCachingDecorator` и дополнительно зарегистрировать `YandexTrackerClientCachingOptions`.
+В настройках кэширования можно задать TTl в минутах (2 минуты по умолчанию).
 
 ```csharp
-services.AddYandexTrackerClient(new YandexTrackerClientOptions
-{
-    Organization = "your_organization_id",
-    OAuthToken = "your_private_token";
-}, 
-new YandexTrackerClientCachingDecoratorOptions
-{
-    TTL = your_ttl // 2 минуты по умолчанию
-});
+services.AddOptions<YandexTrackerClientOptions>().Bind(configuration.GetSection("YandexTracker"));
+services.AddOptions<YandexTrackerClientCachingOptions>().Bind(configuration.GetSection("YandexTracker"));
+services.AddYandexTrackerClientCachingDecorator();
 ```

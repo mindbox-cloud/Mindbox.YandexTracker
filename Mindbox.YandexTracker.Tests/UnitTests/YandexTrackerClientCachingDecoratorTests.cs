@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mindbox.YandexTracker.Template;
 using Moq;
@@ -893,9 +894,12 @@ public class YandexTrackerClientCachingDecoratorTests
 
 	private YandexTrackerClientCachingDecorator CreateYandexTrackerClientCachingDecorator()
 	{
+		var optionsMock = new Mock<IOptionsMonitor<YandexTrackerClientCachingOptions>>();
+		optionsMock.Setup(x => x.CurrentValue).Returns(new YandexTrackerClientCachingOptions());
+
 		return new YandexTrackerClientCachingDecorator(
 			_yandexTrackerClientMock.Object,
 			_memoryCacheMock.Object,
-			new YandexTrackerClientCachingOptions());
+			optionsMock.Object);
 	}
 }

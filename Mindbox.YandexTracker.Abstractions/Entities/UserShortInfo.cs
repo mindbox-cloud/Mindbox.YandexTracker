@@ -9,4 +9,9 @@ public sealed record UserShortInfo
 	/// Идентификатор пользователя
 	/// </summary>
 	public required string Id { get; init; }
+
+	/// <summary>
+	/// Отображаемое имя пользователя.
+	/// </summary>
+	public required string Display { get; init; }
 }

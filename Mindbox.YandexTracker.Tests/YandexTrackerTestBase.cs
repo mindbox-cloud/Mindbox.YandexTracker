@@ -55,7 +55,7 @@ public abstract class YandexTrackerTestBase
 				Key = "task",
 				Name = "Задача"
 			},
-			Lead = new UserShortInfo { Id = CurrentUserId },
+			Lead = new UserShortInfo { Id = CurrentUserId, Display = CurrentUserLogin },
 			Name = TestQueueKey.ToUpperInvariant(),
 			IssueTypesConfig =
 			[

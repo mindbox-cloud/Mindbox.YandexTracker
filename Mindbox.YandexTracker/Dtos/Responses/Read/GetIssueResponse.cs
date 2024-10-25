@@ -75,6 +75,12 @@ internal sealed record GetIssueResponse
 	[DataMember(Name = "favorite")]
 	public bool IsFavorite { get; init; }
 
+	[DataMember(Name = "start")]
+	public DateOnly? Start { get; set; }
+
+	[DataMember(Name = "tags")]
+	public IReadOnlyCollection<string> Tags { get; init; } = [];
+
 	[JsonExtensionData]
 	public Dictionary<string, object?> Fields { get; init; } = [];
 }

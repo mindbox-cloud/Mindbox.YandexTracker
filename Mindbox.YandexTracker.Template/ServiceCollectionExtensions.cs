@@ -1,40 +1,27 @@
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Mindbox.YandexTracker.Template;
 
 public static class ServiceCollectionExtensions
 {
-
-	public static IServiceCollection AddYandexTrackerClient(
-		this IServiceCollection services,
-		YandexTrackerClientOptions configureOptions,
-		YandexTrackerClientCachingOptions? cashingOptions = null)
+	public static IServiceCollection AddYandexTrackerClient(this IServiceCollection services)
 	{
-		services = services
+		return services
+			.AddHttpClient()
+			.AddScoped<IYandexTrackerClient, YandexTrackerClient>();
+	}
+
+	public static IServiceCollection AddYandexTrackerClientCachingDecorator(this IServiceCollection services)
+	{
+		return services
 			.AddHttpClient()
 			.AddMemoryCache()
-			.Configure<YandexTrackerClientOptions>(option =>
-			{
-				option.OAuthToken = configureOptions.OAuthToken;
-				option.Organization = configureOptions.Organization;
-			});
-
-		if (cashingOptions is not null)
-		{
-			services = services
-				.Configure<YandexTrackerClientCachingOptions>(option =>
-				{
-					option.Ttl = cashingOptions.Ttl;
-					option.CacheKeyPrefix = cashingOptions.CacheKeyPrefix;
-				})
-				.AddScoped<YandexTrackerClient>()
-				.AddScoped<IYandexTrackerClient, YandexTrackerClientCachingDecorator>();
-		}
-		else
-		{
-			services = services.AddScoped<IYandexTrackerClient, YandexTrackerClient>();
-		}
-
-		return services;
+			.AddScoped<YandexTrackerClient>()
+			.AddScoped<IYandexTrackerClient, YandexTrackerClientCachingDecorator>(sp => new YandexTrackerClientCachingDecorator(
+				sp.GetRequiredService<YandexTrackerClient>(),
+				sp.GetRequiredService<IMemoryCache>(),
+				sp.GetRequiredService<IOptionsMonitor<YandexTrackerClientCachingOptions>>()));
 	}
 }

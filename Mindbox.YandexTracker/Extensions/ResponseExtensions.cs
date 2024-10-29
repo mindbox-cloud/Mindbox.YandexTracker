@@ -125,6 +125,30 @@ internal static class ResponseExtensions
 		return new UserShortInfo { Id = value.Id, Display = value.Display };
 	}
 
+	public static UserDetailedInfo ToUserDetailedInfo(this UserDetailedInfoDto dto)
+	{
+		return new UserDetailedInfo
+		{
+			Display = dto.Display,
+			Email = dto.Email,
+			Id = dto.Id,
+			Login = dto.Login,
+			CloudUid = dto.CloudUid,
+			FirstName = dto.FirstName,
+			LastName = dto.LastName,
+			PassportUid = dto.PassportUid,
+			TrackerUid = dto.PassportUid,
+			Dismissed = dto.Dismissed,
+			External = dto.External,
+			DisableNotifications = dto.DisableNotifications,
+			HasLicense = dto.HasLicense,
+			UseNewFilters = dto.UseNewFilters,
+			WelcomeMailSent = dto.WelcomeMailSent,
+			FirstLoginDateUtc = dto.FirstLoginDateUtc,
+			LastLoginDateUtc = dto.LastLoginDateUtc
+		};
+	}
+
 	public static Issue ToIssue(
 		this GetIssueResponse value,
 		IReadOnlyDictionary<string, IssueType> issueTypeInfos,

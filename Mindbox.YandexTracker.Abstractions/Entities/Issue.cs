@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 [assembly: InternalsVisibleTo("Mindbox.YandexTracker")]
 
@@ -143,11 +144,11 @@ public sealed record Issue
 	/// Кастомные поля задачи
 	/// </summary>
 	/// <remarks>
-	/// Необходимость JToken заключается в том, что мы не знаем какое объект придет к нам с сервера под заданным ключем.
+	/// Необходимость JsonNode заключается в том, что мы не знаем какое объект придет к нам с сервера под заданным ключем.
 	/// Чтобы не поломать работу было принято использовать JToken и ограничить доступ к словарю через GetCustomField и
 	/// SetCustomField
 	/// </remarks>
-	internal Dictionary<string, JToken?> CustomFields { get; init; } = [];
+	internal Dictionary<string, JsonNode?> CustomFields { get; init; } = [];
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
@@ -159,9 +160,7 @@ public sealed record Issue
 
 		if (CustomFields.TryGetValue(customFieldId, out var value))
 		{
-			return value is null
-				? default
-				: value.ToObject<T>();
+			return value.Deserialize<T?>();
 		}
 
 		throw new KeyNotFoundException($"Key '{customFieldId}' not found in custom fields.");
@@ -175,10 +174,7 @@ public sealed record Issue
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
 
-		if (value is null)
-			CustomFields[customFieldId] = null;
-		else
-			CustomFields[customFieldId] = JToken.FromObject(value);
+		CustomFields[customFieldId] = JsonSerializer.SerializeToNode(value);
 	}
 
 	public IReadOnlyList<string> GetCustomFieldsKeys()

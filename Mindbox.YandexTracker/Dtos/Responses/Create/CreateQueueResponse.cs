@@ -1,31 +1,30 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-[DataContract]
 internal sealed record CreateQueueResponse
 {
-	[DataMember(Name = "id")]
+	[JsonPropertyName("id")]
 	public required string Id { get; init; }
 
-	[DataMember(Name = "key")]
+	[JsonPropertyName("key")]
 	public required string Key { get; init; }
 
-	[DataMember(Name = "name")]
+	[JsonPropertyName("name")]
 	public required string Name { get; init; }
 
-	[DataMember(Name = "lead")]
+	[JsonPropertyName("lead")]
 	public required FieldInfo Lead { get; init; }
 
-	[DataMember(Name = "assignAuto")]
+	[JsonPropertyName("assignAuto")]
 	public bool AssignAuto { get; init; }
 
-	[DataMember(Name = "allowExternals")]
+	[JsonPropertyName("allowExternals")]
 	public bool AllowExternals { get; init; }
 
-	[DataMember(Name = "defaultType")]
+	[JsonPropertyName("defaultType")]
 	public required FieldInfo DefaultType { get; init; }
 
-	[DataMember(Name = "defaultPriority")]
+	[JsonPropertyName("defaultPriority")]
 	public required FieldInfo DefaultPriority { get; init; }
 }

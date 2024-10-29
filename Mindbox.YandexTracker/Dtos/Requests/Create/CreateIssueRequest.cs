@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -20,7 +19,7 @@ internal sealed record CreateIssueRequest
 	public Collection<string>? Followers { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "type")]
-	[JsonConverter(typeof(StringEnumConverter))]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public IssueType? Type { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "description")]
@@ -42,13 +41,13 @@ internal sealed record CreateIssueRequest
 	public Collection<string>? Sprints { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "priority")]
-	[JsonConverter(typeof(StringEnumConverter))]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public Priority? Priority { get; init; }
 
 	[DataMember(EmitDefaultValue = false, Name = "assignee")]
 	public string? Assignee { get; init; }
 
 	[DataMember(EmitDefaultValue = false)]
-	[Newtonsoft.Json.JsonExtensionData]
-	public Dictionary<string, JToken?>? Fields { get; init; }
+	[JsonExtensionData]
+	public Dictionary<string, JsonNode?>? Fields { get; init; }
 }

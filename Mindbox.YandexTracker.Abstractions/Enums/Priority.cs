@@ -1,40 +1,39 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 /// <summary>
 /// Приоритет
 /// </summary>
-[DataContract]
 public enum Priority
 {
 	/// <summary>
 	/// Незначительный
 	/// </summary>
-	[EnumMember(Value = "trivial")]
+	[JsonPropertyName("trivial")]
 	Trivial,
 
 	/// <summary>
 	/// Низкий
 	/// </summary>
-	[EnumMember(Value = "minor")]
+	[JsonPropertyName("minor")]
 	Minor,
 
 	/// <summary>
 	/// Средний
 	/// </summary>
-	[EnumMember(Value = "normal")]
+	[JsonPropertyName("normal")]
 	Normal,
 
 	/// <summary>
 	/// Критичный
 	/// </summary>
-	[EnumMember(Value = "critical")]
+	[JsonPropertyName("critical")]
 	Critical,
 
 	/// <summary>
 	/// Блокер
 	/// </summary>
-	[EnumMember(Value = "blocker")]
+	[JsonPropertyName("blocker")]
 	Blocker
 }

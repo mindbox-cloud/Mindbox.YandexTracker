@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -77,5 +77,5 @@ internal sealed record CreateIssueResponse
 	public bool IsFavorite { get; init; }
 
 	[JsonExtensionData]
-	public Dictionary<string, JToken?> CustomFields { get; init; } = [];
+	public Dictionary<string, JsonNode?> CustomFields { get; init; } = [];
 }

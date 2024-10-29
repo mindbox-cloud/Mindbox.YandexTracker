@@ -8,12 +8,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Mindbox.YandexTracker.Helpers;
-using Newtonsoft.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -553,34 +553,38 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return [.. globalFields, .. localQueueFields];
 	}
 
-	public Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken)
+	public async Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken)
 	{
-		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+		return (await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(
 			"myself",
 			HttpMethod.Get,
 			payload: null,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken))
+			.ToUserDetailedInfo();
 	}
 
-	public Task<UserDetailedInfo> GetUserByIdAsync(
+	public async Task<UserDetailedInfo> GetUserByIdAsync(
 		string userId,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+		return (await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(
 			$"users/{userId}",
 			HttpMethod.Get,
 			payload: null,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken))
+			.ToUserDetailedInfo();
 	}
 
-	public Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
+	public async Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfoDto>(
 			"users",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToUserDetailedInfo())
+			.ToList();
 	}
 
 	public Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(CancellationToken cancellationToken = default)
@@ -731,7 +735,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken);
 
 		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-		return JsonConvert.DeserializeObject<TResult>(resultContent)!;
+		return JsonSerializer.Deserialize<TResult>(resultContent)!;
 	}
 
 	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
@@ -770,7 +774,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				else
 				{
 					request.Content = new StringContent(
-						JsonConvert.SerializeObject(payload),
+						JsonSerializer.Serialize(payload),
 						Encoding.UTF8,
 						"application/json");
 				}

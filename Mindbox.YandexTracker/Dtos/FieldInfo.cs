@@ -1,16 +1,15 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-[DataContract]
 internal sealed record FieldInfo
 {
-	[DataMember(Name = "id")]
+	[JsonPropertyName("id")]
 	public required string Id { get; init; }
 
-	[DataMember(EmitDefaultValue = false, Name = "key")]
+	[JsonPropertyName("key")]
 	public string? Key { get; init; }
 
-	[DataMember(Name = "display")]
+	[JsonPropertyName("display")]
 	public required string Display { get; init; }
 }

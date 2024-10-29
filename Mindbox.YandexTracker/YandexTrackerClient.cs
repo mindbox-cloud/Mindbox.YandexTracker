@@ -37,7 +37,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		{
 			Converters =
 			{
+				// у этиъ 2 enum'ов не camelCase, а какая-то своя фигня в Трекере
+				// (например, "ru.yandex.startrek.core.fields.UserFieldType" или snake_case)
 				new EnumWithEnumMemberAttributeJsonConverter<QueueLocalFieldType>(),
+				new EnumWithEnumMemberAttributeJsonConverter<ProjectEntityStatus>(),
+				// а остальные enum'ы - camelCase
 				new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
 				new YandexDateTimeJsonConverter(),
 				new YandexNullableDateTimeJsonConverter()

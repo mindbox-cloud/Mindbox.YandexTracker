@@ -5,7 +5,6 @@ namespace Mindbox.YandexTracker;
 /// <summary>
 /// Тип локального поля очереди
 /// </summary>
-[DataContract]
 public enum QueueLocalFieldType
 {
 	/// <summary>

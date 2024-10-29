@@ -10,7 +10,7 @@ namespace Mindbox.YandexTracker.JsonConverters;
 /// Кастомный конвертер для сериализации/десериализации enum'ов с атрибутом EnumMemberAttribute.
 /// </summary>
 /// <remarks>
-/// При конвертации в json значение берется из атрибута.
+/// При конвертации в json значение берется из атрибута. JsonPropertyAttribute атрибут для enum'ов завезут только в .NET 9.
 /// </remarks>
 internal class EnumWithEnumMemberAttributeJsonConverter<T> : JsonConverter<T> where T: Enum
 {

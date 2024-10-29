@@ -5,7 +5,6 @@ namespace Mindbox.YandexTracker;
 /// <summary>
 /// Статус проекта/портфеля
 /// </summary>
-[DataContract]
 public enum ProjectEntityStatus
 {
 	/// <summary>

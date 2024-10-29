@@ -47,6 +47,9 @@ internal sealed record CreateIssueRequest
 	[DataMember(EmitDefaultValue = false, Name = "assignee")]
 	public string? Assignee { get; init; }
 
+	[DataMember(EmitDefaultValue = false, Name = "tags")]
+	public IReadOnlyCollection<string> Tags { get; init; } = [];
+
 	[DataMember(EmitDefaultValue = false)]
 	[JsonExtensionData]
 	public Dictionary<string, object?>? Fields { get; init; }

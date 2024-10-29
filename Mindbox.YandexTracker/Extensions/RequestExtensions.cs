@@ -28,7 +28,8 @@ internal static class RequestExtensions
 			Priority = issue.Priority,
 			Sprints = issue.Sprints,
 			Type = issue.Type,
-			Author = issue.Author?.Id
+			Author = issue.Author?.Id,
+			Tags = issue.Tags
 		};
 	}
 

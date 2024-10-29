@@ -24,7 +24,7 @@ jobs:
         run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore
 
       - name: Pack
-        run: dotnet pack ./Mindbox.YandexTracker.sln -c Release
+        run: dotnet pack ./Mindbox.YandexTracker.sln -c Release -p:BuildNumber=${{ github.run_number }}
 
       - name: Publish
         run: dotnet nuget push **/*.nupkg -k ${{secrets.MINDBOX_NUGET_AUTH_TOKEN}} -s https://api.nuget.org/v3/index.json

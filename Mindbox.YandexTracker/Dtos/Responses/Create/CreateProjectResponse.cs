@@ -1,33 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-[DataContract]
 internal sealed record CreateProjectResponse
 {
-	[DataMember(Name = "id")]
 	public required string Id { get; init; }
 
-	[DataMember(Name = "shortId")]
 	public int ShortId { get; init; }
 
-	[DataMember(Name = "entityType")]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
+	[JsonPropertyName("entityType")]
 	public ProjectEntityType ProjectEntityType { get; init; }
 
-	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; init; }
 
-	[DataMember(Name = "createdAt")]
 	public DateTime CreatedAt { get; init; }
 
-	[DataMember(Name = "updatedAt")]
 	public DateTime UpdatedAt { get; init; }
 
-	[DataMember(Name = "fields")]
 	[JsonExtensionData]
-	public Dictionary<string, object> Fields { get; init; } = [];
+	public Dictionary<string, JsonElement> Fields { get; init; } = [];
 }

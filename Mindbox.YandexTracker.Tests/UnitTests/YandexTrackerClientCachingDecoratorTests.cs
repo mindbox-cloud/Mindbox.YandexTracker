@@ -301,7 +301,7 @@ public class YandexTrackerClientCachingDecoratorTests
 	[TestMethod]
 	public async Task GetUserByIdAsync_EmptyCache_ValuesTakenFromServer()
 	{
-		var userId = "123";
+		var userId = 123;
 		var cacheEntryMock = new Mock<ICacheEntry>();
 
 		_memoryCacheMock.SetupSequence(x => x.TryGetValue(It.IsAny<object>(), out It.Ref<object?>.IsAny))
@@ -343,12 +343,12 @@ public class YandexTrackerClientCachingDecoratorTests
 
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
-		await decorator.GetUserByIdAsync(null!);
+		await decorator.GetUserByIdAsync(123);
 
 		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
 
 		_yandexTrackerClientMock.Verify(x => x.GetUserByIdAsync(
-			It.IsAny<string>(),
+			It.IsAny<long>(),
 			It.IsAny<CancellationToken>()), Times.Never);
 	}
 

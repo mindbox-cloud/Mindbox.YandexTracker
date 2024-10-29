@@ -9,7 +9,7 @@ namespace Mindbox.YandexTracker.Tests;
 public abstract class YandexTrackerTestBase
 {
 	protected static string TestQueueKey { get; private set; } = null!;
-	protected static string CurrentUserId { get; private set; } = null!;
+	protected static long CurrentUserId { get; private set; }
 	protected static string CurrentUserLogin { get; private set; } = null!;
 	protected static IServiceProvider ServiceProvider { get; private set; } = null!;
 	protected static IYandexTrackerClient YandexTrackerClient { get; private set; } = null!;

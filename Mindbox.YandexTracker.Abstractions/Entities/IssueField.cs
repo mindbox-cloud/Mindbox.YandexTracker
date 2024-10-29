@@ -92,5 +92,5 @@ public sealed record OptionsProviderInfo
 	/// <summary>
 	/// Массив со значениями поля
 	/// </summary>
-	public Collection<string> Values { get; init; } = [];
+	public Collection<object> Values { get; init; } = [];
 }

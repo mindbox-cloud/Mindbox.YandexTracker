@@ -251,7 +251,7 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/get-user-info"/>
 	/// </remarks>
-	Task<UserDetailedInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
+	Task<UserDetailedInfo> GetUserByIdAsync(long userId, CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(
 		CancellationToken cancellationToken = default);

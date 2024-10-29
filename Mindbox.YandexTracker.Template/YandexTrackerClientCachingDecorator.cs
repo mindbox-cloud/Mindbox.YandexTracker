@@ -348,7 +348,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<UserDetailedInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default)
+	public Task<UserDetailedInfo> GetUserByIdAsync(long userId, CancellationToken cancellationToken = default)
 	{
 		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_users_{userId}";
 

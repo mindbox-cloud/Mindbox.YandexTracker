@@ -1,10 +1,9 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-[DataContract]
 internal sealed record GetIssuesFromQueueRequest
 {
-	[DataMember(Name = "queue")]
+	[JsonPropertyName("queue")]
 	public required string QueueKey { get; init; }
 }

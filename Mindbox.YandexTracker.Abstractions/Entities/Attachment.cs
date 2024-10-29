@@ -25,7 +25,7 @@ public sealed record Attachment
 	/// <summary>
 	/// Адрес для скачивания превью
 	/// </summary>
-	public required string ThumbnailUrl { get; init; }
+	public string? ThumbnailUrl { get; init; }
 
 	/// <summary>
 	/// Создатель вложения.

@@ -13,12 +13,11 @@ internal static class ResponseExtensions
 		var enumValues = Enum.GetValues(typeof(T))
 			.Cast<T>()
 			.Where(enumValue => value.HasFlag(enumValue!))
-			.Select(enumValue => enumValue!.ToString())
+			.Select(enumValue => enumValue!.ToString().ToYandexCase())
 			.Skip(1); // skip None
 
 		return string.Join(",", enumValues);
 	}
-
 
 	public static Priority ToPriority(this FieldInfo value) => value.Key switch
 	{
@@ -114,7 +113,7 @@ internal static class ResponseExtensions
 			TeamUsers = new Collection<UserShortInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
 			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
-				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
+				value.IssueTypesConfig.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
 			Workflows = new Collection<IssueType>(workflows),
 			DenyVoting = value.DenyVoting
 		};
@@ -122,7 +121,12 @@ internal static class ResponseExtensions
 
 	public static UserShortInfo ToUserInfo(this FieldInfo value)
 	{
-		return new UserShortInfo { Id = value.Id, Display = value.Display };
+		ArgumentNullException.ThrowIfNull(value, nameof(value));
+
+		if (!long.TryParse(value.Id, out var id))
+			throw new ArgumentException($"Invalid id = {value.Id}", nameof(value));
+
+		return new UserShortInfo { Id = id, Display = value.Display };
 	}
 
 	public static UserDetailedInfo ToUserDetailedInfo(this UserDetailedInfoDto dto)
@@ -133,19 +137,18 @@ internal static class ResponseExtensions
 			Email = dto.Email,
 			Id = dto.Id,
 			Login = dto.Login,
-			CloudUid = dto.CloudUid,
 			FirstName = dto.FirstName,
 			LastName = dto.LastName,
 			PassportUid = dto.PassportUid,
-			TrackerUid = dto.PassportUid,
+			TrackerUid = dto.TrackerUid,
 			Dismissed = dto.Dismissed,
 			External = dto.External,
 			DisableNotifications = dto.DisableNotifications,
 			HasLicense = dto.HasLicense,
 			UseNewFilters = dto.UseNewFilters,
-			WelcomeMailSent = dto.WelcomeMailSent,
+			LastLoginDateUtc = dto.LastLoginDateUtc,
 			FirstLoginDateUtc = dto.FirstLoginDateUtc,
-			LastLoginDateUtc = dto.LastLoginDateUtc
+			WelcomeMailSent = dto.WelcomeMailSent
 		};
 	}
 
@@ -365,21 +368,6 @@ internal static class ResponseExtensions
 
 		foreach (var projectValue in value.Values)
 		{
-			projectValue.Fields.TryGetValue("summary", out var summary);
-			projectValue.Fields.TryGetValue("description", out var description);
-			projectValue.Fields.TryGetValue("author", out var author);
-			projectValue.Fields.TryGetValue("lead", out var lead);
-			projectValue.Fields.TryGetValue("teamUsers", out var teamUsers);
-			projectValue.Fields.TryGetValue("clients", out var clients);
-			projectValue.Fields.TryGetValue("followers", out var followers);
-			projectValue.Fields.TryGetValue("tags", out var tags);
-			projectValue.Fields.TryGetValue("start", out var start);
-			projectValue.Fields.TryGetValue("end", out var end);
-			projectValue.Fields.TryGetValue("teamAccess", out var teamAccess);
-			projectValue.Fields.TryGetValue("status", out var status);
-			projectValue.Fields.TryGetValue("quarter", out var quarter);
-			projectValue.Fields.TryGetValue("checklistItems", out var checklist);
-
 			projects.Add(new Project
 			{
 				Id = projectValue.Id,
@@ -388,31 +376,39 @@ internal static class ResponseExtensions
 				CreatedBy = projectValue.CreatedBy.ToUserInfo(),
 				CreatedAtUtc = projectValue.CreatedAt,
 				UpdatedAtUtc = projectValue.UpdatedAt,
-				Summary = (string?)summary,
-				Description = (string?)description,
-				Author = ((FieldInfo?)author)?.ToUserInfo(),
-				Lead = ((FieldInfo?)lead)?.ToUserInfo(),
-				TeamUsers = teamUsers is not null
-					? new Collection<UserShortInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
+				Summary = projectValue.Summary,
+				Description = projectValue.Description,
+				Author = projectValue.Author?.ToUserInfo(),
+				Lead = projectValue.Lead?.ToUserInfo(),
+				TeamUsers = projectValue.TeamUsers != null
+					? new Collection<UserShortInfo>(projectValue.TeamUsers
+						.Select(dto => dto.ToUserInfo())
+						.ToList())
 					: null,
-				Clients = clients is not null
-					? new Collection<UserShortInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
+				Clients = projectValue.Clients != null
+					? new Collection<UserShortInfo>(projectValue.Clients
+						.Select(dto => dto.ToUserInfo())
+						.ToList())
 					: null,
-				Followers = followers is not null
-					? new Collection<UserShortInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
+				Followers = projectValue.Followers != null
+					? new Collection<UserShortInfo>(projectValue.Followers
+						.Select(dto => dto.ToUserInfo())
+						.ToList())
 					: null,
-				Tags = tags is not null
-					? new Collection<string>((List<string>)tags)
+				Tags = projectValue.Tags != null
+					? new Collection<string>(projectValue.Tags)
 					: null,
-				StartUtc = (DateTime?)start,
-				EndUtc = (DateTime?)end,
-				TeamAccess = (bool?)teamAccess,
-				Status = ((string?)status)?.ToProjectStatus(),
-				Quarter = quarter is not null
-					? new Collection<string>(((List<string>)quarter))
+				StartUtc = projectValue.Start,
+				EndUtc = projectValue.End,
+				TeamAccess = projectValue.TeamAccess,
+				Status = projectValue.Status?.ToProjectStatus(),
+				Quarter = projectValue.Quarter != null
+					? new Collection<string>(projectValue.Quarter)
 					: null,
-				ChecklistIds = checklist is not null
-					? new Collection<string>(((List<FieldInfo>)checklist).Select(dto => dto.Id).ToList())
+				ChecklistIds = projectValue.ChecklistIds != null
+					? new Collection<string>(projectValue.ChecklistIds
+						.Select(dto => dto.Id)
+						.ToList())
 					: null
 			});
 		}

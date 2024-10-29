@@ -260,6 +260,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
 	}
 
+	[Ignore("Компоненты нельзя удалить, вместе с очередью они почему-то не удаляются, запускать только вручную")]
 	[TestMethod]
 	public async Task GetComponentsAsync_ResponseIsNotNullAndNotEmpty()
 	{
@@ -423,7 +424,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Act
 		var projects = await YandexTrackerClient.GetProjectsAsync(
 			ProjectEntityType.Project,
-			requestProject);
+			requestProject,
+			returnedFields: ProjectFieldData.Summary | ProjectFieldData.Description);
 
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId, true);
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId, true);

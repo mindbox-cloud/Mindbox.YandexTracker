@@ -14,7 +14,7 @@ public sealed record Queue
 	/// <summary>
 	/// Идентификатор очереди
 	/// </summary>
-	public string Id { get; init; } = null!;
+	public long Id { get; init; }
 
 	/// <summary>
 	/// Ключ очереди

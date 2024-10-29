@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Mindbox.YandexTracker;
 
@@ -10,10 +9,10 @@ internal static class RequestExtensions
 {
 	public static CreateIssueRequest ToCreateIssueRequest(this Issue issue)
 	{
-		var fields = new Dictionary<string, JsonNode?>(issue.CustomFields)
+		var fields = new Dictionary<string, JsonElement>(issue.CustomFields)
 		{
-			["aliases"] = JsonSerializer.SerializeToNode(issue.Aliases),
-			["project"] = JsonSerializer.SerializeToNode(issue.Project!)
+			["aliases"] = JsonSerializer.SerializeToElement(issue.Aliases),
+			["project"] = JsonSerializer.SerializeToElement(issue.Project)
 		};
 
 		return new CreateIssueRequest
@@ -23,7 +22,7 @@ internal static class RequestExtensions
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
 			Fields = fields,
-			Followers = new Collection<string>(issue.Followers.Select(follower => follower.Id).ToList()),
+			Followers = new Collection<long>(issue.Followers.Select(follower => follower.Id).ToList()),
 			Parent = issue.ParentKey,
 			Priority = issue.Priority,
 			Sprints = issue.Sprints,
@@ -48,12 +47,12 @@ internal static class RequestExtensions
 	{
 		return new CreateQueueRequest
 		{
-			DefaultType = queue.DefaultType.Key.ToString(),
+			DefaultType = queue.DefaultType.Key,
 			Key = queue.Key,
 			LeadId = queue.Lead.Id,
 			Name = queue.Name,
 			DefaultPriority = queue.DefaultPriority,
-			IssutTypesConfig = new Collection<CreateIssueTypeConfigDto>(
+			IssueTypesConfig = new Collection<CreateIssueTypeConfigDto>(
 				queue.IssueTypesConfig
 					.Select(config => config.ToDto())
 					.ToList())
@@ -149,13 +148,13 @@ internal static class RequestExtensions
 			Summary = project.Summary!,
 			AuthorId = project.Author?.Id,
 			Clients = project.Clients is not null
-					? new Collection<string>(project.Clients.Select(client => client.Id).ToList())
+					? new Collection<long>(project.Clients.Select(client => client.Id).ToList())
 					: null,
 			Description = project.Description,
 			End = project.EndUtc,
 			EntityStatus = project.Status,
 			Followers = project.Followers is not null
-					? new Collection<string>(project.Followers.Select(client => client.Id).ToList())
+					? new Collection<long>(project.Followers.Select(client => client.Id).ToList())
 					: null,
 			LeadId = project.Lead?.Id,
 			ParentEntityId = project.ParentId,
@@ -163,7 +162,7 @@ internal static class RequestExtensions
 			Tags = project.Tags,
 			TeamAccess = project.TeamAccess,
 			TeamUsers = project.TeamUsers is not null
-					? new Collection<string>(project.TeamUsers.Select(client => client.Id).ToList())
+					? new Collection<long>(project.TeamUsers.Select(client => client.Id).ToList())
 					: null,
 		};
 	}

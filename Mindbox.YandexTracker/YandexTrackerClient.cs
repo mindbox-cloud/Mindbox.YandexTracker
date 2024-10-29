@@ -9,17 +9,20 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Mindbox.YandexTracker.Helpers;
+using Mindbox.YandexTracker.JsonConverters;
 
 namespace Mindbox.YandexTracker;
 
 public sealed class YandexTrackerClient : IYandexTrackerClient
 {
 	private readonly HttpClient _httpClient;
+	private readonly JsonSerializerOptions _jsonOptions;
 
 	public YandexTrackerClient(
 		IOptionsMonitor<YandexTrackerClientOptions> options,
@@ -29,6 +32,20 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ArgumentNullException.ThrowIfNull(httpClientFactory);
 
 		_httpClient = CreateHttpClient(httpClientFactory, options.CurrentValue);
+
+		_jsonOptions = new JsonSerializerOptions
+		{
+			Converters =
+			{
+				new QueueLocalFieldTypeConverter(),
+				new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
+				new YandexDateTimeConverter(),
+				new YandexNullableDateTimeConverter()
+			},
+			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+			WriteIndented = true
+		};
 	}
 
 	private static HttpClient CreateHttpClient(
@@ -298,7 +315,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<IReadOnlyList<Component>> GetComponentsAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerApiRequestAsync<List<GetComponentResponse>>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetComponentResponse>(
 			"components",
 			HttpMethod.Get,
 			payload: null!,
@@ -564,11 +581,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	public async Task<UserDetailedInfo> GetUserByIdAsync(
-		string userId,
+		long userId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
-
 		return (await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(
 			$"users/{userId}",
 			HttpMethod.Get,
@@ -735,7 +750,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken);
 
 		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-		return JsonSerializer.Deserialize<TResult>(resultContent)!;
+		return JsonSerializer.Deserialize<TResult>(resultContent, _jsonOptions)!;
 	}
 
 	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
@@ -773,8 +788,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				}
 				else
 				{
+					var json = JsonSerializer.Serialize(payload, _jsonOptions);
 					request.Content = new StringContent(
-						JsonSerializer.Serialize(payload),
+						json,
 						Encoding.UTF8,
 						"application/json");
 				}

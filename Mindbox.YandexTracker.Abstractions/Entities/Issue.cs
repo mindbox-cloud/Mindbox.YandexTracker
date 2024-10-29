@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 [assembly: InternalsVisibleTo("Mindbox.YandexTracker")]
 
@@ -148,7 +147,7 @@ public sealed record Issue
 	/// Чтобы не поломать работу было принято использовать JToken и ограничить доступ к словарю через GetCustomField и
 	/// SetCustomField
 	/// </remarks>
-	internal Dictionary<string, JsonNode?> CustomFields { get; init; } = [];
+	internal Dictionary<string, JsonElement> CustomFields { get; init; } = [];
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
@@ -160,7 +159,9 @@ public sealed record Issue
 
 		if (CustomFields.TryGetValue(customFieldId, out var value))
 		{
-			return value.Deserialize<T?>();
+			return value.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined
+				? default
+				: value.Deserialize<T?>();
 		}
 
 		throw new KeyNotFoundException($"Key '{customFieldId}' not found in custom fields.");
@@ -174,7 +175,7 @@ public sealed record Issue
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
 
-		CustomFields[customFieldId] = JsonSerializer.SerializeToNode(value);
+		CustomFields[customFieldId] = JsonSerializer.SerializeToElement(value);
 	}
 
 	public IReadOnlyList<string> GetCustomFieldsKeys()

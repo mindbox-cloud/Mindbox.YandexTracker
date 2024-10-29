@@ -433,7 +433,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Assert
 		Assert.IsNotNull(projects);
 
-		Assert.IsTrue(projects.Any(project => project.ShortId == project1.ShortId));
+		var actualProject = projects.FirstOrDefault(x => x.ShortId == project1.ShortId);
+		Assert.IsNotNull(actualProject);
+		Assert.AreEqual(summary, actualProject.Summary);
 	}
 
 	[TestMethod]

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Mindbox.YandexTracker;
 
@@ -8,13 +9,11 @@ internal static class RequestExtensions
 {
 	public static CreateIssueRequest ToCreateIssueRequest(this Issue issue)
 	{
-		var fields = new Dictionary<string, object?>(issue.CustomFields!)
+		var fields = new Dictionary<string, JToken?>(issue.CustomFields)
 		{
-			["aliases"] = issue.Aliases,
-			["project"] = issue.Project!
-		}
-		.Where(x => x.Value is not null)
-		.ToDictionary(x => x.Key, x => x.Value);
+			["aliases"] = new JArray(issue.Aliases),
+			["project"] = new JValue(issue.Project!)
+		};
 
 		return new CreateIssueRequest
 		{

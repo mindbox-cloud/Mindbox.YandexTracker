@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Mindbox.YandexTracker;
 
@@ -48,6 +49,6 @@ internal sealed record CreateIssueRequest
 	public string? Assignee { get; init; }
 
 	[DataMember(EmitDefaultValue = false)]
-	[JsonExtensionData]
-	public Dictionary<string, object?>? Fields { get; init; }
+	[Newtonsoft.Json.JsonExtensionData]
+	public Dictionary<string, JToken?>? Fields { get; init; }
 }

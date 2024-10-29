@@ -95,20 +95,21 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			FieldType = QueueLocalFieldType.StringFieldType
 		});
 
-		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = new Issue
 		{
 			QueueKey = TestQueueKey,
-			Summary = GetUniqueName(),
-			CustomFields = new()
-			{
-				{ customField.Id, "field1" }
-			}
-		});
+			Summary = GetUniqueName()
+		};
 
-		var response = await YandexTrackerClient.GetIssueAsync(issue.Key);
+		issue.SetCustomField<string>(customField.Id, "field1");
+
+		var createdIssue = await YandexTrackerClient.CreateIssueAsync(issue);
+
+		var response = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
 
 		Assert.IsNotNull(response);
 		Assert.IsTrue(response.CustomFields.ContainsKey(customField.Id));
+		Assert.AreEqual("field1", response.GetCustomField<string>(customField.Id));
 	}
 
 	[TestMethod]

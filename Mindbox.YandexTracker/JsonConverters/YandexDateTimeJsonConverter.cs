@@ -5,7 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker.JsonConverters;
 
-internal class YandexDateTimeConverter : JsonConverter<DateTime>
+/// <summary>
+/// Кастомный конвертер для сериализации/десериализации даты и времени в формате Yandex'а.
+/// </summary>
+internal class YandexDateTimeJsonConverter : JsonConverter<DateTime>
 {
 	private const string DateFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz"; // Adjust this to match your JSON date format
 

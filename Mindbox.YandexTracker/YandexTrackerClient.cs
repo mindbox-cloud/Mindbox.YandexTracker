@@ -37,10 +37,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		{
 			Converters =
 			{
-				new QueueLocalFieldTypeConverter(),
+				new EnumWithEnumMemberAttributeJsonConverter<QueueLocalFieldType>(),
 				new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
-				new YandexDateTimeConverter(),
-				new YandexNullableDateTimeConverter()
+				new YandexDateTimeJsonConverter(),
+				new YandexNullableDateTimeJsonConverter()
 			},
 			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,

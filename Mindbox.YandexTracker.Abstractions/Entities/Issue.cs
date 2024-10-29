@@ -143,9 +143,9 @@ public sealed record Issue
 	/// Кастомные поля задачи
 	/// </summary>
 	/// <remarks>
-	/// Необходимость JsonNode заключается в том, что мы не знаем какое объект придет к нам с сервера под заданным ключем.
-	/// Чтобы не поломать работу было принято использовать JToken и ограничить доступ к словарю через GetCustomField и
-	/// SetCustomField
+	/// Используем JsonElement, потому что на этапе компиляции мы не знаем, какой объект придет к нам с сервера под
+	/// заданным ключиком. Чтобы не поломать работу было принято использовать JsonElement и ограничить доступ к словарю через
+	/// GetCustomField и SetCustomField.
 	/// </remarks>
 	internal Dictionary<string, JsonElement> CustomFields { get; init; } = [];
 

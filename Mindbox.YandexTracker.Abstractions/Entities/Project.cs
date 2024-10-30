@@ -113,6 +113,12 @@ public sealed record Project
 	/// </summary>
 	public int? ParentId { get; init; }
 
+	/// <summary>
+	/// Очереди задач, содержащихся в проекте
+	/// </summary>
+	/// <returns></returns>
+	public Collection<string>? IssueQueueKeys { get; init; }
+
 	public override int GetHashCode()
 	{
 		var hashCodePart1 = HashCode.Combine(

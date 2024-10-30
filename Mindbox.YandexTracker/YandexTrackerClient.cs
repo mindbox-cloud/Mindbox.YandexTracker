@@ -527,19 +527,42 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = returnedFields.Value.ToQueryString();
 		}
 
+		var page = 1;
+		parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
+		parameters["perPage"] = "100";
+
 		var request = project.ToGetProjectsRequest(
 			input,
 			orderBy,
 			orderAscending,
 			rootOnly);
 
-		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType.ToYandexCase()}/_search",
-			HttpMethod.Post,
-			payload: request,
-			parameters: parameters,
-			cancellationToken: cancellationToken))
-			.ToProjects();
+		var projects = new List<Project>();
+
+		// При запросе проектов возвращается респонс
+		// {
+		// "pages": pageCount,
+		// "hits": кол-во проектов в values,
+		// "values": [{}]
+		// },
+		// Логика в обычной пагинации не подойдет, приходится обрабатывать этот случай отдельно
+		GetProjectsResponse? response;
+		do
+		{
+			response = (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
+				$"entities/{entityType.ToYandexCase()}/_search",
+				HttpMethod.Post,
+				payload: request,
+				parameters: parameters,
+				cancellationToken: cancellationToken));
+
+			projects.AddRange(response.ToProjects());
+			page++;
+			parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
+
+		} while (response.Pages > page);
+
+		return projects;
 	}
 
 	public async Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(

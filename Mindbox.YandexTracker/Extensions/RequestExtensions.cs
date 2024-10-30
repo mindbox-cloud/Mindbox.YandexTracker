@@ -163,7 +163,7 @@ internal static class RequestExtensions
 			TeamAccess = project.TeamAccess,
 			TeamUsers = project.TeamUsers is not null
 					? new Collection<long>(project.TeamUsers.Select(client => client.Id).ToList())
-					: null,
+					: null
 		};
 	}
 }

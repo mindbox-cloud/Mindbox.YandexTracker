@@ -371,45 +371,56 @@ internal static class ResponseExtensions
 			projects.Add(new Project
 			{
 				Id = projectValue.Id,
-				ShortId = projectValue.ShortId,
-				ProjectType = projectValue.ProjectType,
-				CreatedBy = projectValue.CreatedBy.ToUserInfo(),
-				CreatedAtUtc = projectValue.CreatedAt,
-				UpdatedAtUtc = projectValue.UpdatedAt,
-				Summary = projectValue.Summary,
-				Description = projectValue.Description,
-				Author = projectValue.Author?.ToUserInfo(),
-				Lead = projectValue.Lead?.ToUserInfo(),
-				TeamUsers = projectValue.TeamUsers != null
-					? new Collection<UserShortInfo>(projectValue.TeamUsers
-						.Select(dto => dto.ToUserInfo())
-						.ToList())
+		        ShortId = projectValue.ShortId,
+		        ProjectType = projectValue.ProjectType,
+		        CreatedBy = projectValue.CreatedBy.ToUserInfo(),
+		        CreatedAtUtc = projectValue.CreatedAt,
+		        UpdatedAtUtc = projectValue.UpdatedAt,
+		        Summary = projectValue.Fields.TryGetValue("summary", out var summaryElement)
+			        ? summaryElement.GetString()
+			        : null,
+				Description = projectValue.Fields.TryGetValue("description", out var descriptionElement)
+					? descriptionElement.GetString()
 					: null,
-				Clients = projectValue.Clients != null
-					? new Collection<UserShortInfo>(projectValue.Clients
-						.Select(dto => dto.ToUserInfo())
-						.ToList())
+		        Author = projectValue.Fields.TryGetValue("author", out var authorElement)
+			        ? authorElement.ToUserShortInfo()
+			        : null,
+		        Lead = projectValue.Fields.TryGetValue("lead", out var leadElement)
+			        ? leadElement.ToUserShortInfo()
+			        : null,
+				TeamUsers = projectValue.Fields.TryGetValue("teamUsers", out var teamUsersElement)
+					? teamUsersElement.ToUserCollection()
 					: null,
-				Followers = projectValue.Followers != null
-					? new Collection<UserShortInfo>(projectValue.Followers
-						.Select(dto => dto.ToUserInfo())
-						.ToList())
-					: null,
-				Tags = projectValue.Tags != null
-					? new Collection<string>(projectValue.Tags)
-					: null,
-				StartUtc = projectValue.Start,
-				EndUtc = projectValue.End,
-				TeamAccess = projectValue.TeamAccess,
-				Status = projectValue.Status?.ToProjectStatus(),
-				Quarter = projectValue.Quarter != null
-					? new Collection<string>(projectValue.Quarter)
-					: null,
-				ChecklistIds = projectValue.ChecklistIds != null
-					? new Collection<string>(projectValue.ChecklistIds
-						.Select(dto => dto.Id)
-						.ToList())
-					: null
+		        Clients = projectValue.Fields.TryGetValue("clients", out var clientsElement)
+			        ? clientsElement.ToUserCollection()
+			        : null,
+		        Followers = projectValue.Fields.TryGetValue("followers", out var followersElement)
+			        ? followersElement.ToUserCollection()
+			        : null,
+		        Tags = projectValue.Fields.TryGetValue("tags", out var tagsElement)
+			        ? tagsElement.ToStringCollection()
+			        : null,
+		        StartUtc = projectValue.Fields.TryGetValue("start", out var startUtcElement)
+			        ? startUtcElement.GetDateTime()
+			        : null,
+		        EndUtc = projectValue.Fields.TryGetValue("end", out var endUtcElement)
+			        ? endUtcElement.GetDateTime()
+			        : null,
+		        TeamAccess = projectValue.Fields.TryGetValue("teamAccess", out var teamAccessElement)
+			        ? teamAccessElement.GetBoolean()
+			        : null,
+		        Status = projectValue.Fields.TryGetValue("status", out var statusElement)
+			        ? statusElement.ToProjectEntityStatus()
+			        : null,
+		        Quarter = projectValue.Fields.TryGetValue("quarter", out var quarterElement)
+			        ? quarterElement.ToStringCollection()
+			        : null,
+		        ChecklistIds = projectValue.Fields.TryGetValue("checklistIds", out var checklistIdsElement)
+			        ? checklistIdsElement.ToStringCollection()
+			        : null,
+		        ParentId = projectValue.Fields.TryGetValue("parentId", out var parentIdElement)
+			        ? parentIdElement.GetInt32()
+			        : null
 			});
 		}
 
@@ -418,14 +429,59 @@ internal static class ResponseExtensions
 
 	public static Project ToProject(this CreateProjectResponse value)
 	{
-		return new Project
+		 return new Project
 		{
-			Id = value.Id,
-			ShortId = value.ShortId,
-			ProjectType = value.ProjectEntityType,
-			CreatedBy = value.CreatedBy.ToUserInfo(),
-			CreatedAtUtc = value.CreatedAt,
-			UpdatedAtUtc = value.UpdatedAt
+	        Id = value.Id,
+	        ShortId = value.ShortId,
+	        ProjectType = value.ProjectEntityType,
+	        CreatedBy = value.CreatedBy.ToUserInfo(),
+	        CreatedAtUtc = value.CreatedAt,
+	        UpdatedAtUtc = value.UpdatedAt,
+	        Summary = value.Fields.TryGetValue("summary", out var summaryElement)
+		        ? summaryElement.GetString()
+		        : null,
+			Description = value.Fields.TryGetValue("description", out var descriptionElement)
+				? descriptionElement.GetString()
+				: null,
+	        Author = value.Fields.TryGetValue("author", out var authorElement)
+		        ? authorElement.ToUserShortInfo()
+		        : null,
+	        Lead = value.Fields.TryGetValue("lead", out var leadElement)
+		        ? leadElement.ToUserShortInfo()
+		        : null,
+			TeamUsers = value.Fields.TryGetValue("teamUsers", out var teamUsersElement)
+				? teamUsersElement.ToUserCollection()
+				: null,
+	        Clients = value.Fields.TryGetValue("clients", out var clientsElement)
+		        ? clientsElement.ToUserCollection()
+		        : null,
+	        Followers = value.Fields.TryGetValue("followers", out var followersElement)
+		        ? followersElement.ToUserCollection()
+		        : null,
+	        Tags = value.Fields.TryGetValue("tags", out var tagsElement)
+		        ? tagsElement.ToStringCollection()
+		        : null,
+	        StartUtc = value.Fields.TryGetValue("start", out var startUtcElement)
+		        ? startUtcElement.GetDateTime()
+		        : null,
+	        EndUtc = value.Fields.TryGetValue("end", out var endUtcElement)
+		        ? endUtcElement.GetDateTime()
+		        : null,
+	        TeamAccess = value.Fields.TryGetValue("teamAccess", out var teamAccessElement)
+		        ? teamAccessElement.GetBoolean()
+		        : null,
+	        Status = value.Fields.TryGetValue("status", out var statusElement)
+		        ? statusElement.ToProjectEntityStatus()
+		        : null,
+	        Quarter = value.Fields.TryGetValue("quarter", out var quarterElement)
+		        ? quarterElement.ToStringCollection()
+		        : null,
+	        ChecklistIds = value.Fields.TryGetValue("checklistIds", out var checklistIdsElement)
+		        ? checklistIdsElement.ToStringCollection()
+		        : null,
+	        ParentId = value.Fields.TryGetValue("parentId", out var parentIdElement)
+		        ? parentIdElement.GetInt32()
+		        : null
 		};
 	}
 

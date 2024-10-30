@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -400,11 +401,36 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Arrange
 		var summary = GetUniqueName();
 
+		var currentUserShortInfo = new UserShortInfo
+		{
+			Display = CurrentUserLogin,
+			Id = CurrentUserId
+		};
+
+		var nowUtc = DateTime.UtcNow;
+		var endUtc = nowUtc.AddDays(3);
+		var tags = new Collection<string> { "tag1", "tag2" };
+		var quarter = new Collection<string> { "Q1" };
+
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
 			new Project
 			{
-				Summary = summary
+				Summary = summary,
+				Author = currentUserShortInfo,
+				Followers = [currentUserShortInfo],
+				Clients = [currentUserShortInfo],
+				Lead = currentUserShortInfo,
+				Description = "DESC",
+				Tags = tags,
+				ProjectType = ProjectEntityType.Project,
+				StartUtc = nowUtc,
+				EndUtc = endUtc,
+				CreatedBy = currentUserShortInfo,
+				TeamAccess = false,
+				TeamUsers = [currentUserShortInfo],
+				Quarter = quarter,
+				Status = ProjectEntityStatus.InProgress
 			});
 
 		var project2 = await YandexTrackerClient.CreateProjectAsync(
@@ -425,7 +451,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var projects = await YandexTrackerClient.GetProjectsAsync(
 			ProjectEntityType.Project,
 			requestProject,
-			returnedFields: ProjectFieldData.Summary | ProjectFieldData.Description);
+			returnedFields:
+				ProjectFieldData.Summary | ProjectFieldData.Description | ProjectFieldData.Author
+				| ProjectFieldData.Lead | ProjectFieldData.TeamUsers | ProjectFieldData.Clients
+				| ProjectFieldData.Followers | ProjectFieldData.Start | ProjectFieldData.End
+				| ProjectFieldData.Tags | ProjectFieldData.ParentEntity
+				| ProjectFieldData.TeamAccess | ProjectFieldData.Quarter | ProjectFieldData.EntityStatus
+				| ProjectFieldData.IssueQueues);
 
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId, true);
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId, true);
@@ -436,6 +468,25 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var actualProject = projects.FirstOrDefault(x => x.ShortId == project1.ShortId);
 		Assert.IsNotNull(actualProject);
 		Assert.AreEqual(summary, actualProject.Summary);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Author!.Id);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Lead!.Id);
+		Assert.AreEqual(1, actualProject.Followers!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Followers!.First().Id);
+		Assert.AreEqual(1, actualProject.Clients!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Clients!.First().Id);
+		Assert.AreEqual("DESC", actualProject.Description);
+		Assert.AreEqual(2, actualProject.Tags!.Count);
+		CollectionAssert.AreEqual(tags, actualProject.Tags);
+		Assert.AreEqual(ProjectEntityType.Project, actualProject.ProjectType);
+		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Status);
+		Assert.AreEqual(nowUtc, actualProject.StartUtc);
+		Assert.AreEqual(endUtc, actualProject.EndUtc);
+		Assert.AreEqual(currentUserShortInfo, actualProject.CreatedBy);
+		Assert.IsFalse(actualProject.TeamAccess);
+		Assert.AreEqual(1, actualProject.TeamUsers!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.TeamUsers!.First().Id);
+		Assert.AreEqual(1, actualProject.Quarter!.Count);
+		CollectionAssert.AreEqual(quarter, actualProject.Tags);
 	}
 
 	[TestMethod]

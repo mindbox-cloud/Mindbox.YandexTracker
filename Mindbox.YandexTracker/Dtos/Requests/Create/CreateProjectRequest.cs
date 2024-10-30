@@ -13,6 +13,7 @@ internal sealed record ProjectFieldsDto
 {
 	public required string Summary { get; init; }
 
+	[JsonPropertyName("teamAccess")]
 	public bool? TeamAccess { get; init; }
 
 	public string? Description { get; init; }

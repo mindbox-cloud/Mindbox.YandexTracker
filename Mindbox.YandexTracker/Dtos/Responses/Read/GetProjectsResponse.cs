@@ -52,6 +52,7 @@ internal sealed record ProjectInfo
 
 	public DateTime? End { get; init; }
 
+	[JsonPropertyName("teamAccess")]
 	public bool? TeamAccess { get; init; }
 
 	public string? Status { get; init; }

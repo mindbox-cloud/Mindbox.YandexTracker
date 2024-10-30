@@ -409,18 +409,21 @@ internal static class ResponseExtensions
 		        TeamAccess = projectValue.Fields.TryGetValue("teamAccess", out var teamAccessElement)
 			        ? teamAccessElement.GetBoolean()
 			        : null,
-		        Status = projectValue.Fields.TryGetValue("status", out var statusElement)
+		        Status = projectValue.Fields.TryGetValue("entityStatus", out var statusElement)
 			        ? statusElement.ToProjectEntityStatus()
 			        : null,
 		        Quarter = projectValue.Fields.TryGetValue("quarter", out var quarterElement)
 			        ? quarterElement.ToStringCollection()
 			        : null,
-		        ChecklistIds = projectValue.Fields.TryGetValue("checklistIds", out var checklistIdsElement)
+		        ChecklistIds = projectValue.Fields.TryGetValue("checklistItems", out var checklistIdsElement)
 			        ? checklistIdsElement.ToStringCollection()
 			        : null,
-		        ParentId = projectValue.Fields.TryGetValue("parentId", out var parentIdElement)
+		        ParentId = projectValue.Fields.TryGetValue("parentEntity", out var parentIdElement)
 			        ? parentIdElement.GetInt32()
-			        : null
+			        : null,
+		        IssueQueueKeys = projectValue.Fields.TryGetValue("issueQueues", out var issueQueues)
+			        ? new Collection<string>(issueQueues.ToFieldInfoCollection().Select(x => x.Key!).ToList())
+			        : null,
 			});
 		}
 
@@ -476,10 +479,10 @@ internal static class ResponseExtensions
 	        Quarter = value.Fields.TryGetValue("quarter", out var quarterElement)
 		        ? quarterElement.ToStringCollection()
 		        : null,
-	        ChecklistIds = value.Fields.TryGetValue("checklistIds", out var checklistIdsElement)
+	        ChecklistIds = value.Fields.TryGetValue("checklistItems", out var checklistIdsElement)
 		        ? checklistIdsElement.ToStringCollection()
 		        : null,
-	        ParentId = value.Fields.TryGetValue("parentId", out var parentIdElement)
+	        ParentId = value.Fields.TryGetValue("parentEntity", out var parentIdElement)
 		        ? parentIdElement.GetInt32()
 		        : null
 		};

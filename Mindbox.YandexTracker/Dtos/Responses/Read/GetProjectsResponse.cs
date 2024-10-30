@@ -62,6 +62,8 @@ internal sealed record ProjectInfo
 	[JsonPropertyName("checklistItems")]
 	public List<FieldInfo>? ChecklistIds { get; init; }
 
+	public List<string>? IssueQueueKeys { get; init; }
+
 	[JsonExtensionData]
 	public IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
 }

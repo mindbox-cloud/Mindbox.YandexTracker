@@ -42,4 +42,21 @@ internal static class JsonElementExtensions
 	{
 		return element.GetString()?.ToProjectStatus() ?? default;
 	}
+
+	public static Collection<FieldInfo> ToFieldInfoCollection(this JsonElement element)
+	{
+		var collection = new Collection<FieldInfo>();
+
+		foreach (var item in element.EnumerateArray())
+		{
+			collection.Add(new FieldInfo
+			{
+				Id = item.GetProperty("id").GetString() ?? string.Empty,
+				Key = item.GetProperty("key").GetString() ?? string.Empty,
+				Display = item.GetProperty("display").GetString() ?? string.Empty
+			});
+		}
+
+		return collection;
+	}
 }

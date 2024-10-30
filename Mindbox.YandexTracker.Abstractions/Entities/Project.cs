@@ -81,11 +81,17 @@ public sealed record Project
 	/// <summary>
 	/// Дата начала
 	/// </summary>
+	/// <remarks>
+	/// Учитывается только год, месяц и день
+	/// </remarks>
 	public DateTime? StartUtc { get; init; }
 
 	/// <summary>
 	/// Дедлайн
 	/// </summary>
+	/// <remarks>
+	/// Учитывается только год, месяц и день
+	/// </remarks>
 	public DateTime? EndUtc { get; init; }
 
 	/// <summary>

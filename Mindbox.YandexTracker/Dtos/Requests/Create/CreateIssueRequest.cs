@@ -11,7 +11,7 @@ internal sealed record CreateIssueRequest
 
 	public required string Queue { get; init; }
 
-	public Collection<long>? Followers { get; init; }
+	public Collection<string>? Followers { get; init; }
 
 	public IssueType? Type { get; init; }
 
@@ -19,7 +19,7 @@ internal sealed record CreateIssueRequest
 
 	public string? Parent { get; init; }
 
-	public long? Author { get; init; }
+	public string? Author { get; init; }
 
 	public string? Unique { get; init; }
 
@@ -30,7 +30,7 @@ internal sealed record CreateIssueRequest
 
 	public Priority? Priority { get; init; }
 
-	public long? Assignee { get; init; }
+	public string? Assignee { get; init; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 

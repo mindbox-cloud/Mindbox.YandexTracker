@@ -603,7 +603,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	public async Task<UserDetailedInfo> GetUserByIdAsync(
-		long userId,
+		string userId,
 		CancellationToken cancellationToken = default)
 	{
 		return (await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(

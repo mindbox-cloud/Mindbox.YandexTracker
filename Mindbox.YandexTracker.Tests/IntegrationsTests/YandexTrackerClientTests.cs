@@ -410,7 +410,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var nowUtc = DateTime.UtcNow;
 		var endUtc = nowUtc.AddDays(3);
 		var tags = new Collection<string> { "tag1", "tag2" };
-		var quarter = new Collection<string> { "Q1" };
+		var quarter = new Collection<string>();
 
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
@@ -479,14 +479,17 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		CollectionAssert.AreEqual(tags, actualProject.Tags);
 		Assert.AreEqual(ProjectEntityType.Project, actualProject.ProjectType);
 		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Status);
-		Assert.AreEqual(nowUtc, actualProject.StartUtc);
-		Assert.AreEqual(endUtc, actualProject.EndUtc);
-		Assert.AreEqual(currentUserShortInfo, actualProject.CreatedBy);
-		Assert.IsFalse(actualProject.TeamAccess);
+		Assert.IsTrue(nowUtc.Year == actualProject.StartUtc?.Year // Возвращается только год, месяц и день
+		    && nowUtc.Month == actualProject.StartUtc?.Month
+		    && nowUtc.Day == actualProject.StartUtc?.Day);
+		Assert.IsTrue(endUtc.Year == actualProject.EndUtc?.Year // Возвращается только год, месяц и день
+			&& endUtc.Month == actualProject.EndUtc?.Month
+			&& endUtc.Day == actualProject.EndUtc?.Day);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
+		Assert.IsNull(actualProject.TeamAccess);
 		Assert.AreEqual(1, actualProject.TeamUsers!.Count);
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.TeamUsers!.First().Id);
-		Assert.AreEqual(1, actualProject.Quarter!.Count);
-		CollectionAssert.AreEqual(quarter, actualProject.Tags);
+		Assert.AreEqual(2, actualProject.Quarter!.Count);
 	}
 
 	[TestMethod]

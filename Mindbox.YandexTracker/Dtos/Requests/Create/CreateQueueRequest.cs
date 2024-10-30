@@ -10,7 +10,7 @@ internal sealed record CreateQueueRequest
 	public required string Name { get; init; }
 
 	[JsonPropertyName("lead")]
-	public long LeadId { get; init; }
+	public required string LeadId { get; init; }
 
 	public required string DefaultType { get; init; }
 

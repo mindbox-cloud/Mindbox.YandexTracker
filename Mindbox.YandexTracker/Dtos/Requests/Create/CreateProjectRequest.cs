@@ -19,16 +19,16 @@ internal sealed record ProjectFieldsDto
 	public string? Description { get; init; }
 
 	[JsonPropertyName("author")]
-	public long? AuthorId { get; init; }
+	public string? AuthorId { get; init; }
 
 	[JsonPropertyName("lead")]
-	public long? LeadId { get; init; }
+	public string? LeadId { get; init; }
 
-	public Collection<long>? TeamUsers { get; init; }
+	public Collection<string>? TeamUsers { get; init; }
 
-	public Collection<long>? Clients { get; init; }
+	public Collection<string>? Clients { get; init; }
 
-	public Collection<long>? Followers { get; init; }
+	public Collection<string>? Followers { get; init; }
 
 	/// <remarks>
 	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format

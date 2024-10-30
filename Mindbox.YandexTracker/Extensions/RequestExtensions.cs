@@ -22,7 +22,7 @@ internal static class RequestExtensions
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
 			Fields = fields,
-			Followers = new Collection<long>(issue.Followers.Select(follower => follower.Id).ToList()),
+			Followers = new Collection<string>(issue.Followers.Select(follower => follower.Id).ToList()),
 			Parent = issue.ParentKey,
 			Priority = issue.Priority,
 			Sprints = issue.Sprints,
@@ -148,13 +148,13 @@ internal static class RequestExtensions
 			Summary = project.Summary!,
 			AuthorId = project.Author?.Id,
 			Clients = project.Clients is not null
-					? new Collection<long>(project.Clients.Select(client => client.Id).ToList())
+					? new Collection<string>(project.Clients.Select(client => client.Id).ToList())
 					: null,
 			Description = project.Description,
 			End = project.EndUtc,
 			EntityStatus = project.Status,
 			Followers = project.Followers is not null
-					? new Collection<long>(project.Followers.Select(client => client.Id).ToList())
+					? new Collection<string>(project.Followers.Select(client => client.Id).ToList())
 					: null,
 			LeadId = project.Lead?.Id,
 			ParentEntityId = project.ParentId,
@@ -162,7 +162,7 @@ internal static class RequestExtensions
 			Tags = project.Tags,
 			TeamAccess = project.TeamAccess,
 			TeamUsers = project.TeamUsers is not null
-					? new Collection<long>(project.TeamUsers.Select(client => client.Id).ToList())
+					? new Collection<string>(project.TeamUsers.Select(client => client.Id).ToList())
 					: null
 		};
 	}

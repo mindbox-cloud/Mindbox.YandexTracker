@@ -85,8 +85,8 @@ public class HashCodeTests
 	{
 		var future = DateTime.Now.AddDays(1);
 
-		var authorUserId = 123;
-		var clientUserId = 456;
+		var authorUserId = "123";
+		var clientUserId = "456";
 
 		var project1 = new Project
 		{

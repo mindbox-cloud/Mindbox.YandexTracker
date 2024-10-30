@@ -8,7 +8,7 @@ public sealed record UserShortInfo
 	/// <summary>
 	/// Идентификатор пользователя
 	/// </summary>
-	public required long Id { get; init; }
+	public required string Id { get; init; }
 
 	/// <summary>
 	/// Отображаемое имя пользователя.

@@ -10,7 +10,7 @@ internal static class JsonElementExtensions
 		return new UserShortInfo
 		{
 			Display = element.GetProperty("display").GetString() ?? string.Empty,
-			Id = element.GetProperty("id").GetInt64()
+			Id = element.GetProperty("id").GetString() ?? string.Empty
 		};
 	}
 

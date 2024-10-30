@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,7 @@ namespace Mindbox.YandexTracker.Tests;
 public abstract class YandexTrackerTestBase
 {
 	protected static string TestQueueKey { get; private set; } = null!;
-	protected static long CurrentUserId { get; private set; }
+	protected static string CurrentUserId { get; private set; } = null!;
 	protected static string CurrentUserLogin { get; private set; } = null!;
 	protected static IServiceProvider ServiceProvider { get; private set; } = null!;
 	protected static IYandexTrackerClient YandexTrackerClient { get; private set; } = null!;
@@ -35,7 +36,7 @@ public abstract class YandexTrackerTestBase
 
 		// узнаем инфу о пользователи, от имени которого выполняем запрос
 		var userInfo = await YandexTrackerClient.GetMyselfAsync();
-		CurrentUserId = userInfo.Id;
+		CurrentUserId = userInfo.Id.ToString(CultureInfo.InvariantCulture);
 		CurrentUserLogin = userInfo.Login;
 
 		// в ключе может быть до 15 латинских символов

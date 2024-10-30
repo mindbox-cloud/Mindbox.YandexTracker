@@ -79,9 +79,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not QueueExpandData.None)
 		{
-			parameters["expand"] = expand is QueueExpandData.All
-				? expand.ToString()!
-				: expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(QueueExpandData.All, QueueExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -107,7 +105,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null && (QueuesExpandData)expand != QueuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, QueuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -136,7 +134,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssueExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssueExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -165,7 +163,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -200,7 +198,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -235,7 +233,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -270,7 +268,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -367,10 +365,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not CommentExpandData.None)
 		{
-			if (expand is CommentExpandData.All)
-				parameters["expand"] = expand.ToString()!;
-			else
-				parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(CommentExpandData.All, CommentExpandData.None);
 		}
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
@@ -496,11 +491,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		if (returnedFields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = returnedFields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None);
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType.ToYandexCase()}",
+			$"entities/{entityType.ToCamelCase()}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -524,7 +519,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (returnedFields is not null and not ProjectFieldData.None)
 		{
-			parameters["fields"] = returnedFields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None);
 		}
 
 		var page = 1;
@@ -550,7 +545,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		do
 		{
 			response = (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-				$"entities/{entityType.ToYandexCase()}/_search",
+				$"entities/{entityType.ToCamelCase()}/_search",
 				HttpMethod.Post,
 				payload: request,
 				parameters: parameters,
@@ -752,7 +747,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["withBoard"] = deleteWithBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType.ToYandexCase()}/{projectShortId}",
+			$"entities/{entityType.ToCamelCase()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			parameters: parameters,

@@ -7,18 +7,6 @@ namespace Mindbox.YandexTracker;
 
 internal static class ResponseExtensions
 {
-	public static string ToQueryString<T>(this T value)
-		where T : Enum
-	{
-		var enumValues = Enum.GetValues(typeof(T))
-			.Cast<T>()
-			.Where(enumValue => value.HasFlag(enumValue!))
-			.Select(enumValue => enumValue!.ToString().ToYandexCase())
-			.Skip(1); // skip None
-
-		return string.Join(",", enumValues);
-	}
-
 	public static Priority ToPriority(this FieldInfo value) => value.Key switch
 	{
 		"trivial" => Priority.Trivial,

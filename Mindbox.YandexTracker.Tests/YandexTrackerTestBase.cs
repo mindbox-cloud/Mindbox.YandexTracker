@@ -36,7 +36,7 @@ public abstract class YandexTrackerTestBase
 
 		// узнаем инфу о пользователи, от имени которого выполняем запрос
 		var userInfo = await YandexTrackerClient.GetMyselfAsync();
-		CurrentUserId = userInfo.Uid.ToString(CultureInfo.InvariantCulture);
+		CurrentUserId = userInfo.Id.ToString(CultureInfo.InvariantCulture);
 		CurrentUserLogin = userInfo.Login;
 
 		// в ключе может быть до 15 латинских символов
@@ -52,22 +52,22 @@ public abstract class YandexTrackerTestBase
 
 	private static async Task CreateQueueAsync()
 	{
-		await YandexTrackerClient.CreateQueueAsync(new Queue
+		await YandexTrackerClient.CreateQueueAsync(new CreateQueueResponse
 		{
 			Key = TestQueueKey,
-			DefaultType = new IssueType
+			DefaultType = new FieldInfo
 			{
-				Id = 2,
+				Id = "2",
 				Key = "task",
-				Name = "Задача"
+				Display = "Задача"
 			},
-			Lead = new UserShortInfo { Id = CurrentUserId, Display = CurrentUserLogin },
+			Lead = new FieldInfo { Id = CurrentUserId, Display = CurrentUserLogin },
 			Name = TestQueueKey.ToUpperInvariant(),
 			IssueTypesConfig =
 			[
 				new()
 				{
-					IssueType = new IssueType
+					IssueType = new GetIssueTypeResponse
 					{
 						Id = 2,
 						Key = "task",

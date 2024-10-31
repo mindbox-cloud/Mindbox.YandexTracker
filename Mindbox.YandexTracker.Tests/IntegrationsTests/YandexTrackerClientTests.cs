@@ -45,23 +45,15 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	public async Task GetIssueAsync_IssueKey_ResponseIsNotNullAndIssueSuccessfullyCreated()
 	{
 		// Arrange
-
-		var currentUserShortInfo = new UserShortInfo
-		{
-			Display = CurrentUserLogin,
-			Id = CurrentUserId
-		};
-
 		var nowUtc = DateTime.UtcNow;
 		var dateTimeOnlyStart = DateOnly.FromDateTime(nowUtc);
 		var tags = new[] { "tag1", "tag2" };
 		var summary = GetUniqueName();
 
-		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
 		{
-			QueueKey = TestQueueKey,
+			Queue = TestQueueKey,
 			Summary = summary,
-			CreatedBy = currentUserShortInfo,
 			Description = "DESC",
 			Tags = tags,
 			Followers = [currentUserShortInfo],
@@ -69,7 +61,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Author = currentUserShortInfo,
 			Priority = Priority.Trivial,
 			Start = dateTimeOnlyStart,
-			Type = new IssueType
+			Type = new GetIssueTypeResponse
 			{
 				Id = 2,
 				Name = "Задача",
@@ -123,7 +115,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
 
-		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new QueueLocalField
+		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new GetQueueLocalFieldResponse
 		{
 			Id = "customFields",
 			CategoryId = firstCategory.Id,
@@ -157,7 +149,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
 
-		var localField = new QueueLocalField
+		var localField = new GetQueueLocalFieldResponse
 		{
 			Id = "someId",
 			FieldName = new QueueLocalFieldName()
@@ -253,7 +245,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000);  // Чтобы задачи точно создались в трекере
 
-		var issues = await YandexTrackerClient.GetIssuesByFilterAsync(new IssuesFilter
+		var issues = await YandexTrackerClient.GetIssuesByFilterAsync(new IssuesFilterDto
 		{
 			Queue = TestQueueKey,
 			Summary = summary
@@ -321,22 +313,22 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	[TestMethod]
 	public async Task GetCommentsAsync_IssueKey_ResponseIsNotNullAndNotEmpty()
 	{
-		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
 		{
-			QueueKey = TestQueueKey,
+			Queue = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
 		var comment1 = await YandexTrackerClient.CreateCommentAsync(
 			issue.Key,
-			new Comment
+			new CreateCommentRequest
 			{
 				Text = GetUniqueName()
 			});
 
 		var comment2 = await YandexTrackerClient.CreateCommentAsync(
 			issue.Key,
-			new Comment
+			new CreateCommentRequest
 			{
 				Text = GetUniqueName()
 			});
@@ -344,7 +336,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.Delay(1000); // Чтобы компоненты и задача точно создались в трекере
 
 		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key))
-			.OrderBy(comment => comment.CreatedAtUtc)
+			.OrderBy(comment => comment.CreatedAt)
 			.ToArray();
 
 		Assert.IsNotNull(comments);
@@ -356,9 +348,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	[TestMethod]
 	public async Task GetAttachmentsAsync_IssueKey_ResponseIsNotNullAndNotEmpty()
 	{
-		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
 		{
-			QueueKey = TestQueueKey,
+			Queue = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -375,7 +367,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000); // Чтобы вложения точно создались в трекере
 
-		Attachment[] expectedAttachments = [imageAttachment, textAttachment];
+		CreateAttachmentResponse[] expectedAttachments = [imageAttachment, textAttachment];
 
 		var attachments = (await YandexTrackerClient.GetAttachmentsAsync(issue.Key)).ToArray();
 
@@ -391,9 +383,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	[TestMethod]
 	public async Task CreateTemporaryAttachmentAsync_SomeTemporaryFiles_ResponseIsNotNullAndNotEmptyAndCommentsHasAttachments()
 	{
-		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
 		{
-			QueueKey = TestQueueKey,
+			Queue = TestQueueKey,
 			Summary = GetUniqueName()
 		});
 
@@ -403,16 +395,16 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var imageAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(imageFile, "pepe.png");
 		var textAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(txtFile, "info.txt");
 
-		await YandexTrackerClient.CreateCommentAsync(issue.Key, new Comment
+		await YandexTrackerClient.CreateCommentAsync(issue.Key, new CreateCommentRequest
 		{
 			Text = "This comment has image",
-			Attachments = [imageAttachment.Id]
+			AttachmentIds = [imageAttachment.Id]
 		});
 
-		await YandexTrackerClient.CreateCommentAsync(issue.Key, new Comment
+		await YandexTrackerClient.CreateCommentAsync(issue.Key, new CreateCommentRequest
 		{
 			Text = "This comment has file",
-			Attachments = [textAttachment.Id]
+			AttachmentIds = [textAttachment.Id]
 		});
 
 		await Task.Delay(1000); // Чтобы комментарии точно создались в трекере
@@ -455,23 +447,26 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
-			new Project
+			new CreateProjectRequest
 			{
-				Summary = summary,
-				Author = currentUserShortInfo,
-				Followers = [currentUserShortInfo],
-				Clients = [currentUserShortInfo],
-				Lead = currentUserShortInfo,
-				Description = "DESC",
-				Tags = tags,
-				ProjectType = ProjectEntityType.Project,
-				StartUtc = dateOnlyNow,
-				EndUtc = dateOnlyEnd,
-				CreatedBy = currentUserShortInfo,
-				TeamAccess = false,
-				TeamUsers = [currentUserShortInfo],
-				Quarter = quarter,
-				Status = ProjectEntityStatus.InProgress
+				Fields = new ProjectFieldsDto()
+				{
+					Summary = summary,
+					AuthorId = currentUserShortInfo,
+					Followers = [currentUserShortInfo],
+					Clients = [currentUserShortInfo],
+					LeadId = currentUserShortInfo,
+					Description = "DESC",
+					Tags = tags,
+					ProjectType = ProjectEntityType.Project,
+					StartUtc = dateOnlyNow,
+					EndUtc = dateOnlyEnd,
+					CreatedBy = currentUserShortInfo,
+					TeamAccess = false,
+					TeamUsers = [currentUserShortInfo],
+					Quarter = quarter,
+					Status = ProjectEntityStatus.InProgress
+				}
 			});
 
 		var project2 = await YandexTrackerClient.CreateProjectAsync(

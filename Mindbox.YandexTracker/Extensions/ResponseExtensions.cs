@@ -121,7 +121,7 @@ internal static class ResponseExtensions
 		{
 			Display = dto.Display,
 			Email = dto.Email,
-			Id = dto.Id,
+			Uid = dto.Id,
 			Login = dto.Login,
 			FirstName = dto.FirstName,
 			LastName = dto.LastName,

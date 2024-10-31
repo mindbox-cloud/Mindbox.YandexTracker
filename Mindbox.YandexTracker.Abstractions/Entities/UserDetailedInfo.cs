@@ -10,7 +10,7 @@ public sealed record UserDetailedInfo
 	/// <summary>
 	/// Уникальный идентификатор учетной записи пользователя в Tracker
 	/// </summary>
-	public required long Id { get; init; }
+	public required long Uid { get; init; }
 
 	/// <summary>
 	/// Логин пользователя

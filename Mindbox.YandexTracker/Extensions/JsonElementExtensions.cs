@@ -53,11 +53,14 @@ internal static class JsonElementExtensions
 
 		foreach (var item in element.EnumerateArray())
 		{
+			var display = item.GetProperty("display").GetString();
+			var id = item.GetProperty("id").GetString();
+
 			collection.Add(new FieldInfo
 			{
-				Id = item.GetProperty("id").GetString() ?? string.Empty,
-				Key = item.GetProperty("key").GetString() ?? string.Empty,
-				Display = item.GetProperty("display").GetString() ?? string.Empty
+				Id = display ?? throw new ArgumentNullException(display),
+				Key = item.GetProperty("key").GetString(),
+				Display = id ?? throw new ArgumentNullException(id)
 			});
 		}
 

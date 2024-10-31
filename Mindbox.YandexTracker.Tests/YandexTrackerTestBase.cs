@@ -36,7 +36,7 @@ public abstract class YandexTrackerTestBase
 
 		// узнаем инфу о пользователи, от имени которого выполняем запрос
 		var userInfo = await YandexTrackerClient.GetMyselfAsync();
-		CurrentUserId = userInfo.Id.ToString(CultureInfo.InvariantCulture);
+		CurrentUserId = userInfo.Uid.ToString(CultureInfo.InvariantCulture);
 		CurrentUserLogin = userInfo.Login;
 
 		// в ключе может быть до 15 латинских символов

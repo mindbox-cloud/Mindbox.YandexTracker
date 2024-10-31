@@ -45,10 +45,37 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	public async Task GetIssueAsync_IssueKey_ResponseIsNotNullAndIssueSuccessfullyCreated()
 	{
 		// Arrange
+
+		var currentUserShortInfo = new UserShortInfo
+		{
+			Display = CurrentUserLogin,
+			Id = CurrentUserId
+		};
+
+		var nowUtc = DateTime.UtcNow;
+		var dateTimeOnlyStart = DateOnly.FromDateTime(nowUtc);
+		var tags = new[] { "tag1", "tag2" };
+		var summary = GetUniqueName();
+
 		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
 		{
 			QueueKey = TestQueueKey,
-			Summary = GetUniqueName()
+			Summary = summary,
+			CreatedBy = currentUserShortInfo,
+			Description = "DESC",
+			Tags = tags,
+			Followers = [currentUserShortInfo],
+			Assignee = currentUserShortInfo,
+			Author = currentUserShortInfo,
+			Priority = Priority.Trivial,
+			Start = dateTimeOnlyStart,
+			Type = new IssueType
+			{
+				Id = 2,
+				Name = "Задача",
+				Key = "task"
+			},
+			UpdatedBy = currentUserShortInfo
 		});
 
 		// Act
@@ -57,6 +84,18 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Arrange
 		Assert.IsNotNull(issue);
 		Assert.AreEqual(issue.Key, issueResponse.Key);
+		Assert.AreEqual(summary, issueResponse.Summary);
+		Assert.AreEqual(dateTimeOnlyStart, issueResponse.Start);
+		Assert.AreEqual("task", issueResponse.Type.Key);
+		Assert.AreEqual("DESC", issueResponse.Description);
+		Assert.AreEqual(Priority.Trivial, issueResponse.Priority);
+		Assert.AreEqual(currentUserShortInfo.Id, issueResponse.CreatedBy.Id);
+		Assert.AreEqual(currentUserShortInfo.Id, issueResponse.UpdatedBy.Id);
+		Assert.AreEqual(currentUserShortInfo.Id, issueResponse.Assignee!.Id);
+		Assert.AreEqual(1, issueResponse.Followers.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, issueResponse.Followers.First().Id);
+		Assert.AreEqual(2, issueResponse.Tags.Count);
+		CollectionAssert.AreEqual(tags, issueResponse.Tags.ToList());
 	}
 
 	[TestMethod]
@@ -408,9 +447,11 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		};
 
 		var nowUtc = DateTime.UtcNow;
-		var endUtc = nowUtc.AddDays(3);
 		var tags = new Collection<string> { "tag1", "tag2" };
 		var quarter = new Collection<string>();
+
+		var dateOnlyNow = DateOnly.FromDateTime(nowUtc);
+		var dateOnlyEnd = DateOnly.FromDateTime(nowUtc.AddDays(3));
 
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
@@ -424,8 +465,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 				Description = "DESC",
 				Tags = tags,
 				ProjectType = ProjectEntityType.Project,
-				StartUtc = nowUtc,
-				EndUtc = endUtc,
+				StartUtc = dateOnlyNow,
+				EndUtc = dateOnlyEnd,
 				CreatedBy = currentUserShortInfo,
 				TeamAccess = false,
 				TeamUsers = [currentUserShortInfo],
@@ -479,12 +520,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		CollectionAssert.AreEqual(tags, actualProject.Tags);
 		Assert.AreEqual(ProjectEntityType.Project, actualProject.ProjectType);
 		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Status);
-		Assert.IsTrue(nowUtc.Year == actualProject.StartUtc?.Year // Возвращается только год, месяц и день
-		    && nowUtc.Month == actualProject.StartUtc?.Month
-		    && nowUtc.Day == actualProject.StartUtc?.Day);
-		Assert.IsTrue(endUtc.Year == actualProject.EndUtc?.Year // Возвращается только год, месяц и день
-			&& endUtc.Month == actualProject.EndUtc?.Month
-			&& endUtc.Day == actualProject.EndUtc?.Day);
+		Assert.AreEqual(dateOnlyNow, actualProject.StartUtc);
+		Assert.AreEqual(dateOnlyEnd, actualProject.EndUtc);
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
 		Assert.IsNull(actualProject.TeamAccess);
 		Assert.AreEqual(1, actualProject.TeamUsers!.Count);

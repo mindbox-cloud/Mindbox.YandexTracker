@@ -84,7 +84,7 @@ public sealed record Project
 	/// <remarks>
 	/// Учитывается только год, месяц и день
 	/// </remarks>
-	public DateTime? StartUtc { get; init; }
+	public DateOnly? StartUtc { get; init; }
 
 	/// <summary>
 	/// Дедлайн
@@ -92,7 +92,7 @@ public sealed record Project
 	/// <remarks>
 	/// Учитывается только год, месяц и день
 	/// </remarks>
-	public DateTime? EndUtc { get; init; }
+	public DateOnly? EndUtc { get; init; }
 
 	/// <summary>
 	/// Доступ

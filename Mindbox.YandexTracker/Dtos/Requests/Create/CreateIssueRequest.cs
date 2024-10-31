@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json;
@@ -18,6 +19,8 @@ internal sealed record CreateIssueRequest
 	public string? Description { get; init; }
 
 	public string? Parent { get; init; }
+
+	public DateOnly? Start { get; init; }
 
 	public string? Author { get; init; }
 

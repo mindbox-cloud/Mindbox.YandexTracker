@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -49,5 +50,5 @@ internal class OptionsProviderInfoDto
 {
 	public required string Type { get; init; }
 
-	public Collection<object> Values { get; init; } = [];
+	public Collection<JsonElement> Values { get; init; } = [];
 }

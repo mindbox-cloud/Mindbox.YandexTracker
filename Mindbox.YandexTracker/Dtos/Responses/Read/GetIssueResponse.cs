@@ -29,6 +29,8 @@ internal sealed record GetIssueResponse
 
 	public required FieldInfo Type { get; init; }
 
+	public FieldInfo? Author { get; init; }
+
 	public required FieldInfo Priority { get; init; }
 
 	public DateTime CreatedAt { get; init; }
@@ -51,7 +53,7 @@ internal sealed record GetIssueResponse
 
 	public FieldInfo? PreviousStatus { get; init; }
 
-	public bool IsFavorite { get; init; }
+	public bool Favorite { get; init; }
 
 	public DateOnly? Start { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
@@ -7,10 +8,13 @@ internal static class JsonElementExtensions
 {
 	public static UserShortInfo ToUserShortInfo(this JsonElement element)
 	{
+		var display = element.GetProperty("display").GetString();
+		var id = element.GetProperty("id").GetString();
+
 		return new UserShortInfo
 		{
-			Display = element.GetProperty("display").GetString() ?? string.Empty,
-			Id = element.GetProperty("id").GetString() ?? string.Empty
+			Display = display ?? throw new ArgumentNullException(display),
+			Id = id ?? throw new ArgumentNullException(id)
 		};
 	}
 

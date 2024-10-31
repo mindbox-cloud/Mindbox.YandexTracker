@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -92,5 +93,5 @@ public sealed record OptionsProviderInfo
 	/// <summary>
 	/// Массив со значениями поля
 	/// </summary>
-	public Collection<object> Values { get; init; } = [];
+	public Collection<JsonElement> Values { get; init; } = [];
 }

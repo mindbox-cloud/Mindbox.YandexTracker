@@ -18,6 +18,7 @@ internal static class RequestExtensions
 		return new CreateIssueRequest
 		{
 			Queue = issue.QueueKey,
+			Start = issue.Start,
 			Summary = issue.Summary,
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
@@ -28,7 +29,7 @@ internal static class RequestExtensions
 			Sprints = issue.Sprints,
 			Type = issue.Type,
 			Author = issue.Author?.Id,
-			Tags = issue.Tags
+			Tags = issue.Tags,
 		};
 	}
 

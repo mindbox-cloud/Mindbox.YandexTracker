@@ -33,12 +33,12 @@ internal sealed record ProjectFieldsDto
 	/// <remarks>
 	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format
 	/// </remarks>
-	public DateTime? Start { get; init; }
+	public DateOnly? Start { get; init; }
 
 	/// <remarks>
 	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format
 	/// </remarks>
-	public DateTime? End { get; init; }
+	public DateOnly? End { get; init; }
 
 	public Collection<string>? Tags { get; init; }
 

@@ -1,49 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-[DataContract]
 internal sealed record GetProjectsResponse
 {
-	[DataMember(Name = "hits")]
 	public int Hits { get; init; }
 
-	[DataMember(Name = "pages")]
 	public int Pages { get; init; }
 
-	[DataMember(Name = "values")]
 	public required Collection<ProjectInfo> Values { get; init; }
 
-	[DataMember(Name = "orderBy")]
 	public string? OrderBy { get; init; }
 }
 
-[DataContract]
 internal sealed record ProjectInfo
 {
-	[DataMember(Name = "id")]
 	public required string Id { get; init; }
 
-	[DataMember(Name = "shortId")]
 	public int ShortId { get; init; }
 
-	[DataMember(Name = "entityType")]
-	[JsonConverter(typeof(JsonStringEnumConverter))]
+	[JsonPropertyName("entityType")]
 	public ProjectEntityType ProjectType { get; init; }
 
-	[DataMember(Name = "createdBy")]
 	public required FieldInfo CreatedBy { get; init; }
 
-	[DataMember(Name = "createdAt")]
 	public DateTime CreatedAt { get; init; }
 
-	[DataMember(Name = "updatedAt")]
 	public required DateTime UpdatedAt { get; init; }
 
-	[DataMember(Name = "fields")]
-	public Dictionary<string, object> Fields { get; init; } = [];
+	public string? Summary { get; init; }
+
+	public string? Description { get; init; }
+
+	public FieldInfo? Author { get; init; }
+
+	public FieldInfo? Lead { get; init; }
+
+	public List<FieldInfo>? TeamUsers { get; init; }
+
+	public List<FieldInfo>? Clients { get; init; }
+
+	public List<FieldInfo>? Followers { get; init; }
+
+	public List<string>? Tags { get; init; }
+
+	public DateTime? Start { get; init; }
+
+	public DateTime? End { get; init; }
+
+	[JsonPropertyName("teamAccess")]
+	public bool? TeamAccess { get; init; }
+
+	public string? Status { get; init; }
+
+	public List<string>? Quarter { get; init; }
+
+	[JsonPropertyName("checklistItems")]
+	public List<FieldInfo>? ChecklistIds { get; init; }
+
+	public List<string>? IssueQueueKeys { get; init; }
+
+	[JsonExtensionData]
+	public IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
 }

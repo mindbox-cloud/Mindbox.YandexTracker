@@ -2,24 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
 
 internal static class ResponseExtensions
 {
-	public static string ToQueryString<T>(this T value)
-		where T : Enum
-	{
-		var enumValues = Enum.GetValues(typeof(T))
-			.Cast<T>()
-			.Where(enumValue => value.HasFlag(enumValue!))
-			.Select(enumValue => enumValue!.ToString())
-			.Skip(1); // skip None
-
-		return string.Join(",", enumValues);
-	}
-
-
 	public static Priority ToPriority(this FieldInfo value) => value.Key switch
 	{
 		"trivial" => Priority.Trivial,
@@ -114,7 +102,7 @@ internal static class ResponseExtensions
 			TeamUsers = new Collection<UserShortInfo>(value.TeamUsers.Select(dto => dto.ToUserInfo()).ToList()),
 			IssueTypes = new Collection<IssueType>(value.IssueTypes.Select(dto => dto.ToIssueType(issueTypeInfos)).ToList()),
 			IssueTypesConfig = new Collection<IssueTypeConfig>(
-				value.IssueTypesConfigDto.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
+				value.IssueTypesConfig.Select(dto => dto.ToIssueTypeConfig(issueTypeInfos, resolutionInfos)).ToList()),
 			Workflows = new Collection<IssueType>(workflows),
 			DenyVoting = value.DenyVoting
 		};
@@ -122,7 +110,32 @@ internal static class ResponseExtensions
 
 	public static UserShortInfo ToUserInfo(this FieldInfo value)
 	{
+		ArgumentNullException.ThrowIfNull(value, nameof(value));
+
 		return new UserShortInfo { Id = value.Id, Display = value.Display };
+	}
+
+	public static UserDetailedInfo ToUserDetailedInfo(this UserDetailedInfoDto dto)
+	{
+		return new UserDetailedInfo
+		{
+			Display = dto.Display,
+			Email = dto.Email,
+			Id = dto.Id,
+			Login = dto.Login,
+			FirstName = dto.FirstName,
+			LastName = dto.LastName,
+			PassportUid = dto.PassportUid,
+			TrackerUid = dto.TrackerUid,
+			Dismissed = dto.Dismissed,
+			External = dto.External,
+			DisableNotifications = dto.DisableNotifications,
+			HasLicense = dto.HasLicense,
+			UseNewFilters = dto.UseNewFilters,
+			LastLoginDateUtc = dto.LastLoginDateUtc,
+			FirstLoginDateUtc = dto.FirstLoginDateUtc,
+			WelcomeMailSent = dto.WelcomeMailSent
+		};
 	}
 
 	public static Issue ToIssue(
@@ -341,56 +354,89 @@ internal static class ResponseExtensions
 
 		foreach (var projectValue in value.Values)
 		{
-			projectValue.Fields.TryGetValue("summary", out var summary);
-			projectValue.Fields.TryGetValue("description", out var description);
-			projectValue.Fields.TryGetValue("author", out var author);
-			projectValue.Fields.TryGetValue("lead", out var lead);
-			projectValue.Fields.TryGetValue("teamUsers", out var teamUsers);
-			projectValue.Fields.TryGetValue("clients", out var clients);
-			projectValue.Fields.TryGetValue("followers", out var followers);
-			projectValue.Fields.TryGetValue("tags", out var tags);
-			projectValue.Fields.TryGetValue("start", out var start);
-			projectValue.Fields.TryGetValue("end", out var end);
-			projectValue.Fields.TryGetValue("teamAccess", out var teamAccess);
-			projectValue.Fields.TryGetValue("status", out var status);
-			projectValue.Fields.TryGetValue("quarter", out var quarter);
-			projectValue.Fields.TryGetValue("checklistItems", out var checklist);
-
-			projects.Add(new Project
+			var project = new Project
 			{
 				Id = projectValue.Id,
 				ShortId = projectValue.ShortId,
 				ProjectType = projectValue.ProjectType,
 				CreatedBy = projectValue.CreatedBy.ToUserInfo(),
 				CreatedAtUtc = projectValue.CreatedAt,
-				UpdatedAtUtc = projectValue.UpdatedAt,
-				Summary = (string?)summary,
-				Description = (string?)description,
-				Author = ((FieldInfo?)author)?.ToUserInfo(),
-				Lead = ((FieldInfo?)lead)?.ToUserInfo(),
-				TeamUsers = teamUsers is not null
-					? new Collection<UserShortInfo>(((List<FieldInfo>)teamUsers).Select(dto => dto.ToUserInfo()).ToList())
-					: null,
-				Clients = clients is not null
-					? new Collection<UserShortInfo>(((List<FieldInfo>)clients).Select(dto => dto.ToUserInfo()).ToList())
-					: null,
-				Followers = followers is not null
-					? new Collection<UserShortInfo>(((List<FieldInfo>)followers).Select(dto => dto.ToUserInfo()).ToList())
-					: null,
-				Tags = tags is not null
-					? new Collection<string>((List<string>)tags)
-					: null,
-				StartUtc = (DateTime?)start,
-				EndUtc = (DateTime?)end,
-				TeamAccess = (bool?)teamAccess,
-				Status = ((string?)status)?.ToProjectStatus(),
-				Quarter = quarter is not null
-					? new Collection<string>(((List<string>)quarter))
-					: null,
-				ChecklistIds = checklist is not null
-					? new Collection<string>(((List<FieldInfo>)checklist).Select(dto => dto.Id).ToList())
-					: null
-			});
+				UpdatedAtUtc = projectValue.UpdatedAt
+			};
+
+			if (projectValue.Fields.TryGetValue("fields", out var customFields) && customFields.ValueKind is JsonValueKind.Object)
+			{
+				projects.Add(project with
+				{
+					Summary = customFields.TryGetProperty("summary", out var summaryElement)
+				        ? summaryElement.GetString()
+				        : null,
+					Description = customFields.TryGetProperty("description", out var descriptionElement)
+						? descriptionElement.GetString()
+						: null,
+			        Author = customFields.TryGetProperty("author", out var authorElement)
+			                 && authorElement.ValueKind is not JsonValueKind.Null
+						        ? authorElement.ToUserShortInfo()
+						        : null,
+			        Lead = customFields.TryGetProperty("lead", out var leadElement)
+			               && leadElement.ValueKind is not JsonValueKind.Null
+						        ? leadElement.ToUserShortInfo()
+						        : null,
+					TeamUsers = customFields.TryGetProperty("teamUsers", out var teamUsersElement)
+					            && teamUsersElement.ValueKind is not JsonValueKind.Null
+									? teamUsersElement.ToUserCollection()
+									: null,
+			        Clients = customFields.TryGetProperty("clients", out var clientsElement)
+			                  && clientsElement.ValueKind is not JsonValueKind.Null
+								? clientsElement.ToUserCollection()
+								: null,
+			        Followers = customFields.TryGetProperty("followers", out var followersElement)
+			                    && followersElement.ValueKind is not JsonValueKind.Null
+							        ? followersElement.ToUserCollection()
+							        : null,
+			        Tags = customFields.TryGetProperty("tags", out var tagsElement)
+			               && tagsElement.ValueKind is not JsonValueKind.Null
+					           ? tagsElement.ToStringCollection()
+					           : null,
+			        StartUtc = customFields.TryGetProperty("start", out var startUtcElement)
+			                   && startUtcElement.ValueKind is not JsonValueKind.Null
+						        ? startUtcElement.GetDateTime()
+						        : null,
+			        EndUtc = customFields.TryGetProperty("end", out var endUtcElement)
+			                 && endUtcElement.ValueKind is not JsonValueKind.Null
+						        ? endUtcElement.GetDateTime()
+						        : null,
+			        TeamAccess = customFields.TryGetProperty("teamAccess", out var teamAccessElement)
+			                && teamAccessElement.ValueKind is not JsonValueKind.Null
+						        ? teamAccessElement.GetBoolean()
+						        : null,
+			        Status = customFields.TryGetProperty("entityStatus", out var statusElement)
+			                 && statusElement.ValueKind is not JsonValueKind.Null
+						        ? statusElement.ToProjectEntityStatus()
+						        : null,
+			        Quarter = customFields.TryGetProperty("quarter", out var quarterElement)
+			                  && quarterElement.ValueKind is not JsonValueKind.Null
+						        ? quarterElement.ToStringCollection()
+						        : null,
+			        ChecklistIds = customFields.TryGetProperty("checklistItems", out var checklistIdsElement)
+			                       && checklistIdsElement.ValueKind is not JsonValueKind.Null
+							        ? checklistIdsElement.ToStringCollection()
+							        : null,
+			        ParentId = customFields.TryGetProperty("parentEntity", out var parentIdElement)
+			                   && parentIdElement.ValueKind is not JsonValueKind.Null
+						        ? parentIdElement.GetInt32()
+						        : null,
+			        IssueQueueKeys = customFields.TryGetProperty("issueQueues", out var issueQueues)
+			                         && issueQueues.ValueKind is not JsonValueKind.Null
+								        ? new Collection<string>(issueQueues.ToFieldInfoCollection().Select(x => x.Key!)
+									        .ToList())
+								        : null
+				});
+			}
+			else
+			{
+				projects.Add(project);
+			}
 		}
 
 		return projects;
@@ -398,7 +444,7 @@ internal static class ResponseExtensions
 
 	public static Project ToProject(this CreateProjectResponse value)
 	{
-		return new Project
+		var project = new Project
 		{
 			Id = value.Id,
 			ShortId = value.ShortId,
@@ -407,6 +453,78 @@ internal static class ResponseExtensions
 			CreatedAtUtc = value.CreatedAt,
 			UpdatedAtUtc = value.UpdatedAt
 		};
+
+		if (value.Fields.TryGetValue("fields", out var customFields) && customFields.ValueKind is JsonValueKind.Object)
+		{
+			return project with
+			{
+				Summary = customFields.TryGetProperty("summary", out var summaryElement)
+			        ? summaryElement.GetString()
+			        : null,
+				Description = customFields.TryGetProperty("description", out var descriptionElement)
+					? descriptionElement.GetString()
+					: null,
+		        Author = customFields.TryGetProperty("author", out var authorElement)
+		                 && authorElement.ValueKind is not JsonValueKind.Null
+					        ? authorElement.ToUserShortInfo()
+					        : null,
+		        Lead = customFields.TryGetProperty("lead", out var leadElement)
+		               && leadElement.ValueKind is not JsonValueKind.Null
+					        ? leadElement.ToUserShortInfo()
+					        : null,
+				TeamUsers = customFields.TryGetProperty("teamUsers", out var teamUsersElement)
+				            && teamUsersElement.ValueKind is not JsonValueKind.Null
+								? teamUsersElement.ToUserCollection()
+								: null,
+		        Clients = customFields.TryGetProperty("clients", out var clientsElement)
+		                  && clientsElement.ValueKind is not JsonValueKind.Null
+							? clientsElement.ToUserCollection()
+							: null,
+		        Followers = customFields.TryGetProperty("followers", out var followersElement)
+		                    && followersElement.ValueKind is not JsonValueKind.Null
+						        ? followersElement.ToUserCollection()
+						        : null,
+		        Tags = customFields.TryGetProperty("tags", out var tagsElement)
+		               && tagsElement.ValueKind is not JsonValueKind.Null
+				           ? tagsElement.ToStringCollection()
+				           : null,
+		        StartUtc = customFields.TryGetProperty("start", out var startUtcElement)
+		                   && startUtcElement.ValueKind is not JsonValueKind.Null
+					        ? startUtcElement.GetDateTime()
+					        : null,
+		        EndUtc = customFields.TryGetProperty("end", out var endUtcElement)
+		                 && endUtcElement.ValueKind is not JsonValueKind.Null
+					        ? endUtcElement.GetDateTime()
+					        : null,
+		        TeamAccess = customFields.TryGetProperty("teamAccess", out var teamAccessElement)
+		                && teamAccessElement.ValueKind is not JsonValueKind.Null
+					        ? teamAccessElement.GetBoolean()
+					        : null,
+		        Status = customFields.TryGetProperty("entityStatus", out var statusElement)
+		                 && statusElement.ValueKind is not JsonValueKind.Null
+					        ? statusElement.ToProjectEntityStatus()
+					        : null,
+		        Quarter = customFields.TryGetProperty("quarter", out var quarterElement)
+		                  && quarterElement.ValueKind is not JsonValueKind.Null
+					        ? quarterElement.ToStringCollection()
+					        : null,
+		        ChecklistIds = customFields.TryGetProperty("checklistItems", out var checklistIdsElement)
+		                       && checklistIdsElement.ValueKind is not JsonValueKind.Null
+								? checklistIdsElement.ToStringCollection()
+						        : null,
+		        ParentId = customFields.TryGetProperty("parentEntity", out var parentIdElement)
+		                   && parentIdElement.ValueKind is not JsonValueKind.Null
+					        ? parentIdElement.GetInt32()
+					        : null,
+		        IssueQueueKeys = customFields.TryGetProperty("issueQueues", out var issueQueues)
+		                         && issueQueues.ValueKind is not JsonValueKind.Null
+							        ? new Collection<string>(issueQueues.ToFieldInfoCollection().Select(x => x.Key!)
+								        .ToList())
+							        : null
+			};
+		}
+
+		return project;
 	}
 
 	public static IssueField ToIssueField(this GetIssueFieldsResponse value)

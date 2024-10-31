@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+
+[assembly: InternalsVisibleTo("Mindbox.YandexTracker")]
 
 namespace Mindbox.YandexTracker;
 
@@ -137,5 +142,46 @@ public sealed record Issue
 	/// <summary>
 	/// Кастомные поля задачи
 	/// </summary>
-	public Dictionary<string, object?> CustomFields { get; init; } = [];
+	/// <remarks>
+	/// Используем JsonElement, потому что на этапе компиляции мы не знаем, какой объект придет к нам с сервера под
+	/// заданным ключиком. Чтобы не поломать работу было принято использовать JsonElement и ограничить доступ к словарю через
+	/// GetCustomField и SetCustomField.
+	/// </remarks>
+	internal Dictionary<string, JsonElement> CustomFields { get; init; } = [];
+
+	/// <remarks>
+	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
+	/// названии, которое будет совпадать с id
+	/// </remarks>
+	public T? GetCustomField<T>(string customFieldId)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+
+		if (CustomFields.TryGetValue(customFieldId, out var value))
+		{
+			return value.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined
+				? default
+				: value.Deserialize<T?>();
+		}
+
+		throw new KeyNotFoundException($"Key '{customFieldId}' not found in custom fields.");
+	}
+
+	/// <remarks>
+	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
+	/// названии, которое будет совпадать с id
+	/// </remarks>
+	public void SetCustomField<T>(string customFieldId, T value)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+
+		CustomFields[customFieldId] = JsonSerializer.SerializeToElement(value);
+	}
+
+	public IReadOnlyList<string> GetCustomFieldsKeys()
+	{
+		return CustomFields
+			.Select(pair => pair.Key)
+			.ToList();
+	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,20 +96,21 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			FieldType = QueueLocalFieldType.StringFieldType
 		});
 
-		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		var issue = new Issue
 		{
 			QueueKey = TestQueueKey,
-			Summary = GetUniqueName(),
-			CustomFields = new()
-			{
-				{ customField.Id, "field1" }
-			}
-		});
+			Summary = GetUniqueName()
+		};
 
-		var response = await YandexTrackerClient.GetIssueAsync(issue.Key);
+		issue.SetCustomField<string>(customField.Id, "field1");
+
+		var createdIssue = await YandexTrackerClient.CreateIssueAsync(issue);
+
+		var response = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
 
 		Assert.IsNotNull(response);
 		Assert.IsTrue(response.CustomFields.ContainsKey(customField.Id));
+		Assert.AreEqual("field1", response.GetCustomField<string>(customField.Id));
 	}
 
 	[TestMethod]
@@ -259,6 +261,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
 	}
 
+	[Ignore("Компоненты нельзя удалить, вместе с очередью они почему-то не удаляются, запускать только вручную")]
 	[TestMethod]
 	public async Task GetComponentsAsync_ResponseIsNotNullAndNotEmpty()
 	{
@@ -347,6 +350,44 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	public async Task CreateTemporaryAttachmentAsync_SomeTemporaryFiles_ResponseIsNotNullAndNotEmptyAndCommentsHasAttachments()
+	{
+		var issue = await YandexTrackerClient.CreateIssueAsync(new Issue
+		{
+			QueueKey = TestQueueKey,
+			Summary = GetUniqueName()
+		});
+
+		await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
+		await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
+
+		var imageAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(imageFile, "pepe.png");
+		var textAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(txtFile, "info.txt");
+
+		await YandexTrackerClient.CreateCommentAsync(issue.Key, new Comment
+		{
+			Text = "This comment has image",
+			Attachments = [imageAttachment.Id]
+		});
+
+		await YandexTrackerClient.CreateCommentAsync(issue.Key, new Comment
+		{
+			Text = "This comment has file",
+			Attachments = [textAttachment.Id]
+		});
+
+		await Task.Delay(1000); // Чтобы комментарии точно создались в трекере
+
+		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key, CommentExpandData.Attachments))
+			.ToList();
+
+		Assert.IsNotNull(comments);
+		Assert.AreEqual(2, comments.Count);
+		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments[0]);
+		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments[0]);
+	}
+
+	[TestMethod]
 	public async Task GetTagsAsync_ResponseIsNotNull()
 	{
 		var response = await YandexTrackerClient.GetTagsAsync(TestQueueKey);
@@ -360,11 +401,36 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Arrange
 		var summary = GetUniqueName();
 
+		var currentUserShortInfo = new UserShortInfo
+		{
+			Display = CurrentUserLogin,
+			Id = CurrentUserId
+		};
+
+		var nowUtc = DateTime.UtcNow;
+		var endUtc = nowUtc.AddDays(3);
+		var tags = new Collection<string> { "tag1", "tag2" };
+		var quarter = new Collection<string>();
+
 		var project1 = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
 			new Project
 			{
-				Summary = summary
+				Summary = summary,
+				Author = currentUserShortInfo,
+				Followers = [currentUserShortInfo],
+				Clients = [currentUserShortInfo],
+				Lead = currentUserShortInfo,
+				Description = "DESC",
+				Tags = tags,
+				ProjectType = ProjectEntityType.Project,
+				StartUtc = nowUtc,
+				EndUtc = endUtc,
+				CreatedBy = currentUserShortInfo,
+				TeamAccess = false,
+				TeamUsers = [currentUserShortInfo],
+				Quarter = quarter,
+				Status = ProjectEntityStatus.InProgress
 			});
 
 		var project2 = await YandexTrackerClient.CreateProjectAsync(
@@ -384,7 +450,14 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Act
 		var projects = await YandexTrackerClient.GetProjectsAsync(
 			ProjectEntityType.Project,
-			requestProject);
+			requestProject,
+			returnedFields:
+				ProjectFieldData.Summary | ProjectFieldData.Description | ProjectFieldData.Author
+				| ProjectFieldData.Lead | ProjectFieldData.TeamUsers | ProjectFieldData.Clients
+				| ProjectFieldData.Followers | ProjectFieldData.Start | ProjectFieldData.End
+				| ProjectFieldData.Tags | ProjectFieldData.ParentEntity
+				| ProjectFieldData.TeamAccess | ProjectFieldData.Quarter | ProjectFieldData.EntityStatus
+				| ProjectFieldData.IssueQueues);
 
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId, true);
 		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId, true);
@@ -392,7 +465,31 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Assert
 		Assert.IsNotNull(projects);
 
-		Assert.IsTrue(projects.Any(project => project.ShortId == project1.ShortId));
+		var actualProject = projects.FirstOrDefault(x => x.ShortId == project1.ShortId);
+		Assert.IsNotNull(actualProject);
+		Assert.AreEqual(summary, actualProject.Summary);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Author!.Id);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Lead!.Id);
+		Assert.AreEqual(1, actualProject.Followers!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Followers!.First().Id);
+		Assert.AreEqual(1, actualProject.Clients!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Clients!.First().Id);
+		Assert.AreEqual("DESC", actualProject.Description);
+		Assert.AreEqual(2, actualProject.Tags!.Count);
+		CollectionAssert.AreEqual(tags, actualProject.Tags);
+		Assert.AreEqual(ProjectEntityType.Project, actualProject.ProjectType);
+		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Status);
+		Assert.IsTrue(nowUtc.Year == actualProject.StartUtc?.Year // Возвращается только год, месяц и день
+		    && nowUtc.Month == actualProject.StartUtc?.Month
+		    && nowUtc.Day == actualProject.StartUtc?.Day);
+		Assert.IsTrue(endUtc.Year == actualProject.EndUtc?.Year // Возвращается только год, месяц и день
+			&& endUtc.Month == actualProject.EndUtc?.Month
+			&& endUtc.Day == actualProject.EndUtc?.Day);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
+		Assert.IsNull(actualProject.TeamAccess);
+		Assert.AreEqual(1, actualProject.TeamUsers!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.TeamUsers!.First().Id);
+		Assert.AreEqual(2, actualProject.Quarter!.Count);
 	}
 
 	[TestMethod]

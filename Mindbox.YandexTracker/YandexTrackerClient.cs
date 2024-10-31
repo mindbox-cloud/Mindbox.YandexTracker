@@ -8,18 +8,21 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Mindbox.YandexTracker.Helpers;
-using Newtonsoft.Json;
+using Mindbox.YandexTracker.JsonConverters;
 
 namespace Mindbox.YandexTracker;
 
 public sealed class YandexTrackerClient : IYandexTrackerClient
 {
 	private readonly HttpClient _httpClient;
+	private readonly JsonSerializerOptions _jsonOptions;
 
 	public YandexTrackerClient(
 		IOptionsMonitor<YandexTrackerClientOptions> options,
@@ -29,6 +32,24 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ArgumentNullException.ThrowIfNull(httpClientFactory);
 
 		_httpClient = CreateHttpClient(httpClientFactory, options.CurrentValue);
+
+		_jsonOptions = new JsonSerializerOptions
+		{
+			Converters =
+			{
+				// у этиъ 2 enum'ов не camelCase, а какая-то своя фигня в Трекере
+				// (например, "ru.yandex.startrek.core.fields.UserFieldType" или snake_case)
+				new EnumWithEnumMemberAttributeJsonConverter<QueueLocalFieldType>(),
+				new EnumWithEnumMemberAttributeJsonConverter<ProjectEntityStatus>(),
+				// а остальные enum'ы - camelCase
+				new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
+				new YandexDateTimeJsonConverter(),
+				new YandexNullableDateTimeJsonConverter()
+			},
+			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+			WriteIndented = true
+		};
 	}
 
 	private static HttpClient CreateHttpClient(
@@ -58,9 +79,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not QueueExpandData.None)
 		{
-			parameters["expand"] = expand is QueueExpandData.All
-				? expand.ToString()!
-				: expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(QueueExpandData.All, QueueExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -86,7 +105,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null && (QueuesExpandData)expand != QueuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, QueuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -115,7 +134,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssueExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssueExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -144,7 +163,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -179,7 +198,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -214,7 +233,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -249,7 +268,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
 		}
 
 		var issueTypeInfos = (await GetIssueTypesAsync(cancellationToken))
@@ -298,7 +317,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public async Task<IReadOnlyList<Component>> GetComponentsAsync(
 		CancellationToken cancellationToken = default)
 	{
-		return (await ExecuteYandexTrackerApiRequestAsync<List<GetComponentResponse>>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<GetComponentResponse>(
 			"components",
 			HttpMethod.Get,
 			payload: null!,
@@ -346,10 +365,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (expand is not null and not CommentExpandData.None)
 		{
-			if (expand is CommentExpandData.All)
-				parameters["expand"] = expand.ToString()!;
-			else
-				parameters["expand"] = expand.Value.ToQueryString();
+			parameters["expand"] = expand.Value.ToYandexQueryString(CommentExpandData.All, CommentExpandData.None);
 		}
 
 		return (await ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
@@ -429,6 +445,25 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			.ToAttachment();
 	}
 
+	public async Task<Attachment> CreateTemporaryAttachmentAsync(
+		Stream fileStream,
+		string? newFileName = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(fileStream);
+
+		using var form = new MultipartFormDataContent();
+		using var fileContent = new StreamContent(fileStream);
+		form.Add(fileContent, "file", newFileName ?? "file");
+
+		return (await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
+				$"attachments",
+				HttpMethod.Post,
+				payload: form,
+				cancellationToken: cancellationToken))
+			.ToAttachment();
+	}
+
 	public async Task<IReadOnlyList<string>> GetTagsAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default)
@@ -456,11 +491,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		if (returnedFields is not null
 			and not ProjectFieldData.None)
 		{
-			parameters["fields"] = returnedFields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None);
 		}
 
 		return (await ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
-			$"entities/{entityType.ToYandexCase()}",
+			$"entities/{entityType.ToCamelCase()}",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
@@ -484,8 +519,12 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (returnedFields is not null and not ProjectFieldData.None)
 		{
-			parameters["fields"] = returnedFields.Value.ToQueryString();
+			parameters["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None);
 		}
+
+		var page = 1;
+		parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
+		parameters["perPage"] = "100";
 
 		var request = project.ToGetProjectsRequest(
 			input,
@@ -493,13 +532,32 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			orderAscending,
 			rootOnly);
 
-		return (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
-			$"entities/{entityType.ToYandexCase()}/_search",
-			HttpMethod.Post,
-			payload: request,
-			parameters: parameters,
-			cancellationToken: cancellationToken))
-			.ToProjects();
+		var projects = new List<Project>();
+
+		// При запросе проектов возвращается респонс
+		// {
+		// "pages": pageCount,
+		// "hits": кол-во проектов в values,
+		// "values": [{}]
+		// },
+		// Логика в обычной пагинации не подойдет, приходится обрабатывать этот случай отдельно
+		GetProjectsResponse? response;
+		do
+		{
+			response = (await ExecuteYandexTrackerApiRequestAsync<GetProjectsResponse>(
+				$"entities/{entityType.ToCamelCase()}/_search",
+				HttpMethod.Post,
+				payload: request,
+				parameters: parameters,
+				cancellationToken: cancellationToken));
+
+			projects.AddRange(response.ToProjects());
+			page++;
+			parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
+
+		} while (response.Pages > page);
+
+		return projects;
 	}
 
 	public async Task<IReadOnlyList<IssueField>> GetAccessibleFieldsForIssueAsync(
@@ -534,34 +592,36 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return [.. globalFields, .. localQueueFields];
 	}
 
-	public Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken)
+	public async Task<UserDetailedInfo> GetMyselfAsync(CancellationToken cancellationToken)
 	{
-		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+		return (await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(
 			"myself",
 			HttpMethod.Get,
 			payload: null,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken))
+			.ToUserDetailedInfo();
 	}
 
-	public Task<UserDetailedInfo> GetUserByIdAsync(
+	public async Task<UserDetailedInfo> GetUserByIdAsync(
 		string userId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(userId);
-
-		return ExecuteYandexTrackerApiRequestAsync<UserDetailedInfo>(
+		return (await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(
 			$"users/{userId}",
 			HttpMethod.Get,
 			payload: null,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken))
+			.ToUserDetailedInfo();
 	}
 
-	public Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
+	public async Task<IReadOnlyList<UserDetailedInfo>> GetUsersAsync(CancellationToken cancellationToken = default)
 	{
-		return ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfo>(
+		return (await ExecuteYandexTrackerCollectionRequestAsync<UserDetailedInfoDto>(
 			"users",
 			HttpMethod.Get,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken))
+			.Select(dto => dto.ToUserDetailedInfo())
+			.ToList();
 	}
 
 	public Task<IReadOnlyList<IssueType>> GetIssueTypesAsync(CancellationToken cancellationToken = default)
@@ -687,7 +747,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["withBoard"] = deleteWithBoard.ToString()!;
 
 		await ExecuteYandexTrackerApiRequestAsync(
-			$"entities/{entityType.ToYandexCase()}/{projectShortId}",
+			$"entities/{entityType.ToCamelCase()}/{projectShortId}",
 			HttpMethod.Delete,
 			payload: null,
 			parameters: parameters,
@@ -712,7 +772,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken);
 
 		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-		return JsonConvert.DeserializeObject<TResult>(resultContent)!;
+		return JsonSerializer.Deserialize<TResult>(resultContent, _jsonOptions)!;
 	}
 
 	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
@@ -750,8 +810,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				}
 				else
 				{
+					var json = JsonSerializer.Serialize(payload, _jsonOptions);
 					request.Content = new StringContent(
-						JsonConvert.SerializeObject(payload),
+						json,
 						Encoding.UTF8,
 						"application/json");
 				}

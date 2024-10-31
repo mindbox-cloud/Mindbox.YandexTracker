@@ -81,11 +81,17 @@ public sealed record Project
 	/// <summary>
 	/// Дата начала
 	/// </summary>
+	/// <remarks>
+	/// Учитывается только год, месяц и день
+	/// </remarks>
 	public DateTime? StartUtc { get; init; }
 
 	/// <summary>
 	/// Дедлайн
 	/// </summary>
+	/// <remarks>
+	/// Учитывается только год, месяц и день
+	/// </remarks>
 	public DateTime? EndUtc { get; init; }
 
 	/// <summary>
@@ -112,6 +118,12 @@ public sealed record Project
 	/// Идентификатор родительского проекта
 	/// </summary>
 	public int? ParentId { get; init; }
+
+	/// <summary>
+	/// Очереди задач, содержащихся в проекте
+	/// </summary>
+	/// <returns></returns>
+	public Collection<string>? IssueQueueKeys { get; init; }
 
 	public override int GetHashCode()
 	{

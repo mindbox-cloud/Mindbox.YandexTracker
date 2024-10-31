@@ -39,6 +39,19 @@ public class YandexTrackerClientCachingDecoratorTests
 	}
 
 	[TestMethod]
+	public async Task CreateTemporaryAttachmentAsync_ValuesTakenFromServer()
+	{
+		using var decorator = CreateYandexTrackerClientCachingDecorator();
+
+		await decorator.CreateTemporaryAttachmentAsync(null!, null!);
+
+		_yandexTrackerClientMock.Verify(x => x.CreateTemporaryAttachmentAsync(
+			It.IsAny<Stream>(),
+			It.IsAny<string>(),
+			It.IsAny<CancellationToken>()));
+	}
+
+	[TestMethod]
 	public async Task CreateCommentAsync_ValuesTakenFromServer()
 	{
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
@@ -330,7 +343,7 @@ public class YandexTrackerClientCachingDecoratorTests
 
 		using var decorator = CreateYandexTrackerClientCachingDecorator();
 
-		await decorator.GetUserByIdAsync(null!);
+		await decorator.GetUserByIdAsync("123");
 
 		_memoryCacheMock.Verify(x => x.CreateEntry(It.IsAny<object>()), Times.Never());
 

@@ -21,6 +21,14 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateAttachmentAsync(issueKey, fileStream, newFileName, cancellationToken);
 	}
 
+	public Task<Attachment> CreateTemporaryAttachmentAsync(
+		Stream fileStream,
+		string? newFileName = null,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.CreateTemporaryAttachmentAsync(fileStream, newFileName, cancellationToken);
+	}
+
 	public Task<Comment> CreateCommentAsync(
 		string issueKey,
 		Comment comment,

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,12 @@ public abstract class YandexTrackerTestBase
 		var serviceCollection = new ServiceCollection();
 
 		var configuration = new ConfigurationBuilder()
-			.AddJsonFile("appsettings.tests.json")
+			// основной файл
+			.AddJsonFile("appsettings.json")
+			// секреты, которые в .gitignore, чтобы случайно не залить их в репозиторий
+			.AddJsonFile("appsettings.secret.json", true)
+			// для передачи параметров из CI/CD в GitHub Actions через env variables
+			.AddEnvironmentVariables()
 			.Build();
 
 		SetupServices(serviceCollection, configuration);
@@ -30,7 +36,7 @@ public abstract class YandexTrackerTestBase
 
 		// узнаем инфу о пользователи, от имени которого выполняем запрос
 		var userInfo = await YandexTrackerClient.GetMyselfAsync();
-		CurrentUserId = userInfo.Id;
+		CurrentUserId = userInfo.Id.ToString(CultureInfo.InvariantCulture);
 		CurrentUserLogin = userInfo.Login;
 
 		// в ключе может быть до 15 латинских символов

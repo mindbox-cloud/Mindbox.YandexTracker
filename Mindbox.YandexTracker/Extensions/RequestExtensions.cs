@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -8,13 +9,11 @@ internal static class RequestExtensions
 {
 	public static CreateIssueRequest ToCreateIssueRequest(this Issue issue)
 	{
-		var fields = new Dictionary<string, object?>(issue.CustomFields!)
+		var fields = new Dictionary<string, JsonElement>(issue.CustomFields)
 		{
-			["aliases"] = issue.Aliases,
-			["project"] = issue.Project!
-		}
-		.Where(x => x.Value is not null)
-		.ToDictionary(x => x.Key, x => x.Value);
+			["aliases"] = JsonSerializer.SerializeToElement(issue.Aliases),
+			["project"] = JsonSerializer.SerializeToElement(issue.Project)
+		};
 
 		return new CreateIssueRequest
 		{
@@ -48,12 +47,12 @@ internal static class RequestExtensions
 	{
 		return new CreateQueueRequest
 		{
-			DefaultType = queue.DefaultType.Key.ToString(),
+			DefaultType = queue.DefaultType.Key,
 			Key = queue.Key,
 			LeadId = queue.Lead.Id,
 			Name = queue.Name,
 			DefaultPriority = queue.DefaultPriority,
-			IssutTypesConfig = new Collection<CreateIssueTypeConfigDto>(
+			IssueTypesConfig = new Collection<CreateIssueTypeConfigDto>(
 				queue.IssueTypesConfig
 					.Select(config => config.ToDto())
 					.ToList())
@@ -164,7 +163,7 @@ internal static class RequestExtensions
 			TeamAccess = project.TeamAccess,
 			TeamUsers = project.TeamUsers is not null
 					? new Collection<string>(project.TeamUsers.Select(client => client.Id).ToList())
-					: null,
+					: null
 		};
 	}
 }

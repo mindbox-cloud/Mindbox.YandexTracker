@@ -85,11 +85,14 @@ public class HashCodeTests
 	{
 		var future = DateTime.Now.AddDays(1);
 
+		var authorUserId = "123";
+		var clientUserId = "456";
+
 		var project1 = new Project
 		{
 			Author = new UserShortInfo
 			{
-				Id = "id",
+				Id = authorUserId,
 				Display = "display"
 			},
 			Id = "5",
@@ -97,20 +100,20 @@ public class HashCodeTests
 			Clients = [
 				new()
 				{
-					Id = "id2",
+					Id = clientUserId,
 					Display = "display2"
 				}
 			],
 			CreatedAtUtc = future,
 			CreatedBy = new UserShortInfo
 			{
-				Id = "w",
+				Id = authorUserId,
 				Display = "displayw"
 			},
 			EndUtc = future.AddDays(-3),
 			Lead = new UserShortInfo
 			{
-				Id = "id",
+				Id = authorUserId,
 				Display = "display"
 			},
 			Quarter = ["q1", "q2"],
@@ -126,7 +129,7 @@ public class HashCodeTests
 		{
 			Author = new UserShortInfo
 			{
-				Id = "id",
+				Id = authorUserId,
 				Display = "display"
 			},
 			Id = "5",
@@ -134,20 +137,20 @@ public class HashCodeTests
 			Clients = [
 				new()
 				{
-					Id = "id2",
+					Id = clientUserId,
 					Display = "display2"
 				}
 			],
 			CreatedAtUtc = future,
 			CreatedBy = new UserShortInfo
 			{
-				Id = "w",
+				Id = authorUserId,
 				Display = "displayw"
 			},
 			EndUtc = future.AddDays(-3),
 			Lead = new UserShortInfo
 			{
-				Id = "id",
+				Id = authorUserId,
 				Display = "display"
 			},
 			Quarter = ["q1", "q2"],

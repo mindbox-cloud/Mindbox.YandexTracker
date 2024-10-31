@@ -61,22 +61,22 @@ public sealed record Project
 	/// <summary>
 	/// Участники проекта
 	/// </summary>
-	public Collection<UserShortInfo>? TeamUsers { get; init; }
+	public Collection<UserShortInfo> TeamUsers { get; init; } = [];
 
 	/// <summary>
 	/// Заказчики
 	/// </summary>
-	public Collection<UserShortInfo>? Clients { get; init; }
+	public Collection<UserShortInfo> Clients { get; init; } = [];
 
 	/// <summary>
 	/// Наблюдатели
 	/// </summary>
-	public Collection<UserShortInfo>? Followers { get; init; }
+	public Collection<UserShortInfo> Followers { get; init; } = [];
 
 	/// <summary>
 	/// Теги
 	/// </summary>
-	public Collection<string>? Tags { get; init; }
+	public Collection<string> Tags { get; init; } = [];
 
 	/// <summary>
 	/// Дата начала
@@ -107,12 +107,12 @@ public sealed record Project
 	/// <summary>
 	/// Кварталы начала и окончания проекта
 	/// </summary>
-	public Collection<string>? Quarter { get; init; }
+	public Collection<string> Quarter { get; init; } = [];
 
 	/// <summary>
 	/// Идентификаторы чеклистов
 	/// </summary>
-	public Collection<string>? ChecklistIds { get; init; }
+	public Collection<string> ChecklistIds { get; init; } = [];
 
 	/// <summary>
 	/// Идентификатор родительского проекта
@@ -123,7 +123,7 @@ public sealed record Project
 	/// Очереди задач, содержащихся в проекте
 	/// </summary>
 	/// <returns></returns>
-	public Collection<string>? IssueQueueKeys { get; init; }
+	public Collection<string> IssueQueueKeys { get; init; } = [];
 
 	public override int GetHashCode()
 	{

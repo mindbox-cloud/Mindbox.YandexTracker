@@ -58,9 +58,9 @@ internal static class JsonElementExtensions
 
 			collection.Add(new FieldInfo
 			{
-				Id = display ?? throw new ArgumentNullException(display),
+				Id = id ?? throw new ArgumentNullException(id),
 				Key = item.GetProperty("key").GetString(),
-				Display = id ?? throw new ArgumentNullException(id)
+				Display = display ?? throw new ArgumentNullException(display)
 			});
 		}
 

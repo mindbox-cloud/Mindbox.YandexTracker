@@ -110,7 +110,7 @@ public class HashCodeTests
 				Id = authorUserId,
 				Display = "displayw"
 			},
-			EndUtc = future.AddDays(-3),
+			EndUtc = DateOnly.FromDateTime(future.AddDays(-3)),
 			Lead = new UserShortInfo
 			{
 				Id = authorUserId,
@@ -119,7 +119,7 @@ public class HashCodeTests
 			Quarter = ["q1", "q2"],
 			ParentId = 3,
 			Description = "project for project",
-			StartUtc = future.AddDays(2),
+			StartUtc = DateOnly.FromDateTime(future.AddDays(2)),
 			Status = ProjectEntityStatus.Draft,
 			Summary = "summary",
 			ShortId = 2
@@ -147,7 +147,7 @@ public class HashCodeTests
 				Id = authorUserId,
 				Display = "displayw"
 			},
-			EndUtc = future.AddDays(-3),
+			EndUtc = DateOnly.FromDateTime(future.AddDays(-3)),
 			Lead = new UserShortInfo
 			{
 				Id = authorUserId,
@@ -156,7 +156,7 @@ public class HashCodeTests
 			Quarter = ["q1", "q2"],
 			ParentId = 3,
 			Description = "project for project",
-			StartUtc = future.AddDays(2),
+			StartUtc = DateOnly.FromDateTime(future.AddDays(2)),
 			Status = ProjectEntityStatus.Draft,
 			Summary = "summary",
 			ShortId = 2

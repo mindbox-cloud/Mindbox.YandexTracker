@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -9,6 +10,8 @@ internal sealed record GetIssueFieldsResponse
 	public required string Key { get; init; }
 
 	public required string Name { get; init; }
+
+	public string? Description { get; init; }
 
 	public bool Readonly { get; init; }
 
@@ -49,5 +52,5 @@ internal class OptionsProviderInfoDto
 {
 	public required string Type { get; init; }
 
-	public Collection<object> Values { get; init; } = [];
+	public Collection<JsonElement> Values { get; init; } = [];
 }

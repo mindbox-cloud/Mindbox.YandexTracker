@@ -20,6 +20,8 @@ internal sealed record CreateIssueResponse
 
 	public required FieldInfo UpdatedBy { get; init; }
 
+	public FieldInfo? Author { get; init; }
+
 	public string? Description { get; init; }
 
 	[JsonPropertyName("sprint")]

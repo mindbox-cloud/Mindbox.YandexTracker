@@ -121,7 +121,8 @@ internal static class ResponseExtensions
 		{
 			Display = dto.Display,
 			Email = dto.Email,
-			Id = dto.Id,
+			CloudUid = dto.CloudUid,
+			Uid = dto.Id,
 			Login = dto.Login,
 			FirstName = dto.FirstName,
 			LastName = dto.LastName,
@@ -148,6 +149,7 @@ internal static class ResponseExtensions
 			Key = value.Key,
 			LastCommentUpdatedAtUtc = value.LastCommentUpdatedAt,
 			Summary = value.Summary,
+			Author = value.Author?.ToUserInfo(),
 			ParentKey = value.Parent?.Key,
 			UpdatedBy = value.UpdatedBy.ToUserInfo(),
 			Description = value.Description,
@@ -165,7 +167,7 @@ internal static class ResponseExtensions
 			UpdatedAt = value.UpdatedAt,
 			Status = value.Status.ToIssueStatus(issueStatusInfos),
 			PreviousStatus = value.PreviousStatus?.ToIssueStatus(issueStatusInfos),
-			IsFavorite = value.IsFavorite,
+			IsFavorite = value.Favorite,
 			Start = value.Start,
 			Tags = value.Tags,
 			CustomFields = value.Fields
@@ -188,6 +190,7 @@ internal static class ResponseExtensions
 			Type = value.Type.ToIssueType(issueTypeInfos),
 			Priority = value.Priority.ToPriority(),
 			CreatedAtUtc = value.CreatedAt,
+			Author = value.Author?.ToUserInfo(),
 			Aliases = value.Aliases,
 			Sprints = new Collection<string>(value.Sprints.Select(sprint => sprint.Id).ToList()),
 			Followers = new Collection<UserShortInfo>(value.Followers.Select(follower => follower.ToUserInfo()).ToList()),
@@ -385,26 +388,26 @@ internal static class ResponseExtensions
 					TeamUsers = customFields.TryGetProperty("teamUsers", out var teamUsersElement)
 					            && teamUsersElement.ValueKind is not JsonValueKind.Null
 									? teamUsersElement.ToUserCollection()
-									: null,
+									: [],
 			        Clients = customFields.TryGetProperty("clients", out var clientsElement)
 			                  && clientsElement.ValueKind is not JsonValueKind.Null
 								? clientsElement.ToUserCollection()
-								: null,
+								: [],
 			        Followers = customFields.TryGetProperty("followers", out var followersElement)
 			                    && followersElement.ValueKind is not JsonValueKind.Null
 							        ? followersElement.ToUserCollection()
-							        : null,
+							        : [],
 			        Tags = customFields.TryGetProperty("tags", out var tagsElement)
 			               && tagsElement.ValueKind is not JsonValueKind.Null
 					           ? tagsElement.ToStringCollection()
-					           : null,
+					           : [],
 			        StartUtc = customFields.TryGetProperty("start", out var startUtcElement)
 			                   && startUtcElement.ValueKind is not JsonValueKind.Null
-						        ? startUtcElement.GetDateTime()
+						        ? DateOnly.FromDateTime(startUtcElement.GetDateTime())
 						        : null,
 			        EndUtc = customFields.TryGetProperty("end", out var endUtcElement)
 			                 && endUtcElement.ValueKind is not JsonValueKind.Null
-						        ? endUtcElement.GetDateTime()
+						        ? DateOnly.FromDateTime(endUtcElement.GetDateTime())
 						        : null,
 			        TeamAccess = customFields.TryGetProperty("teamAccess", out var teamAccessElement)
 			                && teamAccessElement.ValueKind is not JsonValueKind.Null
@@ -417,11 +420,11 @@ internal static class ResponseExtensions
 			        Quarter = customFields.TryGetProperty("quarter", out var quarterElement)
 			                  && quarterElement.ValueKind is not JsonValueKind.Null
 						        ? quarterElement.ToStringCollection()
-						        : null,
+						        : [],
 			        ChecklistIds = customFields.TryGetProperty("checklistItems", out var checklistIdsElement)
 			                       && checklistIdsElement.ValueKind is not JsonValueKind.Null
 							        ? checklistIdsElement.ToStringCollection()
-							        : null,
+							        : [],
 			        ParentId = customFields.TryGetProperty("parentEntity", out var parentIdElement)
 			                   && parentIdElement.ValueKind is not JsonValueKind.Null
 						        ? parentIdElement.GetInt32()
@@ -430,7 +433,7 @@ internal static class ResponseExtensions
 			                         && issueQueues.ValueKind is not JsonValueKind.Null
 								        ? new Collection<string>(issueQueues.ToFieldInfoCollection().Select(x => x.Key!)
 									        .ToList())
-								        : null
+								        : []
 				});
 			}
 			else
@@ -475,26 +478,26 @@ internal static class ResponseExtensions
 				TeamUsers = customFields.TryGetProperty("teamUsers", out var teamUsersElement)
 				            && teamUsersElement.ValueKind is not JsonValueKind.Null
 								? teamUsersElement.ToUserCollection()
-								: null,
+								: [],
 		        Clients = customFields.TryGetProperty("clients", out var clientsElement)
 		                  && clientsElement.ValueKind is not JsonValueKind.Null
 							? clientsElement.ToUserCollection()
-							: null,
+							: [],
 		        Followers = customFields.TryGetProperty("followers", out var followersElement)
 		                    && followersElement.ValueKind is not JsonValueKind.Null
 						        ? followersElement.ToUserCollection()
-						        : null,
+						        : [],
 		        Tags = customFields.TryGetProperty("tags", out var tagsElement)
 		               && tagsElement.ValueKind is not JsonValueKind.Null
 				           ? tagsElement.ToStringCollection()
-				           : null,
+				           : [],
 		        StartUtc = customFields.TryGetProperty("start", out var startUtcElement)
 		                   && startUtcElement.ValueKind is not JsonValueKind.Null
-					        ? startUtcElement.GetDateTime()
+					        ? DateOnly.FromDateTime(startUtcElement.GetDateTime())
 					        : null,
 		        EndUtc = customFields.TryGetProperty("end", out var endUtcElement)
 		                 && endUtcElement.ValueKind is not JsonValueKind.Null
-					        ? endUtcElement.GetDateTime()
+					        ? DateOnly.FromDateTime(endUtcElement.GetDateTime())
 					        : null,
 		        TeamAccess = customFields.TryGetProperty("teamAccess", out var teamAccessElement)
 		                && teamAccessElement.ValueKind is not JsonValueKind.Null
@@ -507,11 +510,11 @@ internal static class ResponseExtensions
 		        Quarter = customFields.TryGetProperty("quarter", out var quarterElement)
 		                  && quarterElement.ValueKind is not JsonValueKind.Null
 					        ? quarterElement.ToStringCollection()
-					        : null,
+					        : [],
 		        ChecklistIds = customFields.TryGetProperty("checklistItems", out var checklistIdsElement)
 		                       && checklistIdsElement.ValueKind is not JsonValueKind.Null
 								? checklistIdsElement.ToStringCollection()
-						        : null,
+						        : [],
 		        ParentId = customFields.TryGetProperty("parentEntity", out var parentIdElement)
 		                   && parentIdElement.ValueKind is not JsonValueKind.Null
 					        ? parentIdElement.GetInt32()
@@ -520,7 +523,7 @@ internal static class ResponseExtensions
 		                         && issueQueues.ValueKind is not JsonValueKind.Null
 							        ? new Collection<string>(issueQueues.ToFieldInfoCollection().Select(x => x.Key!)
 								        .ToList())
-							        : null
+							        : []
 			};
 		}
 
@@ -533,6 +536,7 @@ internal static class ResponseExtensions
 		{
 			Id = value.Id,
 			Key = value.Key,
+			Description = value.Description,
 			Name = value.Name,
 			Readonly = value.Readonly,
 			Options = value.Options,

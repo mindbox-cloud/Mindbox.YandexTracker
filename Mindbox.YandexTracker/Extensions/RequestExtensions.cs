@@ -18,6 +18,7 @@ internal static class RequestExtensions
 		return new CreateIssueRequest
 		{
 			Queue = issue.QueueKey,
+			Start = issue.Start,
 			Summary = issue.Summary,
 			Assignee = issue.Assignee?.Id,
 			Description = issue.Description,
@@ -28,7 +29,7 @@ internal static class RequestExtensions
 			Sprints = issue.Sprints,
 			Type = issue.Type,
 			Author = issue.Author?.Id,
-			Tags = issue.Tags
+			Tags = issue.Tags,
 		};
 	}
 
@@ -63,7 +64,7 @@ internal static class RequestExtensions
 	{
 		return new CreateIssueTypeConfigDto
 		{
-			IssueType = config.IssueType.Key.ToString(),
+			IssueType = config.IssueType.Key,
 			Workflow = config.Workflow,
 			Resolutions = new Collection<string>(config.Resolutions.Select(resolution => resolution.Key).ToList())
 		};
@@ -147,13 +148,13 @@ internal static class RequestExtensions
 		{
 			Summary = project.Summary!,
 			AuthorId = project.Author?.Id,
-			Clients = project.Clients is not null
+			Clients = project.Clients.Count > 0
 					? new Collection<string>(project.Clients.Select(client => client.Id).ToList())
 					: null,
 			Description = project.Description,
 			End = project.EndUtc,
 			EntityStatus = project.Status,
-			Followers = project.Followers is not null
+			Followers = project.Followers.Count > 0
 					? new Collection<string>(project.Followers.Select(client => client.Id).ToList())
 					: null,
 			LeadId = project.Lead?.Id,
@@ -161,7 +162,7 @@ internal static class RequestExtensions
 			Start = project.StartUtc,
 			Tags = project.Tags,
 			TeamAccess = project.TeamAccess,
-			TeamUsers = project.TeamUsers is not null
+			TeamUsers = project.TeamUsers.Count > 0
 					? new Collection<string>(project.TeamUsers.Select(client => client.Id).ToList())
 					: null
 		};

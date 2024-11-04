@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -22,8 +21,7 @@ public sealed record ProjectInfo : CustomFieldsResponse
 
 	public int ShortId { get; init; }
 
-	[JsonPropertyName("entityType")]
-	public ProjectEntityType ProjectType { get; init; }
+	public ProjectEntityType EntityType { get; init; }
 
 	public required FieldInfo CreatedBy { get; init; }
 
@@ -51,15 +49,13 @@ public sealed record ProjectInfo : CustomFieldsResponse
 
 	public DateTime? End { get; init; }
 
-	[JsonPropertyName("teamAccess")]
 	public bool? TeamAccess { get; init; }
 
 	public string? Status { get; init; }
 
 	public IReadOnlyCollection<string>? Quarter { get; init; }
 
-	[JsonPropertyName("checklistItems")]
-	public IReadOnlyCollection<FieldInfo>? ChecklistIds { get; init; }
+	public IReadOnlyCollection<FieldInfo>? ChecklistItems { get; init; }
 
 	public IReadOnlyCollection<string>? IssueQueueKeys { get; init; }
 }

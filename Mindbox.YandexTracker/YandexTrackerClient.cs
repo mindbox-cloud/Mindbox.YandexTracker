@@ -405,7 +405,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetProjectsResponse>> GetProjectsAsync(
+	public async Task<IReadOnlyList<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
 		ProjectFieldData? returnedFields = null,

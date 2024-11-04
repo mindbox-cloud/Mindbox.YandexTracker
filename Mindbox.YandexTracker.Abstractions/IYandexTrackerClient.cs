@@ -212,7 +212,7 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/entities/search-entities"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetProjectsResponse>> GetProjectsAsync(
+	Task<IReadOnlyList<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
 		ProjectFieldData? returnedFields = null,

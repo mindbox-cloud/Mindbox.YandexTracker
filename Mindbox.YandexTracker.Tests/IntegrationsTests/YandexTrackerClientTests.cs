@@ -523,11 +523,11 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Clients!.First().Id);
 		Assert.AreEqual("DESC", actualProject.Description);
 		Assert.AreEqual(2, actualProject.Tags!.Count);
-		CollectionAssert.AreEqual(tags, actualProject.Tags);
-		Assert.AreEqual(ProjectEntityType.Project, actualProject.ProjectType);
+		CollectionAssert.AreEquivalent(tags, actualProject.Tags.ToArray());
+		Assert.AreEqual(ProjectEntityType.Project, actualProject.EntityType);
 		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Status);
-		Assert.AreEqual(dateOnlyNow, actualProject.StartUtc);
-		Assert.AreEqual(dateOnlyEnd, actualProject.EndUtc);
+		Assert.AreEqual(dateOnlyNow, actualProject.Start);
+		Assert.AreEqual(dateOnlyEnd, actualProject.End);
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
 		Assert.IsNull(actualProject.TeamAccess);
 		Assert.AreEqual(1, actualProject.TeamUsers!.Count);

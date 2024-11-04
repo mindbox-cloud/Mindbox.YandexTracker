@@ -12,7 +12,7 @@ public sealed record GetAttachmentResponse
 
 	public string? Thumbnail { get; init; }
 
-	public required FieldInfo CreatedBy { get; init; }
+	public required UserShortInfoDto CreatedBy { get; init; }
 
 	public DateTime CreatedAt { get; init; }
 

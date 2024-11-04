@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
+// TODO Чекнуть доп поля
 public sealed record CreateIssueRequest
 {
 	public required string Summary { get; init; }
@@ -14,7 +15,7 @@ public sealed record CreateIssueRequest
 
 	public Collection<string>? Followers { get; init; }
 
-	public GetIssueTypeResponse? Type { get; init; }
+	public string? Type { get; init; }
 
 	public string? Description { get; init; }
 
@@ -28,12 +29,14 @@ public sealed record CreateIssueRequest
 
 	public Collection<string>? AttachmentsIds { get; init; }
 
-	[JsonPropertyName("sprint")]
-	public Collection<string>? Sprints { get; init; }
+	public Collection<string>? Sprint { get; init; }
 
+	// TODO Это что вообще?
 	public Priority? Priority { get; init; }
 
 	public string? Assignee { get; init; }
+
+	public IReadOnlyCollection<string>? AttachmentIds { get; init; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 

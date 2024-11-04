@@ -12,7 +12,7 @@ namespace Mindbox.YandexTracker;
 public interface IYandexTrackerClient : IDisposable
 {
 	/// <remarks>
-	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/create-queue"/>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/queues/get-queue"/>
 	/// </remarks>
 	Task<GetQueuesResponse> GetQueueAsync(
 		string queueKey,
@@ -46,6 +46,7 @@ public interface IYandexTrackerClient : IDisposable
 		IssueExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
+	// TODO У всех серчи апи нет параметра order.
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
 	/// </remarks>

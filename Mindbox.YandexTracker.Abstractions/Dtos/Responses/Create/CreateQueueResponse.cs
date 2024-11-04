@@ -5,6 +5,7 @@ public sealed record CreateQueueResponse
 	public required long Id { get; init; }
 
 	public required string Key { get; init; }
+	public required int Version { get; init; }
 
 	public required string Name { get; init; }
 

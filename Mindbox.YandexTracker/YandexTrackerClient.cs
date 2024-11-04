@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -146,7 +145,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var request = new GetIssuesFromQueueRequest
 		{
-			QueueKey = queueKey
+			Queue = queueKey
 		};
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
@@ -173,7 +172,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		var request = new GetIssuesFromKeysRequest
 		{
-			Keys = new Collection<string>([.. issueKeys])
+			Keys = issueKeys
 		};
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(

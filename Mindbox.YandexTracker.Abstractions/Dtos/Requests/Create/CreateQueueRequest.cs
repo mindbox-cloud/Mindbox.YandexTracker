@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
@@ -9,8 +8,7 @@ public sealed record CreateQueueRequest
 
 	public required string Name { get; init; }
 
-	[JsonPropertyName("lead")]
-	public required string LeadId { get; init; }
+	public required string Lead { get; init; }
 
 	public required string DefaultType { get; init; }
 

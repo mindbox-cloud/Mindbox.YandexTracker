@@ -6,11 +6,13 @@ using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
+// TODO Прочекать доп поля.
 public sealed record GetIssueResponse
 {
 	public required string Id { get; init; }
 
 	public required string Key { get; init; }
+	public required int Version { get; init; }
 
 	public required string Summary { get; init; }
 
@@ -20,12 +22,11 @@ public sealed record GetIssueResponse
 
 	public Collection<string> Aliases { get; init; } = [];
 
-	public required FieldInfo UpdatedBy { get; init; }
+	public required UserShortInfoDto UpdatedBy { get; init; }
 
 	public string? Description { get; init; }
 
-	[JsonPropertyName("sprint")]
-	public Collection<FieldInfo> Sprints { get; init; } = [];
+	public Collection<FieldInfo> Sprint { get; init; } = [];
 
 	public required FieldInfo Type { get; init; }
 
@@ -35,13 +36,13 @@ public sealed record GetIssueResponse
 
 	public DateTime CreatedAt { get; init; }
 
-	public Collection<FieldInfo> Followers { get; init; } = [];
+	public Collection<UserShortInfoDto> Followers { get; init; } = [];
 
-	public required FieldInfo CreatedBy { get; init; }
+	public required UserShortInfoDto CreatedBy { get; init; }
 
 	public int Votes { get; init; }
 
-	public FieldInfo? Assignee { get; init; }
+	public UserShortInfoDto? Assignee { get; init; }
 
 	public FieldInfo? Project { get; init; }
 

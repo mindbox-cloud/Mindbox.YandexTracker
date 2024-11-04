@@ -4,6 +4,7 @@ using System;
 
 namespace Mindbox.YandexTracker;
 
+// TODO Не понимаю, как была создана эта дто.
 [DataContract]
 public sealed record IssuesFilterDto
 {

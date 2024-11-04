@@ -1,8 +1,8 @@
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
 public sealed record GetIssuesFromKeysRequest
 {
-	public Collection<string> Keys { get; init; } = [];
+	public IReadOnlyCollection<string> Keys { get; init; } = [];
 }

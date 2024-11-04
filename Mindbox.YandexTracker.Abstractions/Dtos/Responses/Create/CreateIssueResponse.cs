@@ -12,22 +12,23 @@ public sealed record CreateIssueResponse
 
 	public required string Key { get; init; }
 
+	public required int Version { get; init; }
+
 	public required string Summary { get; init; }
 
 	public DateTime? LastCommentUpdatedAt { get; init; }
 
 	public FieldInfo? Parent { get; init; }
 
-	public required FieldInfo UpdatedBy { get; init; }
+	public required UserShortInfoDto UpdatedBy { get; init; }
 
 	public FieldInfo? Author { get; init; }
 
 	public string? Description { get; init; }
 
-	[JsonPropertyName("sprint")]
-	public Collection<FieldInfo> Sprints { get; init; } = [];
+	public Collection<FieldInfo> Sprint { get; init; } = [];
 
-	public Collection<FieldInfo> Followers { get; init; } = [];
+	public Collection<UserShortInfoDto> Followers { get; init; } = [];
 
 	public Collection<string> Aliases { get; init; } = [];
 
@@ -37,7 +38,7 @@ public sealed record CreateIssueResponse
 
 	public DateTime CreatedAt { get; init; }
 
-	public required FieldInfo CreatedBy { get; init; }
+	public required UserShortInfoDto CreatedBy { get; init; }
 
 	public int Votes { get; init; }
 
@@ -53,7 +54,7 @@ public sealed record CreateIssueResponse
 
 	public FieldInfo? PreviousStatus { get; init; }
 
-	public bool IsFavorite { get; init; }
+	public bool Favorite { get; init; }
 
 	[JsonExtensionData]
 	public Dictionary<string, JsonElement> CustomFields { get; init; } = [];

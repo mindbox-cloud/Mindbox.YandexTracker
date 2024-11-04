@@ -13,16 +13,13 @@ public sealed record ProjectFieldsDto
 {
 	public required string Summary { get; init; }
 
-	[JsonPropertyName("teamAccess")]
 	public bool? TeamAccess { get; init; }
 
 	public string? Description { get; init; }
 
-	[JsonPropertyName("author")]
-	public string? AuthorId { get; init; }
+	public string? Author { get; init; }
 
-	[JsonPropertyName("lead")]
-	public string? LeadId { get; init; }
+	public string? Lead { get; init; }
 
 	public Collection<string>? TeamUsers { get; init; }
 
@@ -36,7 +33,7 @@ public sealed record ProjectFieldsDto
 	public DateOnly? Start { get; init; }
 
 	/// <remarks>
-	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format
+	/// WTF Дата начала в формате YYYY-MM-DDThh:mm:ss.sss±hhmm.
 	/// </remarks>
 	public DateOnly? End { get; init; }
 

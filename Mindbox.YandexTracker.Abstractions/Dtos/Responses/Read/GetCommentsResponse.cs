@@ -7,7 +7,13 @@ public sealed record GetCommentsResponse
 {
 	public int Id { get; init; }
 
+	public required string LongId { get; init; }
+
+	public int Version { get; init; }
+
 	public required string Text { get; init; }
+
+	public required string TextHtml { get; init; }
 
 	public Collection<FieldInfo> Attachments { get; init; } = [];
 
@@ -15,11 +21,11 @@ public sealed record GetCommentsResponse
 
 	public DateTime UpdatedAt { get; init; }
 
-	public required FieldInfo CreatedBy { get; init; }
+	public required UserShortInfoDto CreatedBy { get; init; }
 
-	public required FieldInfo UpdatedBy { get; init; }
+	public required UserShortInfoDto UpdatedBy { get; init; }
 
 	public CommentType Type { get; init; }
 
-	public CommentTransportType TransportType { get; init; }
+	public CommentTransportType Transport { get; init; }
 }

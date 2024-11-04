@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-public sealed record CreateProjectResponse
+public sealed record CreateProjectResponse : CustomFieldsResponse
 {
 	public required string Id { get; init; }
 
@@ -19,7 +17,4 @@ public sealed record CreateProjectResponse
 	public DateTime CreatedAt { get; init; }
 
 	public DateTime UpdatedAt { get; init; }
-
-	[JsonExtensionData]
-	public Dictionary<string, JsonElement> Fields { get; init; } = [];
 }

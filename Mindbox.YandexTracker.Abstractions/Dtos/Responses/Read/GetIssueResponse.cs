@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 // TODO Прочекать доп поля.
-public sealed record GetIssueResponse
+public sealed record GetIssueResponse : CustomFieldsResponse
 {
 	public required string Id { get; init; }
 
@@ -59,7 +57,4 @@ public sealed record GetIssueResponse
 	public DateOnly? Start { get; set; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
-
-	[JsonExtensionData]
-	public Dictionary<string, JsonElement> Fields { get; init; } = [];
 }

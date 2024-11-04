@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
-public sealed record CreateIssueResponse
+public sealed record CreateIssueResponse : CustomFieldsResponse
 {
 	public required string Id { get; init; }
 
@@ -55,7 +52,4 @@ public sealed record CreateIssueResponse
 	public FieldInfo? PreviousStatus { get; init; }
 
 	public bool Favorite { get; init; }
-
-	[JsonExtensionData]
-	public Dictionary<string, JsonElement> CustomFields { get; init; } = [];
 }

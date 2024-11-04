@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 // TODO Чекнуть доп поля
-public sealed record CreateIssueRequest
+public sealed record CreateIssueRequest : CustomFieldsRequest
 {
 	public required string Summary { get; init; }
 
@@ -39,7 +37,4 @@ public sealed record CreateIssueRequest
 	public IReadOnlyCollection<string>? AttachmentIds { get; init; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
-
-	[JsonExtensionData]
-	public IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
 }

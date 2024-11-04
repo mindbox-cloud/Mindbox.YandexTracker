@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
@@ -17,7 +16,7 @@ public sealed record GetProjectsResponse
 	public string? OrderBy { get; init; }
 }
 
-public sealed record ProjectInfo
+public sealed record ProjectInfo : CustomFieldsResponse
 {
 	public required string Id { get; init; }
 
@@ -63,7 +62,4 @@ public sealed record ProjectInfo
 	public IReadOnlyCollection<FieldInfo>? ChecklistIds { get; init; }
 
 	public IReadOnlyCollection<string>? IssueQueueKeys { get; init; }
-
-	[JsonExtensionData]
-	public IReadOnlyDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
 }

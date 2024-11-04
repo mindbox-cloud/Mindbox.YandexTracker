@@ -411,8 +411,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ProjectFieldData? returnedFields = null,
 		CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Что-то странное");
-		/*
 		ArgumentNullException.ThrowIfNull(request);
 
 		var parameters = new Dictionary<string, string>();
@@ -426,7 +424,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
 		parameters["perPage"] = "100";
 
-		var projects = new List<GetProjectsResponse>();
+		var projects = new List<ProjectInfo>();
 
 		// При запросе проектов возвращается респонс
 		// {
@@ -445,14 +443,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				parameters: parameters,
 				cancellationToken: cancellationToken);
 
-			projects.AddRange(response);
+			projects.AddRange(response.Values);
 			page++;
 			parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
 
 		} while (response.Pages > page);
 
 		return projects;
-		*/
 	}
 
 	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetAccessibleFieldsForIssueAsync(

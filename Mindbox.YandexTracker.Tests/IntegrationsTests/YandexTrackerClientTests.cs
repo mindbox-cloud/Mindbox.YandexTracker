@@ -514,25 +514,25 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		var actualProject = projects.FirstOrDefault(x => x.ShortId == project1.ShortId);
 		Assert.IsNotNull(actualProject);
-		Assert.AreEqual(summary, actualProject.Summary);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Author!.Id);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Lead!.Id);
-		Assert.AreEqual(1, actualProject.Followers!.Count);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Followers!.First().Id);
-		Assert.AreEqual(1, actualProject.Clients!.Count);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Clients!.First().Id);
-		Assert.AreEqual("DESC", actualProject.Description);
-		Assert.AreEqual(2, actualProject.Tags!.Count);
-		CollectionAssert.AreEquivalent(tags, actualProject.Tags.ToArray());
+		Assert.AreEqual(summary, actualProject.Fields!.Summary);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Author!.Id);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Lead!.Id);
+		Assert.AreEqual(1, actualProject.Fields!.Followers!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Followers!.First().Id);
+		Assert.AreEqual(1, actualProject.Fields!.Clients!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Clients!.First().Id);
+		Assert.AreEqual("DESC", actualProject.Fields!.Description);
+		Assert.AreEqual(2, actualProject.Fields!.Tags!.Count);
+		CollectionAssert.AreEquivalent(tags, actualProject.Fields!.Tags.ToArray());
 		Assert.AreEqual(ProjectEntityType.Project, actualProject.EntityType);
-		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Status);
-		Assert.AreEqual(dateOnlyNow, actualProject.Start);
-		Assert.AreEqual(dateOnlyEnd, actualProject.End);
+		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Fields!.Status);
+		Assert.AreEqual(dateOnlyNow, actualProject.Fields!.Start);
+		Assert.AreEqual(dateOnlyEnd, actualProject.Fields!.End);
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
-		Assert.IsNull(actualProject.TeamAccess);
-		Assert.AreEqual(1, actualProject.TeamUsers!.Count);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.TeamUsers!.First().Id);
-		Assert.AreEqual(2, actualProject.Quarter!.Count);
+		Assert.IsNull(actualProject.Fields!.TeamAccess);
+		Assert.AreEqual(1, actualProject.Fields!.TeamUsers!.Count);
+		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.TeamUsers!.First().Id);
+		Assert.AreEqual(2, actualProject.Fields!.Quarter!.Count);
 	}
 
 	[TestMethod]

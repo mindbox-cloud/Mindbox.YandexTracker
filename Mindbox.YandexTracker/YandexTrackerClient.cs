@@ -452,37 +452,31 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return projects;
 	}
 
-	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetAccessibleFieldsForIssueAsync(
+	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Опять думать");
-		/*
 		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
-
-		var globalFields = await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-			"fields",
-			HttpMethod.Get,
-			cancellationToken: cancellationToken);
-
-		List<IssueField> localQueueFields = [];
 
 		try
 		{
-			localQueueFields = (await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+			return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
 				$"queues/{queueKey}/localFields",
 				HttpMethod.Get,
-				cancellationToken: cancellationToken))
-				.Select(dto => dto.ToIssueField())
-				.ToList();
+				cancellationToken: cancellationToken);
 		}
 		catch (InvalidOperationException)
 		{
-			// Если локальных полей нет - InvalidOperationException
+			return [];
 		}
+	}
 
-		return [.. globalFields, .. localQueueFields];
-		*/
+	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(CancellationToken cancellationToken = default)
+	{
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+			"fields",
+			HttpMethod.Get,
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<UserDetailedInfoDto> GetMyselfAsync(CancellationToken cancellationToken)

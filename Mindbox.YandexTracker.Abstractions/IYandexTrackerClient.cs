@@ -219,12 +219,16 @@ public interface IYandexTrackerClient : IDisposable
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
-	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-global-fields"/><br />
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/queues/get-local-fields"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueFieldsResponse>> GetAccessibleFieldsForIssueAsync(
+	Task<IReadOnlyList<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
 		CancellationToken cancellationToken = default);
+
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-global-fields"/>
+	/// </remarks>
+	Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Возвращает информацию о пользователе, от имени которого выполняются запросы.

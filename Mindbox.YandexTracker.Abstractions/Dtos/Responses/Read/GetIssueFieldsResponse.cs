@@ -9,6 +9,8 @@ public sealed record GetIssueFieldsResponse
 
 	public required string Key { get; init; }
 
+	public int Version { get; init; }
+
 	public required string Name { get; init; }
 
 	public string? Description { get; init; }

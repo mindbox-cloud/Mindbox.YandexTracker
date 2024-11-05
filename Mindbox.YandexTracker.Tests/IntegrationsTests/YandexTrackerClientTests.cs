@@ -601,7 +601,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	public async Task GetAccessibleFieldsForIssueAsync_ValidQueueKey_ResponseIsNotNullAndContainsSomeElements()
 	{
 		// Arrange & Act
-		var response = await YandexTrackerClient.GetAccessibleFieldsForIssueAsync(TestQueueKey);
+		var response = await YandexTrackerClient.GetLocalQueueFieldsAsync(TestQueueKey);
 
 		// Assert
 		Assert.IsNotNull(response);

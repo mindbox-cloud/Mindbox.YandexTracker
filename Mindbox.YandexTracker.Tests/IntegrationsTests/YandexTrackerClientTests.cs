@@ -243,8 +243,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		{
 			Filter = new IssuesFilterDto
 			{
-				Queue = TestQueueKey,
-				Summary = summary
+				Queue = [TestQueueKey],
+				Summary = [summary]
 			}
 		});
 

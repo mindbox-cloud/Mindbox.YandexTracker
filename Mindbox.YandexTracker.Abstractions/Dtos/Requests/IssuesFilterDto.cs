@@ -1,174 +1,131 @@
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mindbox.YandexTracker;
 
-// TODO Не понимаю, как была создана эта дто.
-[DataContract]
 public sealed record IssuesFilterDto
 {
 	/// <summary>
 	/// Дата и время последнего добавленного комментария
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "lastCommentUpdatedAt")]
-	public DateTime? LastCommentUpdatedAtUtc { get; init; }
+	public DateTime? LastCommentUpdatedAt { get; init; }
 
 	/// <summary>
 	/// Название задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "summary")]
-	public string? Summary { get; init; }
+	public IReadOnlyCollection<string>? Summary { get; init; }
 
 	/// <summary>
 	/// Идентификатор родительской задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "parent")]
-	public string? Parent { get; init; }
-
-	/// <summary>
-	/// Массив с информацией об альтернативных ключах задачи
-	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "alliases")]
-	public Collection<string>? Aliases { get; init; }
+	public IReadOnlyCollection<string>? Parent { get; init; }
 
 	/// <summary>
 	/// Идентификатор последнего сотрудника, изменившего задачу
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "updatedBy")]
-	public string? UpdatedBy { get; init; }
+	public IReadOnlyCollection<string>? UpdatedBy { get; init; }
 
 	/// <summary>
 	/// Описание задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "description")]
-	public string? Description { get; init; }
+	public IReadOnlyCollection<string>? Description { get; init; }
 
 	/// <summary>
 	/// Массив с информацией о спринте
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "sprint")]
-	public Collection<string>? Sprints { get; init; }
+	public IReadOnlyCollection<string>? Sprint { get; init; }
 
 	/// <summary>
 	/// Тип задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "type")]
-	public GetIssueTypeResponse? Type { get; init; }
+	public IReadOnlyCollection<string>? Type { get; init; }
 
 	/// <summary>
 	/// Приоритет задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "priority")]
-	public Priority? Priority { get; init; }
+	public IReadOnlyCollection<Priority>? Priority { get; init; }
 
 	/// <summary>
 	/// Дата и время создания задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "createdAt")]
-	public DateTime? CreatedAtUtc { get; init; }
+	public DateTime? CreatedAt { get; init; }
 
 	/// <summary>
 	/// Массив идентификаторов наблюдателей задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "followers")]
-	public Collection<string>? Followers { get; init; }
+	public IReadOnlyCollection<string>? Followers { get; init; }
 
 	/// <summary>
 	/// Идентификатор создателя задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "createdBy")]
-	public string? CreatedBy { get; init; }
+	public IReadOnlyCollection<string>? CreatedBy { get; init; }
 
 	/// <summary>
 	/// Количество голосов за задачу
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "votes")]
 	public int? Votes { get; init; }
 
 	/// <summary>
 	/// Идентификатор исполнителя задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "assignee")]
-	public string? Assignee { get; init; }
+	public IReadOnlyCollection<string>? Assignee { get; init; }
 
 	/// <summary>
 	/// Идентификатор проекта задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "project")]
-	public string? Project { get; init; }
+	public IReadOnlyCollection<string>? Project { get; init; }
 
 	/// <summary>
 	/// Идентификатор очереди задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "queue")]
-	public string? Queue { get; init; }
+	public IReadOnlyCollection<string>? Queue { get; init; }
 
 	/// <summary>
 	/// Дата и время последнего обновления задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "updatedAt")]
-	public DateTime? UpdatedAtUtc { get; init; }
+	public DateTime? UpdatedAt { get; init; }
 
 	/// <summary>
 	/// Статус задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "status")]
-	public string? Status { get; init; }
+	public IReadOnlyCollection<string>? Status { get; init; }
 
 	/// <summary>
 	/// Предыдущий статус задачи
 	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "previousStatus")]
-	public GetIssueStatusResponse? PreviousStatus { get; init; }
-
-	/// <summary>
-	/// Признак избранной задачи:
-	/// true — пользователь добавил задачу в избранное;
-	/// false — задача не добавлена в избранное.
-	/// </summary>
-	[DataMember(EmitDefaultValue = false, Name = "favorite")]
-	public bool? IsFavorite { get; init; }
+	public IReadOnlyCollection<string>? PreviousStatus { get; init; }
 
 	public override int GetHashCode()
 	{
 		var hashCodePart1 = HashCode.Combine(
-			LastCommentUpdatedAtUtc,
-			Summary,
-			Parent,
-			UpdatedBy,
-			Description,
-			Type,
-			Priority,
-			CreatedAtUtc);
-
-		var hashCodePart2 = HashCode.Combine(
-			CreatedBy,
-			Votes,
-			Assignee,
-			Project,
-			UpdatedAtUtc,
-			Status,
-			PreviousStatus,
-			IsFavorite);
+			LastCommentUpdatedAt,
+			CreatedAt,
+			UpdatedAt);
 
 		var collectionHashCode = 0;
+		CombineCollectionHashCode(Summary);
+		CombineCollectionHashCode(Parent);
+		CombineCollectionHashCode(UpdatedBy);
+		CombineCollectionHashCode(Description);
+		CombineCollectionHashCode(Sprint);
+		CombineCollectionHashCode(Type);
+		CombineCollectionHashCode(Priority);
+		CombineCollectionHashCode(Followers);
+		CombineCollectionHashCode(CreatedBy);
+		CombineCollectionHashCode(Assignee);
+		CombineCollectionHashCode(Project);
+		CombineCollectionHashCode(Queue);
+		CombineCollectionHashCode(Status);
+		CombineCollectionHashCode(PreviousStatus);
 
-		foreach (var alias in Aliases ?? [])
+		return HashCode.Combine(hashCodePart1, collectionHashCode);
+
+		void CombineCollectionHashCode<T>(IEnumerable<T>? collection)
 		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, alias.GetHashCode(StringComparison.InvariantCulture));
+			if (collection is null)
+				return;
+			collectionHashCode = collection.Aggregate(collectionHashCode, (current, item) => HashCode.Combine(item, current));
 		}
-
-		foreach (var sprint in Sprints ?? [])
-		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, sprint.GetHashCode(StringComparison.InvariantCulture));
-		}
-
-		foreach (var follower in Followers ?? [])
-		{
-			collectionHashCode = HashCode.Combine(collectionHashCode, follower.GetHashCode(StringComparison.InvariantCulture));
-		}
-
-		return HashCode.Combine(hashCodePart1, hashCodePart2, collectionHashCode, Queue);
 	}
 }

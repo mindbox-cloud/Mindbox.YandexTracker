@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -18,6 +19,11 @@ namespace Mindbox.YandexTracker;
 
 public sealed class YandexTrackerClient : IYandexTrackerClient
 {
+	private const string TotalPageHeaderName = "X-Total-Pages";
+
+	private static readonly PaginationSettings _defaultPaginationSettings = new();
+
+	private readonly IOptionsMonitor<YandexTrackerClientOptions> _options;
 	private readonly HttpClient _httpClient;
 	private readonly JsonSerializerOptions _jsonOptions;
 
@@ -28,8 +34,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ArgumentNullException.ThrowIfNull(options);
 		ArgumentNullException.ThrowIfNull(httpClient);
 
+		_options = options;
 		_httpClient = httpClient;
-		ConfigureHttpClient(_httpClient, options.CurrentValue);
+		ConfigureHttpClient(_httpClient, _options.CurrentValue);
 
 		_jsonOptions = new JsonSerializerOptions
 		{
@@ -709,24 +716,28 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		object? payload = null,
 		IDictionary<string, string>? parameters = null,
 		IDictionary<string, string>? headers = null,
+		PaginationSettings? customPaginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		const int perPage = 100;
+		var paginationSettings = customPaginationSettings
+								 ?? _options.CurrentValue.DefaultPaginationSettings
+								 ?? _defaultPaginationSettings;
 
-		var pageNumber = 1;
+		var pageNumber = 0;
+		var totalPageCount = 1;
 
 		var result = new List<TResult>();
-		List<TResult> dataChunk;
 		do
 		{
+			pageNumber++;
 			var parametersWithPaging = parameters is not null
 				? new Dictionary<string, string>(parameters)
 				: [];
 
-			parametersWithPaging["perPage"] = perPage.ToString(CultureInfo.InvariantCulture);
+			parametersWithPaging["perPage"] = paginationSettings.PerPage.ToString(CultureInfo.InvariantCulture);
 			parametersWithPaging["page"] = pageNumber.ToString(CultureInfo.InvariantCulture);
 
-			dataChunk = await ExecuteYandexTrackerApiRequestAsync<List<TResult>>(
+			var response = await ExecuteYandexTrackerApiRawRequestAsync(
 				requestTo,
 				httpMethod,
 				payload: payload,
@@ -734,11 +745,19 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				headers,
 				cancellationToken);
 
+			var resultContent = await response.Content.ReadAsStringAsync(cancellationToken);
+			var dataChunk = JsonSerializer.Deserialize<List<TResult>>(resultContent, _jsonOptions)!;
+
 			result.AddRange(dataChunk);
 
-			pageNumber++;
+			if (response.Headers.TryGetValues(TotalPageHeaderName, out var headerValue))
+			{
+				totalPageCount = Convert.ToInt32(headerValue.First(), CultureInfo.InvariantCulture);
+			}
 		}
-		while (dataChunk.Count == perPage);
+		while (
+			pageNumber <= totalPageCount
+			&& (paginationSettings.MaxPageRequestCount is null || pageNumber < paginationSettings.MaxPageRequestCount));
 
 		return result;
 	}

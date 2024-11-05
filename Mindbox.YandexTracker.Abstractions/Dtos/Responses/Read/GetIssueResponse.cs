@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-// TODO Прочекать доп поля.
 public sealed record GetIssueResponse : CustomFieldsResponse
 {
 	public required string Id { get; init; }
@@ -28,7 +27,13 @@ public sealed record GetIssueResponse : CustomFieldsResponse
 
 	public required FieldInfo Type { get; init; }
 
-	public FieldInfo? Author { get; init; }
+	public UserShortInfoDto? Author { get; init; }
+
+	public UserShortInfoDto? QaEngineer { get; init; }
+
+	public IReadOnlyCollection<UserShortInfoDto> Access { get; init; } = [];
+
+	public int? PossibleSpam { get; init; }
 
 	public required FieldInfo Priority { get; init; }
 
@@ -55,8 +60,11 @@ public sealed record GetIssueResponse : CustomFieldsResponse
 	public bool Favorite { get; init; }
 
 	public DateOnly? Start { get; set; }
+
 	public DateOnly? End { get; set; }
+
 	public DateOnly? DueDate { get; set; }
 
+	public DateTime? StatusStartTime { get; init; }
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 }

@@ -6,7 +6,6 @@ public record UserShortInfoDto
 
 	public string? PassportUid { get; init; }
 
-	// TODO Этого поля где-то нет. Почему?
 	public string? CloudUid { get; init; }
 
 	public required string Display { get; init; }

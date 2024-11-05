@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using Mindbox.YandexTracker.Helpers;
 using Mindbox.YandexTracker.JsonConverters;
 
 namespace Mindbox.YandexTracker;
@@ -660,58 +659,51 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			requestUri = new Uri(QueryHelpers.AddQueryString(requestUri.ToString(), parameters!));
 		}
 
-		return await RetryHelpers.RetryOnExceptionAsync(
-			ExecuteAndProcessResultAsync,
-			retryCount: 4,
-			cancellationToken);
+		using var request = new HttpRequestMessage(method, requestUri);
 
-		async Task<HttpResponseMessage> ExecuteAndProcessResultAsync()
+		if (payload is not null)
 		{
-			var request = new HttpRequestMessage(method, requestUri);
-
-			if (payload is not null)
+			if (payload is HttpContent content)
 			{
-				if (payload is HttpContent content)
-				{
-					request.Content = content;
-				}
-				else
-				{
-					var json = JsonSerializer.Serialize(payload, _jsonOptions);
-					request.Content = new StringContent(
-						json,
-						Encoding.UTF8,
-						"application/json");
-				}
+				request.Content = content;
 			}
-
-			if (headers is not null)
+			else
 			{
-				foreach (var header in headers)
-				{
-					request.Headers.Add(header.Key, header.Value);
-				}
+				var json = JsonSerializer.Serialize(payload, _jsonOptions);
+				request.Content = new StringContent(
+					json,
+					Encoding.UTF8,
+					"application/json");
 			}
-
-			var response = await _httpClient.SendAsync(request, cancellationToken);
-
-			if (response.IsSuccessStatusCode) return response;
-
-			await CheckRateLimitExceededAsync(response, cancellationToken);
-
-			string errorMessage;
-			try
-			{
-				errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-			}
-			catch
-			{
-				errorMessage = "Unknown error";
-			}
-			throw new YandexTrackerException(
-				$"Request was not successful: {response.StatusCode} : {errorMessage}",
-				response.StatusCode);
 		}
+
+		if (headers is not null)
+		{
+			foreach (var header in headers)
+			{
+				request.Headers.Add(header.Key, header.Value);
+			}
+		}
+
+		var response = await _httpClient.SendAsync(request, cancellationToken);
+
+		if (response.IsSuccessStatusCode) return response;
+
+		await CheckRateLimitExceededAsync(response, cancellationToken);
+
+		string errorMessage;
+		try
+		{
+			errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+		}
+		catch
+		{
+			errorMessage = "Unknown error";
+		}
+
+		throw new YandexTrackerException(
+			$"Request was not successful: {response.StatusCode} : {errorMessage}",
+			response.StatusCode);
 
 		static async Task CheckRateLimitExceededAsync(
 			HttpResponseMessage response,

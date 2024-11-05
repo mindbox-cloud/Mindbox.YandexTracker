@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
-// TODO Чекнуть доп поля
 public sealed record CreateIssueRequest : CustomFieldsRequest
 {
 	public required string Summary { get; init; }
@@ -20,8 +19,16 @@ public sealed record CreateIssueRequest : CustomFieldsRequest
 	public string? Parent { get; init; }
 
 	public DateOnly? Start { get; init; }
+	public DateOnly? End { get; init; }
+	public DateOnly? DueDate { get; init; }
 
 	public string? Author { get; init; }
+
+	public string? QaEngineer { get; init; }
+
+	public IReadOnlyCollection<string>? Access { get; init; }
+
+	public int? PossibleSpam { get; init; }
 
 	public string? Unique { get; init; }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
@@ -19,7 +20,13 @@ public sealed record CreateIssueResponse : CustomFieldsResponse
 
 	public required UserShortInfoDto UpdatedBy { get; init; }
 
-	public FieldInfo? Author { get; init; }
+	public UserShortInfoDto? Author { get; init; }
+
+	public UserShortInfoDto? QaEngineer { get; init; }
+
+	public IReadOnlyCollection<UserShortInfoDto> Access { get; init; } = [];
+
+	public int? PossibleSpam { get; init; }
 
 	public string? Description { get; init; }
 
@@ -52,4 +59,12 @@ public sealed record CreateIssueResponse : CustomFieldsResponse
 	public FieldInfo? PreviousStatus { get; init; }
 
 	public bool Favorite { get; init; }
+
+	public DateOnly? Start { get; init; }
+
+	public DateOnly? End { get; init; }
+
+	public DateOnly? DueDate { get; init; }
+
+	public DateTime? StatusStartTime { get; init; }
 }

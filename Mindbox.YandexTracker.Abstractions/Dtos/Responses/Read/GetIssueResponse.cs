@@ -55,6 +55,8 @@ public sealed record GetIssueResponse : CustomFieldsResponse
 	public bool Favorite { get; init; }
 
 	public DateOnly? Start { get; set; }
+	public DateOnly? End { get; set; }
+	public DateOnly? DueDate { get; set; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 }

@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Mindbox.YandexTracker;
+﻿namespace Mindbox.YandexTracker;
 
 public sealed record CreateQueueLocalFieldRequest
 {

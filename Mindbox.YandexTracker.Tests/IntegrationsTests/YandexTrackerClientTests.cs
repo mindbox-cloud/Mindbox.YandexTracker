@@ -112,7 +112,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new CreateQueueLocalFieldRequest
 		{
 			Id = "customFields",
-			CategoryId = firstCategory.Id,
+			Category = firstCategory.Id,
 			Name = new QueueLocalFieldName
 			{
 				En = "customFields",
@@ -151,7 +151,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 				En = "eng222",
 				Ru = "ru222"
 			},
-			CategoryId = firstCategory.Id,
+			Category = firstCategory.Id,
 			Type = QueueLocalFieldType.DateFieldType
 		};
 

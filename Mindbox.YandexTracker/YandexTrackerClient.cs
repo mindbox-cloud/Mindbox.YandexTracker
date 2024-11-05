@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -689,8 +688,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		if (response.IsSuccessStatusCode) return response;
 
-		await CheckRateLimitExceededAsync(response, cancellationToken);
-
 		string errorMessage;
 		try
 		{
@@ -704,49 +701,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		throw new YandexTrackerException(
 			$"Request was not successful: {response.StatusCode} : {errorMessage}",
 			response.StatusCode);
-
-		static async Task CheckRateLimitExceededAsync(
-			HttpResponseMessage response,
-			CancellationToken cancellationToken)
-		{
-			var remaining = TryGetHeaderValue(response, "x-ratelimit-remaining");
-
-			if (remaining is not "0")
-				return;
-
-			var retrySeconds = TryGetHeaderValue(response, "Retry-After")?.Transform(int.Parse) ?? 1;
-			var retryPeriod = TimeSpan.FromSeconds(retrySeconds + 1);
-			if (retryPeriod.TotalSeconds > TimeSpan.FromMinutes(1).TotalSeconds)
-			{
-				var noRetryException = new YandexTrackerException(
-					"YandexTracker rate limit reached. Too long wait for next try.",
-					response.StatusCode);
-				noRetryException.Data.Add("Retry-After", retrySeconds);
-
-				throw noRetryException;
-			}
-
-			await Task.Delay(retryPeriod, cancellationToken);
-
-			var exception =
-				new InvalidOperationException($"Request was not successful: {response.StatusCode} : {response.Content}");
-
-			exception.Data.Add("x-ratelimit-remaining", remaining);
-			exception.Data.Add("x-ratelimit-limit", TryGetHeaderValue(response, "x-ratelimit-limit") ?? "null");
-			exception.Data.Add("x-ratelimit-used", TryGetHeaderValue(response, "x-ratelimit-used") ?? "null");
-			exception.Data.Add("x-ratelimit-reset", TryGetHeaderValue(response, "x-ratelimit-resett") ?? "null");
-
-			throw exception;
-		}
 	}
-
-	private static string? TryGetHeaderValue(HttpResponseMessage response, string header)
-		=> response.Headers
-			.Where(h => h.Key.Equals(header, StringComparison.OrdinalIgnoreCase))
-			.Select(h => h.Value)
-			.SingleOrDefault()
-			?.SingleOrDefault()
-			?.TrimAndMakeNullIfEmpty();
 
 	private async Task<IReadOnlyList<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
 		string requestTo,

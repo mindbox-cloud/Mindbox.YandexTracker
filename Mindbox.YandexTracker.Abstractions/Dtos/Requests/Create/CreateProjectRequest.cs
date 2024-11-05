@@ -27,14 +27,8 @@ public sealed record ProjectFieldsDto
 
 	public Collection<string>? Followers { get; init; }
 
-	/// <remarks>
-	/// Must have YYYY-MM-DDThh:mm:ss.sss±hhmm format
-	/// </remarks>
 	public DateOnly? Start { get; init; }
 
-	/// <remarks>
-	/// WTF Дата начала в формате YYYY-MM-DDThh:mm:ss.sss±hhmm.
-	/// </remarks>
 	public DateOnly? End { get; init; }
 
 	public Collection<string>? Tags { get; init; }

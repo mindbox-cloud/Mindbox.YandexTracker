@@ -46,7 +46,6 @@ public interface IYandexTrackerClient : IDisposable
 		IssueExpandData? expand = null,
 		CancellationToken cancellationToken = default);
 
-	// TODO У всех серчи апи нет параметра order.
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
 	/// </remarks>

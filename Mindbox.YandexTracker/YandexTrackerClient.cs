@@ -25,12 +25,13 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	public YandexTrackerClient(
 		IOptionsMonitor<YandexTrackerClientOptions> options,
-		IHttpClientFactory httpClientFactory)
+		HttpClient httpClient)
 	{
 		ArgumentNullException.ThrowIfNull(options);
-		ArgumentNullException.ThrowIfNull(httpClientFactory);
+		ArgumentNullException.ThrowIfNull(httpClient);
 
-		_httpClient = CreateHttpClient(httpClientFactory, options.CurrentValue);
+		_httpClient = httpClient;
+		ConfigureHttpClient(_httpClient, options.CurrentValue);
 
 		_jsonOptions = new JsonSerializerOptions
 		{
@@ -51,20 +52,16 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		};
 	}
 
-	private static HttpClient CreateHttpClient(
-		IHttpClientFactory httpClientFactory,
+	private static void ConfigureHttpClient(
+		HttpClient httpClient,
 		YandexTrackerClientOptions options)
 	{
-		var httpClient = httpClientFactory.CreateClient();
-
 		httpClient.DefaultRequestHeaders.UserAgent.Add(
 			new ProductInfoHeaderValue(
 				"Mindbox.YandexTrackerClient",
 				Assembly.GetExecutingAssembly().GetName().Version!.ToString()));
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.OAuthToken);
 		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
-
-		return httpClient;
 	}
 
 	public async Task<GetQueuesResponse> GetQueueAsync(

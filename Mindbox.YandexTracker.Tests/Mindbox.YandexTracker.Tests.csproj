@@ -20,7 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mindbox.YandexTracker.Template\Mindbox.YandexTracker.Template.csproj" />
       <ProjectReference Include="..\Mindbox.YandexTracker\Mindbox.YandexTracker.csproj" />
     </ItemGroup>
   

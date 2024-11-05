@@ -29,7 +29,6 @@ public sealed record CreateIssueRequest : CustomFieldsRequest
 
 	public Collection<string>? Sprint { get; init; }
 
-	// TODO Это что вообще?
 	public Priority? Priority { get; init; }
 
 	public string? Assignee { get; init; }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
 using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
@@ -81,19 +80,16 @@ public sealed record GetQueueLocalFieldResponse
 /// <summary>
 /// Название локального поля очереди
 /// </summary>
-[DataContract]
 public sealed record QueueLocalFieldName
 {
 	/// <summary>
 	/// Название поля на английском языке
 	/// </summary>
-	[DataMember(Name = "en")]
 	public required string En { get; set; }
 
 	/// <summary>
 	/// Название поля на русском языке
 	/// </summary>
-	[DataMember(Name = "ru")]
 	public required string Ru { get; set; }
 }
 

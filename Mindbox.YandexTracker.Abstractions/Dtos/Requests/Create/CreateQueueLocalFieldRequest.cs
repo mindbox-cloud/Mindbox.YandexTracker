@@ -8,8 +8,7 @@ public sealed record CreateQueueLocalFieldRequest
 
 	public required QueueLocalFieldName Name { get; init; }
 
-	[JsonPropertyName("category")]
-	public required string CategoryId { get; init; }
+	public required string Category { get; init; }
 
 	public QueueLocalFieldType Type { get; init; }
 

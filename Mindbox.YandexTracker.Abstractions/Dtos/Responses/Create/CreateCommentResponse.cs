@@ -23,7 +23,7 @@ public sealed record CreateCommentResponse
 
 	public Collection<UserShortInfoDto> Summonees { get; init; } = [];
 
-	public Collection<FieldInfo> MaillistSummonees { get; init; } = [];
+	public Collection<UserShortInfoDto> MaillistSummonees { get; init; } = [];
 
 	public CommentType Type { get; init; }
 

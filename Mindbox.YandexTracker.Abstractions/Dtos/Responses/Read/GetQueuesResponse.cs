@@ -15,7 +15,7 @@ public sealed record GetQueuesResponse
 
 	public string? Description { get; init; }
 
-	public required FieldInfo Lead { get; init; }
+	public required UserShortInfoDto Lead { get; init; }
 
 	public bool AssignAuto { get; init; }
 
@@ -23,7 +23,7 @@ public sealed record GetQueuesResponse
 
 	public required FieldInfo DefaultPriority { get; init; }
 
-	public Collection<FieldInfo> TeamUsers { get; init; } = [];
+	public Collection<UserShortInfoDto> TeamUsers { get; init; } = [];
 
 	public Collection<FieldInfo> IssueTypes { get; init; } = [];
 

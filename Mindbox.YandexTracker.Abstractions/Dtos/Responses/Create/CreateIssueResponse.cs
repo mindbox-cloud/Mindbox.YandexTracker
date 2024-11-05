@@ -46,7 +46,7 @@ public sealed record CreateIssueResponse : CustomFieldsResponse
 
 	public int Votes { get; init; }
 
-	public FieldInfo? Assignee { get; init; }
+	public UserShortInfoDto? Assignee { get; init; }
 
 	public FieldInfo? Project { get; init; }
 

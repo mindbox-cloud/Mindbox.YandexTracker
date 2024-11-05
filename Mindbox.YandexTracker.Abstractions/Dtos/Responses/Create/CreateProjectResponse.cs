@@ -9,10 +9,9 @@ public sealed record CreateProjectResponse : CustomFieldsResponse
 
 	public int ShortId { get; init; }
 
-	[JsonPropertyName("entityType")]
-	public ProjectEntityType ProjectEntityType { get; init; }
+	public ProjectEntityType EntityType { get; init; }
 
-	public required FieldInfo CreatedBy { get; init; }
+	public required UserShortInfoDto CreatedBy { get; init; }
 
 	public DateTime CreatedAt { get; init; }
 

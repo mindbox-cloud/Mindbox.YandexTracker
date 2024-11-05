@@ -10,8 +10,7 @@ public sealed record GetProjectsRequest
 
 	public string? OrderBy { get; init; }
 
-	[JsonPropertyName("orderAsc")]
-	public bool? OrderAscending { get; init; }
+	public bool? OrderAsc { get; init; }
 
 	public bool? RootOnly { get; init; }
 }

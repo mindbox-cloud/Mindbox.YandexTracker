@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 
 namespace Mindbox.YandexTracker;
 
 public sealed record UserDetailedInfoDto
 {
-	[JsonPropertyName("uid")]
-	public required long Id { get; init; }
+	public required long Uid { get; init; }
 
 	public required string Login { get; init; }
 
@@ -34,11 +32,9 @@ public sealed record UserDetailedInfoDto
 
 	public bool DisableNotifications { get; init; }
 
-	[JsonPropertyName("firstLoginDate")]
-	public DateTime FirstLoginDateUtc { get; init; }
+	public DateTime FirstLoginDate { get; init; }
 
-	[JsonPropertyName("lastLoginDate")]
-	public DateTime LastLoginDateUtc { get; init; }
+	public DateOnly LastLoginDate { get; init; }
 
 	public bool WelcomeMailSent { get; init; }
 }

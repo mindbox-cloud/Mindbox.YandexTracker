@@ -9,7 +9,7 @@ public sealed record CreateQueueResponse
 
 	public required string Name { get; init; }
 
-	public required FieldInfo Lead { get; init; }
+	public required UserShortInfoDto Lead { get; init; }
 
 	public bool AssignAuto { get; init; }
 

@@ -9,7 +9,7 @@ public sealed record CreateIssueRequest : CustomFieldsRequest
 
 	public required string Queue { get; init; }
 
-	public IReadOnlyCollection<string>? Followers { get; init; } = [];
+	public IReadOnlyCollection<string> Followers { get; init; } = [];
 
 	public string? Type { get; init; }
 
@@ -31,9 +31,9 @@ public sealed record CreateIssueRequest : CustomFieldsRequest
 
 	public string? Unique { get; init; }
 
-	public IReadOnlyCollection<string>? AttachmentsIds { get; init; } = [];
+	public IReadOnlyCollection<string> AttachmentsIds { get; init; } = [];
 
-	public IReadOnlyCollection<string>? Sprint { get; init; } = [];
+	public IReadOnlyCollection<string> Sprint { get; init; } = [];
 
 	public Priority? Priority { get; init; }
 

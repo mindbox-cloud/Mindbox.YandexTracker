@@ -67,6 +67,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				Assembly.GetExecutingAssembly().GetName().Version!.ToString()));
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", options.OAuthToken);
 		httpClient.DefaultRequestHeaders.Add("X-Cloud-Org-ID", options.Organization);
+		if (options.LanguageTag is not null)
+			httpClient.DefaultRequestHeaders.Add("Accept-Language", options.LanguageTag);
 	}
 
 	public async Task<GetQueuesResponse> GetQueueAsync(

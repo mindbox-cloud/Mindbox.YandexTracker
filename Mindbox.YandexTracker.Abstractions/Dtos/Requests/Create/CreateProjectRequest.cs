@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
@@ -36,6 +35,4 @@ public sealed record ProjectFieldsDto
 	public int? ParentEntity { get; init; }
 
 	public ProjectEntityStatus? EntityStatus { get; init; }
-
-	public IReadOnlyCollection<string> Quarter { get; init; } = [];
 }

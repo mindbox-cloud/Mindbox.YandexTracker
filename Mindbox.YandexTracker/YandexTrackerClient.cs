@@ -793,7 +793,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			}
 		}
 		while (
-			pageNumber <= totalPageCount
+			pageNumber < totalPageCount
 			&& (paginationSettings.MaxPageRequestCount is null || pageNumber < paginationSettings.MaxPageRequestCount));
 
 		return result;

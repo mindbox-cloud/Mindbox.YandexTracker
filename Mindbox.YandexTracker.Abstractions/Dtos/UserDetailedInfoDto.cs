@@ -34,7 +34,7 @@ public sealed record UserDetailedInfoDto
 
 	public DateTime FirstLoginDate { get; init; }
 
-	public DateOnly LastLoginDate { get; init; }
+	public DateTime LastLoginDate { get; init; }
 
 	public bool WelcomeMailSent { get; init; }
 }

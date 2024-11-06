@@ -34,7 +34,7 @@ public record CustomFieldsRequest
 public record CustomFieldsResponse
 {
 	[JsonExtensionData]
-	public IReadOnlyDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
+	public IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем

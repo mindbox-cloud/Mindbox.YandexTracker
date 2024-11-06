@@ -11,9 +11,9 @@ public sealed record GetCommentsResponse
 
 	public int Version { get; init; }
 
-	public required string Text { get; init; }
+	public string? Text { get; init; }
 
-	public required string TextHtml { get; init; }
+	public string? TextHtml { get; init; }
 
 	public Collection<FieldInfo> Attachments { get; init; } = [];
 

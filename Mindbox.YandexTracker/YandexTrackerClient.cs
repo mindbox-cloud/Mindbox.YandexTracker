@@ -484,18 +484,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
-		try
-		{
-			return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-				$"queues/{queueKey}/localFields",
-				HttpMethod.Get,
-				customPaginationSettings: paginationSettings,
-				cancellationToken: cancellationToken);
-		}
-		catch (InvalidOperationException)
-		{
-			return [];
-		}
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+			$"queues/{queueKey}/localFields",
+			HttpMethod.Get,
+			customPaginationSettings: paginationSettings,
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(

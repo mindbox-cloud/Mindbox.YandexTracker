@@ -4,7 +4,7 @@ public record UserShortInfoDto
 {
 	public required string Id { get; init; }
 
-	public string? PassportUid { get; init; }
+	public long? PassportUid { get; init; }
 
 	public string? CloudUid { get; init; }
 

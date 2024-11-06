@@ -74,7 +74,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		Assert.AreEqual(dateTimeOnlyStart, issueResponse.Start);
 		Assert.AreEqual("task", issueResponse.Type.Key);
 		Assert.AreEqual("DESC", issueResponse.Description);
-		Assert.AreEqual(Priority.Trivial, issueResponse.Priority);
+		Assert.AreEqual(Priority.Trivial.ToString().ToUpperInvariant(), issueResponse.Priority.Key!.ToUpperInvariant());
 		Assert.AreEqual(CurrentUserId, issueResponse.CreatedBy.Id);
 		Assert.AreEqual(CurrentUserId, issueResponse.UpdatedBy.Id);
 		Assert.AreEqual(CurrentUserId, issueResponse.Assignee!.Id);
@@ -421,8 +421,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		Assert.IsNotNull(comments);
 		Assert.AreEqual(2, comments.Count);
-		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments[0]);
-		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments[0]);
+		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments[0].Id);
+		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments[0].Id);
 	}
 
 	[TestMethod]
@@ -469,7 +469,6 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 					End = dateOnlyEnd,
 					TeamAccess = false,
 					TeamUsers = [currentUserShortInfo.Id],
-					Quarter = quarter,
 					EntityStatus = ProjectEntityStatus.InProgress
 				}
 			});
@@ -525,7 +524,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		Assert.AreEqual(2, actualProject.Fields!.Tags!.Count);
 		CollectionAssert.AreEquivalent(tags, actualProject.Fields!.Tags.ToArray());
 		Assert.AreEqual(ProjectEntityType.Project, actualProject.EntityType);
-		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Fields!.Status);
+		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Fields!.EntityStatus);
 		Assert.AreEqual(dateOnlyNow, actualProject.Fields!.Start);
 		Assert.AreEqual(dateOnlyEnd, actualProject.Fields!.End);
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);

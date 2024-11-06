@@ -6,7 +6,7 @@ namespace Mindbox.YandexTracker;
 
 internal static class CustomFieldsHelper
 {
-	public static T? GetCustomField<T>(IReadOnlyDictionary<string, JsonElement> fields, string customFieldId)
+	public static T? GetCustomField<T>(IDictionary<string, JsonElement> fields, string customFieldId)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
 

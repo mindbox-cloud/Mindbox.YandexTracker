@@ -58,8 +58,6 @@ public sealed record ProjectInfoFields
 
 	public bool? TeamAccess { get; init; }
 
-	public string? Status { get; init; }
-
 	public IReadOnlyCollection<string>? Quarter { get; init; }
 
 	public IReadOnlyCollection<CheckListItemDto>? ChecklistItems { get; init; }

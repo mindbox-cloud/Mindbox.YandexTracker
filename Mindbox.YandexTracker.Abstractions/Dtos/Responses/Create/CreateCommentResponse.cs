@@ -11,7 +11,7 @@ public sealed record CreateCommentResponse
 
 	public required string LongId { get; init; }
 
-	public required string Text { get; init; }
+	public string? Text { get; init; }
 
 	public required UserShortInfoDto CreatedBy { get; init; }
 

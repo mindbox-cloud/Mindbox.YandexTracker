@@ -8,7 +8,8 @@ namespace Mindbox.YandexTracker;
 public record CustomFieldsRequest
 {
 	[JsonExtensionData]
-	public Dictionary<string, JsonElement> Fields { get; init; } = [];
+	[JsonInclude]
+	private Dictionary<string, JsonElement> Fields { get; init; } = [];
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
@@ -34,7 +35,8 @@ public record CustomFieldsRequest
 public record CustomFieldsResponse
 {
 	[JsonExtensionData]
-	public IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
+	[JsonInclude]
+	private IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем

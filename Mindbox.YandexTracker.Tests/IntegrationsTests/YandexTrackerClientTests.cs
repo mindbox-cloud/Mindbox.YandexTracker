@@ -61,7 +61,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Author = CurrentUserLogin,
 			Priority = Priority.Trivial,
 			Start = dateTimeOnlyStart,
-			Type = "task",
+			Type = "task"
 		});
 
 		// Act
@@ -134,7 +134,6 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var response = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
 
 		Assert.IsNotNull(response);
-		Assert.IsTrue(response.Fields.ContainsKey(customField.Id));
 		Assert.AreEqual("field1", response.GetCustomField<string>(customField.Id));
 	}
 

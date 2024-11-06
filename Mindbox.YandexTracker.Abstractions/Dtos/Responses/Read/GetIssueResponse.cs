@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -17,13 +16,13 @@ public sealed record GetIssueResponse : CustomFieldsResponse
 
 	public FieldInfo? Parent { get; init; }
 
-	public Collection<string> Aliases { get; init; } = [];
+	public IReadOnlyCollection<string> Aliases { get; init; } = [];
 
 	public required UserShortInfoDto UpdatedBy { get; init; }
 
 	public string? Description { get; init; }
 
-	public Collection<FieldInfo> Sprint { get; init; } = [];
+	public IReadOnlyCollection<FieldInfo> Sprint { get; init; } = [];
 
 	public required FieldInfo Type { get; init; }
 
@@ -39,7 +38,7 @@ public sealed record GetIssueResponse : CustomFieldsResponse
 
 	public DateTime CreatedAt { get; init; }
 
-	public Collection<UserShortInfoDto> Followers { get; init; } = [];
+	public IReadOnlyCollection<UserShortInfoDto> Followers { get; init; } = [];
 
 	public required UserShortInfoDto CreatedBy { get; init; }
 

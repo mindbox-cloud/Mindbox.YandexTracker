@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -10,7 +9,7 @@ public sealed record GetProjectsResponse
 
 	public int Pages { get; init; }
 
-	public required Collection<ProjectInfo> Values { get; init; }
+	public required IReadOnlyCollection<ProjectInfo> Values { get; init; } = [];
 
 	public string? OrderBy { get; init; }
 }

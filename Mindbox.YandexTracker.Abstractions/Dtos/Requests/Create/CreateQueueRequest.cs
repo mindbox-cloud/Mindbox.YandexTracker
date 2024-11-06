@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
@@ -14,7 +14,7 @@ public sealed record CreateQueueRequest
 
 	public Priority DefaultPriority { get; init; }
 
-	public Collection<CreateIssueTypeConfigDto> IssueTypesConfig { get; init; } = [];
+	public IReadOnlyCollection<CreateIssueTypeConfigDto> IssueTypesConfig { get; init; } = [];
 }
 
 public sealed record CreateIssueTypeConfigDto
@@ -23,5 +23,5 @@ public sealed record CreateIssueTypeConfigDto
 
 	public required string Workflow { get; init; }
 
-	public Collection<string> Resolutions { get; init; } = [];
+	public IReadOnlyCollection<string> Resolutions { get; init; } = [];
 }

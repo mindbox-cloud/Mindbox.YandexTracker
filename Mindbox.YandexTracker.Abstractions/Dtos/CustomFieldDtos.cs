@@ -36,7 +36,7 @@ public record CustomFieldsResponse
 {
 	[JsonExtensionData]
 	[JsonInclude]
-	private IDictionary<string, JsonElement> Fields { get; init; } = new Dictionary<string, JsonElement>();
+	private Dictionary<string, JsonElement> Fields { get; init; } = [];
 
 	/// <remarks>
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем

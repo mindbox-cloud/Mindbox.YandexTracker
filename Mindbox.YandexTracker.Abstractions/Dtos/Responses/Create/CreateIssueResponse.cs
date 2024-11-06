@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Mindbox.YandexTracker;
 
@@ -30,11 +29,11 @@ public sealed record CreateIssueResponse : CustomFieldsResponse
 
 	public string? Description { get; init; }
 
-	public Collection<FieldInfo> Sprint { get; init; } = [];
+	public IReadOnlyCollection<FieldInfo> Sprint { get; init; } = [];
 
-	public Collection<UserShortInfoDto> Followers { get; init; } = [];
+	public IReadOnlyCollection<UserShortInfoDto> Followers { get; init; } = [];
 
-	public Collection<string> Aliases { get; init; } = [];
+	public IReadOnlyCollection<string> Aliases { get; init; } = [];
 
 	public required FieldInfo Type { get; init; }
 

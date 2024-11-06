@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace Mindbox.YandexTracker;
 
@@ -23,15 +23,16 @@ public sealed record GetQueuesResponse
 
 	public required FieldInfo DefaultPriority { get; init; }
 
-	public Collection<UserShortInfoDto> TeamUsers { get; init; } = [];
+	public IReadOnlyCollection<UserShortInfoDto> TeamUsers { get; init; } = [];
 
-	public Collection<FieldInfo> IssueTypes { get; init; } = [];
+	public IReadOnlyCollection<FieldInfo> IssueTypes { get; init; } = [];
 
-	public Collection<FieldInfo> Versions { get; init; } = [];
+	public IReadOnlyCollection<FieldInfo> Versions { get; init; } = [];
 
-	public Dictionary<string, Collection<FieldInfo>> Workflows { get; init; } = [];
+	public IReadOnlyDictionary<string, IReadOnlyCollection<FieldInfo>> Workflows { get; init; }
+		= ImmutableDictionary<string, IReadOnlyCollection<FieldInfo>>.Empty;
 
-	public Collection<IssueTypeConfigDto> IssueTypesConfig { get; init; } = [];
+	public IReadOnlyCollection<IssueTypeConfigDto> IssueTypesConfig { get; init; } = [];
 
 	public bool DenyVoting { get; init; }
 }

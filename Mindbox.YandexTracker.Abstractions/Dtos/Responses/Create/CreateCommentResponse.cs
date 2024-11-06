@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
@@ -21,9 +21,9 @@ public sealed record CreateCommentResponse
 
 	public DateTime UpdatedAt { get; init; }
 
-	public Collection<UserShortInfoDto> Summonees { get; init; } = [];
+	public IReadOnlyCollection<UserShortInfoDto> Summonees { get; init; } = [];
 
-	public Collection<UserShortInfoDto> MaillistSummonees { get; init; } = [];
+	public IReadOnlyCollection<UserShortInfoDto> MaillistSummonees { get; init; } = [];
 
 	public CommentType Type { get; init; }
 

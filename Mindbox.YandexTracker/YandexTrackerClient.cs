@@ -458,17 +458,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
-		try
-		{
-			return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
-				$"queues/{queueKey}/localFields",
-				HttpMethod.Get,
-				cancellationToken: cancellationToken);
-		}
-		catch (InvalidOperationException)
-		{
-			return [];
-		}
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
+			$"queues/{queueKey}/localFields",
+			HttpMethod.Get,
+			cancellationToken: cancellationToken);
 	}
 
 	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(CancellationToken cancellationToken = default)
@@ -672,49 +665,50 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		{
 			var request = new HttpRequestMessage(method, requestUri);
 
-			if (payload is not null)
+		if (payload is not null)
+		{
+			if (payload is HttpContent content)
 			{
-				if (payload is HttpContent content)
-				{
-					request.Content = content;
-				}
-				else
-				{
-					var json = JsonSerializer.Serialize(payload, _jsonOptions);
-					request.Content = new StringContent(
-						json,
-						Encoding.UTF8,
-						"application/json");
-				}
+				request.Content = content;
 			}
-
-			if (headers is not null)
+			else
 			{
-				foreach (var header in headers)
-				{
-					request.Headers.Add(header.Key, header.Value);
-				}
+				var json = JsonSerializer.Serialize(payload, _jsonOptions);
+				request.Content = new StringContent(
+					json,
+					Encoding.UTF8,
+					"application/json");
 			}
+		}
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+		if (headers is not null)
+		{
+			foreach (var header in headers)
+			{
+				request.Headers.Add(header.Key, header.Value);
+			}
+		}
 
-			if (response.IsSuccessStatusCode) return response;
+		var response = await _httpClient.SendAsync(request, cancellationToken);
+
+		if (response.IsSuccessStatusCode) return response;
 
 			await CheckRateLimitExceededAsync(response, cancellationToken);
 
-			string errorMessage;
-			try
-			{
-				errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-			}
-			catch
-			{
-				errorMessage = "Unknown error";
-			}
-			throw new YandexTrackerException(
-				$"Request was not successful: {response.StatusCode} : {errorMessage}",
-				response.StatusCode);
+		string errorMessage;
+		try
+		{
+			errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
 		}
+		catch
+		{
+			errorMessage = "Unknown error";
+		}
+
+		throw new YandexTrackerException(
+			$"Request was not successful: {response.StatusCode} : {errorMessage}",
+			response.StatusCode);
+	}
 
 		static async Task CheckRateLimitExceededAsync(
 			HttpResponseMessage response,
@@ -793,7 +787,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			result.AddRange(dataChunk);
 
 			pageNumber++;
-		}
+			}
 		while (dataChunk.Count == perPage);
 
 		return result;

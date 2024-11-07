@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +61,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Author = CurrentUserLogin,
 			Priority = Priority.Trivial,
 			Start = dateTimeOnlyStart,
-			Type = "task",
+			Type = "task"
 		});
 
 		// Act
@@ -134,7 +134,6 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var response = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
 
 		Assert.IsNotNull(response);
-		Assert.IsTrue(response.Fields.ContainsKey(customField.Id));
 		Assert.AreEqual("field1", response.GetCustomField<string>(customField.Id));
 	}
 
@@ -421,8 +420,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		Assert.IsNotNull(comments);
 		Assert.AreEqual(2, comments.Count);
-		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments[0].Id);
-		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments[0].Id);
+		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments.First().Id);
+		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments.First().Id);
 	}
 
 	[TestMethod]
@@ -446,8 +445,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		};
 
 		var nowUtc = DateTime.UtcNow;
-		var tags = new Collection<string> { "tag1", "tag2" };
-		var quarter = new Collection<string>();
+		var tags = new List<string> { "tag1", "tag2" };
 
 		var dateOnlyNow = DateOnly.FromDateTime(nowUtc);
 		var dateOnlyEnd = DateOnly.FromDateTime(nowUtc.AddDays(3));

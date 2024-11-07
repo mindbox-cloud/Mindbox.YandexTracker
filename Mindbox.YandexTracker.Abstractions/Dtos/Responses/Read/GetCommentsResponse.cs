@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
@@ -15,7 +15,7 @@ public sealed record GetCommentsResponse
 
 	public string? TextHtml { get; init; }
 
-	public Collection<FieldInfo> Attachments { get; init; } = [];
+	public IReadOnlyCollection<FieldInfo> Attachments { get; init; } = [];
 
 	public DateTime CreatedAt { get; init; }
 

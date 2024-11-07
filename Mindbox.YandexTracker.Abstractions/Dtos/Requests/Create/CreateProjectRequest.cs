@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
@@ -20,17 +20,17 @@ public sealed record ProjectFieldsDto
 
 	public string? Lead { get; init; }
 
-	public Collection<string>? TeamUsers { get; init; }
+	public IReadOnlyCollection<string> TeamUsers { get; init; } = [];
 
-	public Collection<string>? Clients { get; init; }
+	public IReadOnlyCollection<string> Clients { get; init; } = [];
 
-	public Collection<string>? Followers { get; init; }
+	public IReadOnlyCollection<string> Followers { get; init; } = [];
 
 	public DateOnly? Start { get; init; }
 
 	public DateOnly? End { get; init; }
 
-	public Collection<string>? Tags { get; init; }
+	public IReadOnlyCollection<string> Tags { get; init; } = [];
 
 	public int? ParentEntity { get; init; }
 

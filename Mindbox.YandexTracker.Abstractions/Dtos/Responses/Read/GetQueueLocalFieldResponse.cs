@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
@@ -103,5 +103,5 @@ public sealed record OptionsProviderInfo
 	/// <summary>
 	/// Массив со значениями поля
 	/// </summary>
-	public Collection<JsonElement> Values { get; init; } = [];
+	public IReadOnlyCollection<JsonElement> Values { get; init; } = [];
 }

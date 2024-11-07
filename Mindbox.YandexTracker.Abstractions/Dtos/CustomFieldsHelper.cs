@@ -6,18 +6,31 @@ namespace Mindbox.YandexTracker;
 
 internal static class CustomFieldsHelper
 {
-	public static T? GetCustomField<T>(IDictionary<string, JsonElement> fields, string customFieldId)
+	public static bool TryGetCustomField<T>(
+		IDictionary<string, JsonElement> fields,
+		string customFieldId,
+		out T? customField)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
 
+		customField = default;
 		if (fields.TryGetValue(customFieldId, out var value))
 		{
-			return value.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined
-				? default
-				: value.Deserialize<T?>();
+			if (value.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined)
+				return false;
+
+			customField = value.Deserialize<T>();
+			return true;
 		}
 
-		throw new KeyNotFoundException($"Key '{customFieldId}' not found in custom fields.");
+		return false;
+	}
+
+	public static T GetCustomField<T>(IDictionary<string, JsonElement> fields, string customFieldId)
+	{
+		return TryGetCustomField<T>(fields, customFieldId, out var value)
+			? value!
+			: throw new KeyNotFoundException($"Key '{customFieldId}' not found in custom fields.");
 	}
 
 	public static void SetCustomField<T>(IDictionary<string, JsonElement> fields, string customFieldId, T value)

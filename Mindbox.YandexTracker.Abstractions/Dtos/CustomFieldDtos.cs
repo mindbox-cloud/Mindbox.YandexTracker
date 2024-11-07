@@ -15,7 +15,13 @@ public record CustomFieldsRequest
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
 	/// названии, которое будет совпадать с id
 	/// </remarks>
-	public T? GetCustomField<T>(string customFieldId)
+	public bool TryGetCustomField<T>(string customFieldId, out T? value)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+		return CustomFieldsHelper.TryGetCustomField(Fields, customFieldId, out value);
+	}
+
+	public T GetCustomField<T>(string customFieldId)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
 		return CustomFieldsHelper.GetCustomField<T>(Fields, customFieldId);
@@ -42,7 +48,13 @@ public record CustomFieldsResponse
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
 	/// названии, которое будет совпадать с id
 	/// </remarks>
-	public T? GetCustomField<T>(string customFieldId)
+	public bool TryGetCustomField<T>(string customFieldId, out T? value)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+		return CustomFieldsHelper.TryGetCustomField(Fields, customFieldId, out value);
+	}
+
+	public T GetCustomField<T>(string customFieldId)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
 		return CustomFieldsHelper.GetCustomField<T>(Fields, customFieldId);

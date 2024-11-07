@@ -31,15 +31,13 @@ public sealed record CreateIssueRequest : CustomFieldsRequest
 
 	public string? Unique { get; init; }
 
-	public IReadOnlyCollection<string> AttachmentsIds { get; init; } = [];
+	public IReadOnlyCollection<string> AttachmentIds { get; init; } = [];
 
 	public IReadOnlyCollection<string> Sprint { get; init; } = [];
 
 	public Priority? Priority { get; init; }
 
 	public string? Assignee { get; init; }
-
-	public IReadOnlyCollection<string>? AttachmentIds { get; init; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 }

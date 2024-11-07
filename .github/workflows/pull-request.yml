@@ -29,3 +29,6 @@ jobs:
 
       - name: Build
         run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore
+      
+      - name: Test
+        run: dotnet test --no-restore

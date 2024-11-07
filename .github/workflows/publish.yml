@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      YandexTrackerOptions__OAuthToken: ${{ secrets.YANDEXTRACKER_OAUTHTOKEN }}
+      YandexTrackerOptions__Organization: ${{ secrets.YANDEXTRACKER_ORGANIZATION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

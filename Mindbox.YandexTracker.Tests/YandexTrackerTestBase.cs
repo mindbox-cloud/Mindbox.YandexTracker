@@ -52,37 +52,19 @@ public abstract class YandexTrackerTestBase
 
 	private static async Task CreateQueueAsync()
 	{
-		await YandexTrackerClient.CreateQueueAsync(new Queue
+		await YandexTrackerClient.CreateQueueAsync(new CreateQueueRequest
 		{
 			Key = TestQueueKey,
-			DefaultType = new IssueType
-			{
-				Id = 2,
-				Key = "task",
-				Name = "Задача"
-			},
-			Lead = new UserShortInfo { Id = CurrentUserId, Display = CurrentUserLogin },
+			DefaultType = "task",
+			Lead = CurrentUserLogin,
 			Name = TestQueueKey.ToUpperInvariant(),
 			IssueTypesConfig =
 			[
 				new()
 				{
-					IssueType = new IssueType
-					{
-						Id = 2,
-						Key = "task",
-						Name = "Задача"
-					},
+					IssueType = "task",
 					Workflow = "developmentPresetWorkflow",
-					Resolutions =
-					[
-						new()
-						{
-							Id = 2,
-							Key = "wontFix",
-							Name = "Не будет исправлено"
-						}
-					]
+					Resolutions = ["wontFix"]
 				}
 			]
 		});

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 
 namespace Mindbox.YandexTracker;
@@ -43,7 +42,7 @@ internal static class StringExtensions
 
 		// если нет, то выберем все варианты, кроме исключенных
 		var filteredEnumValues = new List<string>();
-		foreach (var checkedFlag in Enum.GetValues(typeof(T)).Cast<T>())
+		foreach (var checkedFlag in Enum.GetValues<T>())
 		{
 			if (excludedValues != null && excludedValues.Value.HasFlag(checkedFlag)) continue;
 

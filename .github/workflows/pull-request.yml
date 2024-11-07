@@ -18,8 +18,9 @@ jobs:
         uses: mindbox-cloud/github-actions/ensure-bump@master
         with:
           abstractionsPath: 'Mindbox.YandexTracker.Abstractions'
+
       - name: Install dependencies
-        run: dotnet restore          
+        run: dotnet restore
 
       - name: Build
         run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore /warnaserror

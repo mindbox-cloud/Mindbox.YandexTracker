@@ -23,10 +23,10 @@ jobs:
 
       - name: Test
         run: dotnet test --no-restore
-     
+
       - name: Test
         run: dotnet test --no-restore
-     
+
       - name: Pack
         run: dotnet pack ./Mindbox.YandexTracker.sln -c Release -p:BuildNumber=${{ github.run_number }}
 

@@ -791,7 +791,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			{
 				totalPageCount = Convert.ToInt32(headerValue.First(), CultureInfo.InvariantCulture);
 			}
-		}
+			}
 		while (
 			pageNumber < totalPageCount
 			&& (paginationSettings.MaxPageRequestCount is null || pageNumber < paginationSettings.MaxPageRequestCount));

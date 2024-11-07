@@ -246,6 +246,11 @@ public interface IYandexTrackerClient : IDisposable
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-global-fields"/>
+	/// </remarks>
+	Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(CancellationToken cancellationToken = default);
+
 	/// <summary>
 	/// Возвращает информацию о пользователе, от имени которого выполняются запросы.
 	/// </summary>

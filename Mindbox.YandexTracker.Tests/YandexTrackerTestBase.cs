@@ -21,8 +21,6 @@ public abstract class YandexTrackerTestBase
 		var serviceCollection = new ServiceCollection();
 
 		var configuration = new ConfigurationBuilder()
-			// основной файл
-			.AddJsonFile("appsettings.json")
 			// секреты, которые в .gitignore, чтобы случайно не залить их в репозиторий
 			.AddJsonFile("appsettings.secret.json", true)
 			// для передачи параметров из CI/CD в GitHub Actions через env variables

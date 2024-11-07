@@ -14,7 +14,7 @@ public sealed record CreateQueueRequest
 
 	public Priority DefaultPriority { get; init; }
 
-	public IReadOnlyCollection<CreateIssueTypeConfigDto> IssueTypesConfig { get; init; } = [];
+	public IReadOnlyCollection<CreateIssueTypeConfigDto>? IssueTypesConfig { get; init; }
 }
 
 public sealed record CreateIssueTypeConfigDto
@@ -23,5 +23,5 @@ public sealed record CreateIssueTypeConfigDto
 
 	public required string Workflow { get; init; }
 
-	public IReadOnlyCollection<string> Resolutions { get; init; } = [];
+	public IReadOnlyCollection<string>? Resolutions { get; init; }
 }

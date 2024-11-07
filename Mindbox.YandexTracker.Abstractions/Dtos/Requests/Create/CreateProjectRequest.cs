@@ -20,17 +20,17 @@ public sealed record ProjectFieldsDto
 
 	public string? Lead { get; init; }
 
-	public IReadOnlyCollection<string> TeamUsers { get; init; } = [];
+	public IReadOnlyCollection<string>? TeamUsers { get; init; }
 
-	public IReadOnlyCollection<string> Clients { get; init; } = [];
+	public IReadOnlyCollection<string>? Clients { get; init; }
 
-	public IReadOnlyCollection<string> Followers { get; init; } = [];
+	public IReadOnlyCollection<string>? Followers { get; init; }
 
 	public DateOnly? Start { get; init; }
 
 	public DateOnly? End { get; init; }
 
-	public IReadOnlyCollection<string> Tags { get; init; } = [];
+	public IReadOnlyCollection<string>? Tags { get; init; }
 
 	public int? ParentEntity { get; init; }
 

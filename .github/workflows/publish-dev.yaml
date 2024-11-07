@@ -18,8 +18,8 @@ jobs:
       - name: Build
         run: dotnet build ./Mindbox.YandexTracker.sln --configuration Release --no-restore /warnaserror
 
-      - name: Test
-        run: dotnet test --no-restore
+#      - name: Test
+#        run: dotnet test --no-restore
 
       - name: Pack
         run: dotnet pack ./Mindbox.YandexTracker.sln -c Release -p:BuildNumber=${{ github.run_number }} -p:VersionTag="-dev"

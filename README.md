@@ -52,7 +52,11 @@ services.AddYandexTrackerClient(enableCaching: true)
                 UseJitter = true,
                 ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
                     .Handle<HttpRequestException>()
-                    .HandleResult(response => (int)response.StatusCode >= 500)
+                    .HandleResult(response =>
+                    {
+                        int statusCode = (int)response.StatusCode;
+                        return statusCode >= 500 || statusCode == 429;
+                    })
             });
 
             builder.AddTimeout(TimeSpan.FromSeconds(5));

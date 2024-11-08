@@ -81,7 +81,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.DeleteQueueAsync(queueKey, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -100,7 +100,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -123,7 +123,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetMyselfAsync(cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetAttachmentResponse>> GetAttachmentsAsync(
+	public Task<YandexTrackerCollectionResponse<GetAttachmentResponse>> GetAttachmentsAsync(
 		string issueKey,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -140,7 +140,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetCommentsResponse>> GetCommentsAsync(
+	public Task<YandexTrackerCollectionResponse<GetCommentsResponse>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -149,7 +149,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetCommentsAsync(issueKey, expand, paginationSettings, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetComponentResponse>> GetComponentsAsync(
+	public Task<YandexTrackerCollectionResponse<GetComponentResponse>> GetComponentsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -175,7 +175,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssueAsync(issueKey, expand, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueResponse>> GetIssuesByFilterAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByFilterAsync(
 		GetIssuesByFilterRequest request,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -184,7 +184,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByFilterAsync(request, expand, paginationSettings, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueResponse>> GetIssuesByQueryAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByQueryAsync(
 		string query,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -193,7 +193,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByQueryAsync(query, expand, paginationSettings, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueResponse>> GetIssuesByKeysAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -202,7 +202,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByKeysAsync(issueKeys, expand, paginationSettings, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueResponse>> GetIssuesFromQueueAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesFromQueueAsync(
 		string queueKey,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -211,7 +211,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesFromQueueAsync(queueKey, expand, paginationSettings, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueStatusResponse>> GetIssueStatusesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -237,7 +237,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateLocalFieldInQueueAsync(queueKey, request, cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
+	public Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -255,7 +255,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueTypeResponse>> GetIssueTypesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -273,7 +273,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<ProjectInfo>> GetProjectsAsync(
+	public Task<YandexTrackerCollectionResponse<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
 		ProjectFieldData? returnedFields = null,
@@ -319,7 +319,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<GetQueuesResponse>> GetQueuesAsync(
+	public Task<YandexTrackerCollectionResponse<GetQueuesResponse>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -338,7 +338,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+	public Task<YandexTrackerCollectionResponse<GetResolutionResponse>> GetResolutionsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -356,7 +356,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<string>> GetTagsAsync(
+	public Task<YandexTrackerCollectionResponse<string>> GetTagsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -391,7 +391,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
-	public Task<IReadOnlyList<UserDetailedInfoDto>> GetUsersAsync(
+	public Task<YandexTrackerCollectionResponse<UserDetailedInfoDto>> GetUsersAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{

@@ -93,7 +93,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetQueuesResponse>> GetQueuesAsync(
+	public async Task<YandexTrackerCollectionResponse<GetQueuesResponse>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -135,7 +135,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueResponse>> GetIssuesFromQueueAsync(
+	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesFromQueueAsync(
 		string queueKey,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -164,7 +164,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueResponse>> GetIssuesByKeysAsync(
+	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -193,7 +193,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueResponse>> GetIssuesByFilterAsync(
+	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByFilterAsync(
 		GetIssuesByFilterRequest request,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -217,7 +217,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueResponse>> GetIssuesByQueryAsync(
+	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByQueryAsync(
 		string query,
 		IssuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -259,7 +259,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetComponentResponse>> GetComponentsAsync(
+	public async Task<YandexTrackerCollectionResponse<GetComponentResponse>> GetComponentsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -284,7 +284,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetCommentsResponse>> GetCommentsAsync(
+	public async Task<YandexTrackerCollectionResponse<GetCommentsResponse>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -331,7 +331,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetAttachmentResponse>> GetAttachmentsAsync(
+	public async Task<YandexTrackerCollectionResponse<GetAttachmentResponse>> GetAttachmentsAsync(
 		string issueKey,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -389,7 +389,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<string>> GetTagsAsync(
+	public async Task<YandexTrackerCollectionResponse<string>> GetTagsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -427,7 +427,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<ProjectInfo>> GetProjectsAsync(
+	public async Task<YandexTrackerCollectionResponse<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
 		ProjectFieldData? returnedFields = null,
@@ -476,10 +476,15 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			response.Pages > page
 			&& (pagination.MaxPageRequestCount is null || page < pagination.MaxPageRequestCount));
 
-		return projects;
+		return new YandexTrackerCollectionResponse<ProjectInfo>()
+		{
+			FetchedPages = page,
+			TotalPages = response.Pages,
+			Values = projects
+		};
 	}
 
-	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
+	public async Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -493,7 +498,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
+	public async Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -524,7 +529,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<UserDetailedInfoDto>> GetUsersAsync(
+	public async Task<YandexTrackerCollectionResponse<UserDetailedInfoDto>> GetUsersAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -535,7 +540,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueTypeResponse>> GetIssueTypesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -546,7 +551,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+	public Task<YandexTrackerCollectionResponse<GetResolutionResponse>> GetResolutionsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -557,7 +562,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueStatusResponse>> GetIssueStatusesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -583,7 +588,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
+	public async Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
@@ -747,7 +752,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			response.StatusCode);
 	}
 
-	private async Task<IReadOnlyList<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
+	private async Task<YandexTrackerCollectionResponse<TResult>> ExecuteYandexTrackerCollectionRequestAsync<TResult>(
 		string requestTo,
 		HttpMethod httpMethod,
 		object? payload = null,
@@ -760,7 +765,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 								 ?? _options.CurrentValue.DefaultPaginationSettings
 								 ?? _defaultPaginationSettings;
 
-		var pageNumber = 0;
+		var pageNumber = paginationSettings.StartPage - 1;
 		var totalPageCount = 1;
 
 		var result = new List<TResult>();
@@ -791,12 +796,18 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			{
 				totalPageCount = Convert.ToInt32(headerValue.First(), CultureInfo.InvariantCulture);
 			}
-			}
+		}
 		while (
 			pageNumber < totalPageCount
 			&& (paginationSettings.MaxPageRequestCount is null || pageNumber < paginationSettings.MaxPageRequestCount));
 
-		return result;
+		return new YandexTrackerCollectionResponse<TResult>
+		{
+			StartPage = paginationSettings.StartPage,
+			FetchedPages = pageNumber,
+			TotalPages = totalPageCount,
+			Values = result
+		};
 	}
 
 	private async Task ExecuteYandexTrackerApiRequestAsync(

@@ -19,6 +19,9 @@ jobs:
         with:
           abstractionsPath: 'Mindbox.YandexTracker.Abstractions'
 
+      - name: Check License Lines
+        run: npx @kt3k/license-checker
+
       - name: Install dependencies
         run: dotnet restore
 

@@ -17,6 +17,7 @@ using Mindbox.YandexTracker.JsonConverters;
 
 namespace Mindbox.YandexTracker;
 
+/// <inheritdoc />
 public sealed class YandexTrackerClient : IYandexTrackerClient
 {
 	private const string TotalPageHeaderName = "X-Total-Pages";
@@ -75,6 +76,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			httpClient.DefaultRequestHeaders.Add("Accept-Language", options.LanguageTag);
 	}
 
+	/// <inheritdoc />
 	public async Task<GetQueuesResponse> GetQueueAsync(
 		string queueKey,
 		QueueExpandData? expand = null,
@@ -97,6 +99,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetQueuesResponse>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -117,6 +120,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<GetIssueResponse> GetIssueAsync(
 		string issueKey,
 		IssueExpandData? expand = null,
@@ -139,6 +143,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesFromQueueAsync(
 		string queueKey,
 		IssuesExpandData? expand = null,
@@ -168,6 +173,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
@@ -197,6 +203,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByFilterAsync(
 		GetIssuesByFilterRequest request,
 		IssuesExpandData? expand = null,
@@ -221,6 +228,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByQueryAsync(
 		string query,
 		IssuesExpandData? expand = null,
@@ -250,6 +258,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateIssueResponse> CreateIssueAsync(
 		CreateIssueRequest request,
 		CancellationToken cancellationToken = default)
@@ -263,6 +272,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetComponentResponse>> GetComponentsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -275,6 +285,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateComponentResponse> CreateComponentAsync(
 		CreateComponentRequest request,
 		CancellationToken cancellationToken = default)
@@ -288,6 +299,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetCommentsResponse>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
@@ -311,6 +323,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateCommentResponse> CreateCommentAsync(
 		string issueKey,
 		CreateCommentRequest request,
@@ -335,6 +348,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetAttachmentResponse>> GetAttachmentsAsync(
 		string issueKey,
 		PaginationSettings? paginationSettings = null,
@@ -349,6 +363,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateAttachmentResponse> CreateAttachmentAsync(
 		string issueKey,
 		Stream fileStream,
@@ -375,6 +390,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateAttachmentResponse> CreateTemporaryAttachmentAsync(
 		Stream fileStream,
 		string? newFileName = null,
@@ -393,6 +409,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<string>> GetTagsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
@@ -407,6 +424,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateProjectResponse> CreateProjectAsync(
 		ProjectEntityType entityType,
 		CreateProjectRequest request,
@@ -431,6 +449,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
@@ -488,6 +507,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		};
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
@@ -502,6 +522,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -513,6 +534,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<UserDetailedInfoDto> GetMyselfAsync(CancellationToken cancellationToken)
 	{
 		return await ExecuteYandexTrackerApiRequestAsync<UserDetailedInfoDto>(
@@ -522,6 +544,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<UserDetailedInfoDto> GetUserByIdAsync(
 		string userId,
 		CancellationToken cancellationToken = default)
@@ -533,6 +556,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<UserDetailedInfoDto>> GetUsersAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -544,6 +568,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueTypeResponse>> GetIssueTypesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -555,6 +580,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetResolutionResponse>> GetResolutionsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -566,6 +592,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueStatusResponse>> GetIssueStatusesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -577,6 +604,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateQueueLocalFieldResponse> CreateLocalFieldInQueueAsync(
 		string queueKey,
 		CreateQueueLocalFieldRequest request,
@@ -592,6 +620,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -603,6 +632,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task<CreateQueueResponse> CreateQueueAsync(
 		CreateQueueRequest request,
 		CancellationToken cancellationToken = default)
@@ -616,6 +646,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
@@ -627,6 +658,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task DeleteCommentAsync(
 		string issueKey,
 		int commentId,
@@ -641,6 +673,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task DeleteAttachmentAsync(string issueKey, string attachmentKey, CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
@@ -653,6 +686,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public async Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,

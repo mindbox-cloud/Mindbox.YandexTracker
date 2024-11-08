@@ -376,7 +376,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		CreateAttachmentResponse[] expectedAttachments = [imageAttachment, textAttachment];
 
-		var attachments = (await YandexTrackerClient.GetAttachmentsAsync(issue.Key));
+		var attachments = await YandexTrackerClient.GetAttachmentsAsync(issue.Key);
 
 		var deleteImageAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, imageAttachment.Id);
 		var deleteTxtAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, textAttachment.Id);

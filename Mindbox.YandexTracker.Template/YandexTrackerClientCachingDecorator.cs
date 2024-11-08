@@ -7,11 +7,14 @@ using Microsoft.Extensions.Options;
 
 namespace Mindbox.YandexTracker.Template;
 
+
+/// <inheritdoc />
 public sealed class YandexTrackerClientCachingDecorator(
 	IYandexTrackerClient yandexTrackerClient,
 	IMemoryCache cache,
 	IOptionsMonitor<YandexTrackerClientCachingOptions> options) : IYandexTrackerClient
 {
+	/// <inheritdoc />
 	public Task<CreateAttachmentResponse> CreateAttachmentAsync(
 		string issueKey,
 		Stream fileStream,
@@ -21,6 +24,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateAttachmentAsync(issueKey, fileStream, newFileName, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<CreateAttachmentResponse> CreateTemporaryAttachmentAsync(
 		Stream fileStream,
 		string? newFileName = null,
@@ -29,6 +33,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateTemporaryAttachmentAsync(fileStream, newFileName, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<CreateCommentResponse> CreateCommentAsync(
 		string issueKey,
 		CreateCommentRequest request,
@@ -38,11 +43,13 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateCommentAsync(issueKey, request, addAuthorToFollowers, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<CreateIssueResponse> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.CreateIssueAsync(request, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<CreateProjectResponse> CreateProjectAsync(
 		ProjectEntityType entityType,
 		CreateProjectRequest request,
@@ -52,21 +59,25 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateProjectAsync(entityType, request, returnedFields, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<CreateQueueResponse> CreateQueueAsync(CreateQueueRequest request, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.CreateQueueAsync(request, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task DeleteAttachmentAsync(string issueKey, string attachmentKey, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.DeleteAttachmentAsync(issueKey, attachmentKey, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task DeleteCommentAsync(string issueKey, int commentId, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.DeleteCommentAsync(issueKey, commentId, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task DeleteProjectAsync(
 		ProjectEntityType entityType,
 		int projectShortId,
@@ -76,11 +87,13 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.DeleteProjectAsync(entityType, projectShortId, deleteWithBoard, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.DeleteQueueAsync(queueKey, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
@@ -100,6 +113,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -118,11 +132,13 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<UserDetailedInfoDto> GetMyselfAsync(CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.GetMyselfAsync(cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetAttachmentResponse>> GetAttachmentsAsync(
 		string issueKey,
 		PaginationSettings? paginationSettings = null,
@@ -131,6 +147,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetAttachmentsAsync(issueKey, paginationSettings, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<CreateComponentResponse> CreateComponentAsync(
 		CreateComponentRequest request,
 		CancellationToken cancellationToken = default)
@@ -140,6 +157,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetCommentsResponse>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
@@ -149,6 +167,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetCommentsAsync(issueKey, expand, paginationSettings, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetComponentResponse>> GetComponentsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -167,6 +186,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<GetIssueResponse> GetIssueAsync(
 		string issueKey,
 		IssueExpandData? expand = null,
@@ -175,6 +195,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssueAsync(issueKey, expand, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByFilterAsync(
 		GetIssuesByFilterRequest request,
 		IssuesExpandData? expand = null,
@@ -184,6 +205,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByFilterAsync(request, expand, paginationSettings, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByQueryAsync(
 		string query,
 		IssuesExpandData? expand = null,
@@ -193,6 +215,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByQueryAsync(query, expand, paginationSettings, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
@@ -202,6 +225,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesByKeysAsync(issueKeys, expand, paginationSettings, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesFromQueueAsync(
 		string queueKey,
 		IssuesExpandData? expand = null,
@@ -211,6 +235,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssuesFromQueueAsync(queueKey, expand, paginationSettings, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueStatusResponse>> GetIssueStatusesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -229,6 +254,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<CreateQueueLocalFieldResponse> CreateLocalFieldInQueueAsync(
 		string queueKey,
 		CreateQueueLocalFieldRequest request,
@@ -237,6 +263,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateLocalFieldInQueueAsync(queueKey, request, cancellationToken);
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -255,6 +282,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetIssueTypeResponse>> GetIssueTypesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -273,6 +301,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
@@ -300,6 +329,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<GetQueuesResponse> GetQueueAsync(
 		string queueKey,
 		QueueExpandData? expand = null,
@@ -319,6 +349,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetQueuesResponse>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
 		PaginationSettings? paginationSettings = null,
@@ -338,6 +369,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetResolutionResponse>> GetResolutionsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -356,6 +388,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<string>> GetTagsAsync(
 		string queueKey,
 		PaginationSettings? paginationSettings = null,
@@ -375,6 +408,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<UserDetailedInfoDto> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default)
 	{
 		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_users_{userId}";
@@ -391,6 +425,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 			})!;
 	}
 
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<UserDetailedInfoDto>> GetUsersAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)

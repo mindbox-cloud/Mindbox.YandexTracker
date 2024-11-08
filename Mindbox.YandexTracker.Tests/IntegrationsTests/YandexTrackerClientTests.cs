@@ -1,3 +1,17 @@
+// Copyright 2024 Mindbox Ltd
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +52,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		// Assert
 		Assert.IsNotNull(response);
-		Assert.IsTrue(response.Any());
+		Assert.IsTrue(response.Values.Any());
 	}
 
 	[TestMethod]
@@ -101,13 +115,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var categories = await YandexTrackerClient.GetFieldCategoriesAsync();
 
 		Assert.IsNotNull(categories);
-		Assert.IsTrue(categories.Any());
+		Assert.IsTrue(categories.Values.Any());
 	}
 
 	[TestMethod]
 	public async Task CreateIssueAsync_CustomFields_ShouldCreatedIssueWithCustomFields()
 	{
-		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
 
 		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new CreateQueueLocalFieldRequest
 		{
@@ -120,6 +134,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			},
 			Type = QueueLocalFieldType.StringFieldType
 		});
+
+		await Task.Delay(TimeSpan.FromSeconds(1)); // Чтобы поле точно создалось в трекере
 
 		var issue = new CreateIssueRequest
 		{
@@ -140,7 +156,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	[TestMethod]
 	public async Task CreateLocalFieldInQueueAsync_ValidRequest_ShouldCreatedLocalField()
 	{
-		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).ToList().FirstOrDefault()!;
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
 
 		var localField = new CreateQueueLocalFieldRequest
 		{
@@ -182,9 +198,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var issues = await YandexTrackerClient.GetIssuesFromQueueAsync(TestQueueKey);
 
 		Assert.IsNotNull(issues);
-		Assert.IsTrue(issues.Count >= 2);
-		Assert.IsTrue(issues.Any(issue => issue.Key == issue1.Key));
-		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
+		Assert.IsTrue(issues.Values.Count >= 2);
+		Assert.IsTrue(issues.Values.Any(issue => issue.Key == issue1.Key));
+		Assert.IsTrue(issues.Values.Any(issue => issue.Key == issue2.Key));
 	}
 
 	[TestMethod]
@@ -208,9 +224,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		Assert.IsNotNull(issues);
 		// могут быть задачи, созданные в других тестах, поэтому проверяем через any
-		Assert.AreEqual(2, issues.Count);
-		Assert.IsTrue(issues.Any(issue => issue.Key == issue1.Key));
-		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
+		Assert.AreEqual(2, issues.Values.Count);
+		Assert.IsTrue(issues.Values.Any(issue => issue.Key == issue1.Key));
+		Assert.IsTrue(issues.Values.Any(issue => issue.Key == issue2.Key));
 	}
 
 	[TestMethod]
@@ -249,8 +265,8 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		Assert.IsNotNull(issues);
 		// могут быть задачи, созданные в других тестах, поэтому проверяем через any
-		Assert.IsTrue(issues.Count >= 1);
-		Assert.IsTrue(issues.Any(@issue => @issue.Key == issue.Key));
+		Assert.IsTrue(issues.Values.Count >= 1);
+		Assert.IsTrue(issues.Values.Any(@issue => @issue.Key == issue.Key));
 	}
 
 	[TestMethod]
@@ -283,9 +299,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		Assert.IsNotNull(issues);
 		// могут быть задачи, созданные в других тестах, поэтому проверяем через any
-		Assert.IsTrue(issues.Count >= 2);
-		Assert.IsTrue(issues.Any(issue => issue.Key == issue1.Key));
-		Assert.IsTrue(issues.Any(issue => issue.Key == issue2.Key));
+		Assert.IsTrue(issues.Values.Count >= 2);
+		Assert.IsTrue(issues.Values.Any(issue => issue.Key == issue1.Key));
+		Assert.IsTrue(issues.Values.Any(issue => issue.Key == issue2.Key));
 	}
 
 	[Ignore("Компоненты нельзя удалить, вместе с очередью они почему-то не удаляются, запускать только вручную")]
@@ -307,7 +323,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000); // Чтобы компоненты точно создались в трекере
 
-		var components = (await YandexTrackerClient.GetComponentsAsync()).ToArray();
+		var components = (await YandexTrackerClient.GetComponentsAsync()).Values;
 
 		Assert.IsNotNull(components);
 		Assert.AreNotEqual(component1.Id, component2.Id);
@@ -342,6 +358,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.Delay(1000); // Чтобы компоненты и задача точно создались в трекере
 
 		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key))
+			.Values
 			.OrderBy(comment => comment.CreatedAt)
 			.ToArray();
 
@@ -375,7 +392,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		CreateAttachmentResponse[] expectedAttachments = [imageAttachment, textAttachment];
 
-		var attachments = (await YandexTrackerClient.GetAttachmentsAsync(issue.Key)).ToArray();
+		var attachments = await YandexTrackerClient.GetAttachmentsAsync(issue.Key);
 
 		var deleteImageAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, imageAttachment.Id);
 		var deleteTxtAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, textAttachment.Id);
@@ -383,7 +400,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		await Task.WhenAll(deleteImageAttachmentTask, deleteTxtAttachmentTask);
 
 		Assert.IsNotNull(attachments);
-		Assert.AreEqual(expectedAttachments.Length, attachments.Length);
+		Assert.AreEqual(expectedAttachments.Length, attachments.Values.Count);
 	}
 
 	[TestMethod]
@@ -415,13 +432,12 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		await Task.Delay(1000); // Чтобы комментарии точно создались в трекере
 
-		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key, CommentExpandData.Attachments))
-			.ToList();
+		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key, CommentExpandData.Attachments)).Values;
 
 		Assert.IsNotNull(comments);
 		Assert.AreEqual(2, comments.Count);
-		Assert.AreEqual(imageAttachment.Id, comments.First().Attachments.First().Id);
-		Assert.AreEqual(textAttachment.Id, comments.Last().Attachments.First().Id);
+		Assert.AreEqual(imageAttachment.Id, comments[0].Attachments.First().Id);
+		Assert.AreEqual(textAttachment.Id, comments[^1].Attachments.First().Id);
 	}
 
 	[TestMethod]
@@ -509,7 +525,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Assert
 		Assert.IsNotNull(projects);
 
-		var actualProject = projects.FirstOrDefault(x => x.ShortId == project1.ShortId);
+		var actualProject = projects.Values.FirstOrDefault(x => x.ShortId == project1.ShortId);
 		Assert.IsNotNull(actualProject);
 		Assert.AreEqual(summary, actualProject.Fields!.Summary);
 		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Author!.Id);
@@ -561,7 +577,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		// Assert
 		Assert.IsNotNull(response);
-		Assert.IsTrue(response.Any());
+		Assert.IsTrue(response.Values.Any());
 	}
 
 	[TestMethod]
@@ -602,7 +618,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		// Assert
 		Assert.IsNotNull(response);
-		Assert.IsTrue(response.Any());
+		Assert.IsTrue(response.Values.Any());
 	}
 
 	private string GetUniqueName()

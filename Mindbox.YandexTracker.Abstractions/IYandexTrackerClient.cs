@@ -1,3 +1,17 @@
+// Copyright 2024 Mindbox Ltd
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,8 +36,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/get-queues"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetQueuesResponse>> GetQueuesAsync(
+	Task<YandexTrackerCollectionResponse<GetQueuesResponse>> GetQueuesAsync(
 		QueuesExpandData? expand = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
@@ -49,33 +64,37 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueResponse>> GetIssuesFromQueueAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesFromQueueAsync(
 		string queueKey,
 		IssuesExpandData? expand = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueResponse>> GetIssuesByKeysAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByKeysAsync(
 		IReadOnlyList<string> issueKeys,
 		IssuesExpandData? expand = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueResponse>> GetIssuesByFilterAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByFilterAsync(
 		GetIssuesByFilterRequest request,
 		IssuesExpandData? expand = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/search-issues"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueResponse>> GetIssuesByQueryAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueResponse>> GetIssuesByQueryAsync(
 		string query,
 		IssuesExpandData? expand = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
@@ -86,7 +105,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/get-components"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetComponentResponse>> GetComponentsAsync(CancellationToken cancellationToken = default);
+	Task<YandexTrackerCollectionResponse<GetComponentResponse>> GetComponentsAsync(
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/post-component"/>
@@ -98,9 +119,10 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-comments"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetCommentsResponse>> GetCommentsAsync(
+	Task<YandexTrackerCollectionResponse<GetCommentsResponse>> GetCommentsAsync(
 		string issueKey,
 		CommentExpandData? expand = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -132,8 +154,9 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-attachments-list"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetAttachmentResponse>> GetAttachmentsAsync(
+	Task<YandexTrackerCollectionResponse<GetAttachmentResponse>> GetAttachmentsAsync(
 		string issueKey,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
@@ -164,7 +187,10 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/queues/get-tags"/>
 	/// </remarks>
-	Task<IReadOnlyList<string>> GetTagsAsync(string queueKey, CancellationToken cancellationToken = default);
+	Task<YandexTrackerCollectionResponse<string>> GetTagsAsync(
+		string queueKey,
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Создает проект
@@ -206,28 +232,33 @@ public interface IYandexTrackerClient : IDisposable
 	/// <param name="entityType"></param>
 	/// <param name="request"></param>
 	/// <param name="returnedFields">Дополнительные поля, которые будут включены в ответ.</param>
+	/// <param name="paginationSettings">Настройки постраничного отображения результатов</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns>Вернутся данные по проектам с проставленными значениями от Яндекс.Трекера</returns>
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/entities/search-entities"/>
 	/// </remarks>
-	Task<IReadOnlyList<ProjectInfo>> GetProjectsAsync(
+	Task<YandexTrackerCollectionResponse<ProjectInfo>> GetProjectsAsync(
 		ProjectEntityType entityType,
 		GetProjectsRequest request,
 		ProjectFieldData? returnedFields = null,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/queues/get-local-fields"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetLocalQueueFieldsAsync(
 		string queueKey,
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/get-global-fields"/>
 	/// </remarks>
-	Task<IReadOnlyList<GetIssueFieldsResponse>> GetGlobalFieldsAsync(CancellationToken cancellationToken = default);
+	Task<YandexTrackerCollectionResponse<GetIssueFieldsResponse>> GetGlobalFieldsAsync(
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Возвращает информацию о пользователе, от имени которого выполняются запросы.
@@ -237,20 +268,25 @@ public interface IYandexTrackerClient : IDisposable
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/get-users"/>
 	/// </remarks>
-	Task<IReadOnlyList<UserDetailedInfoDto>> GetUsersAsync(CancellationToken cancellationToken = default);
+	Task<YandexTrackerCollectionResponse<UserDetailedInfoDto>> GetUsersAsync(
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/get-user-info"/>
 	/// </remarks>
 	Task<UserDetailedInfoDto> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetIssueTypeResponse>> GetIssueTypesAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueTypeResponse>> GetIssueTypesAsync(
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetResolutionResponse>> GetResolutionsAsync(
+	Task<YandexTrackerCollectionResponse<GetResolutionResponse>> GetResolutionsAsync(
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
-	Task<IReadOnlyList<GetIssueStatusResponse>> GetIssueStatusesAsync(
+	Task<YandexTrackerCollectionResponse<GetIssueStatusResponse>> GetIssueStatusesAsync(
+		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -268,7 +304,10 @@ public interface IYandexTrackerClient : IDisposable
 	/// <summary>
 	/// Возможные категории для поля
 	/// </summary>
+	/// <param name="paginationSettings">Настройки постраничного отображения результатов</param>
 	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	Task<IReadOnlyList<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(CancellationToken cancellationToken = default);
+	Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default);
 }

@@ -20,14 +20,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mindbox.YandexTracker.Template\Mindbox.YandexTracker.Template.csproj" />
       <ProjectReference Include="..\Mindbox.YandexTracker\Mindbox.YandexTracker.csproj" />
     </ItemGroup>
   
     <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="TestFiles\importantInformation.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>

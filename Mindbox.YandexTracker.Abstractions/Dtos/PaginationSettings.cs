@@ -13,7 +13,8 @@ public record PaginationSettings
 	public int StartPage { get; init; } = 1;
 
 	/// <summary>
-	/// Получает или задает количество элементов, извлекаемых на одной странице.
+	/// Задает количество элементов, извлекаемых на одной странице.
+	/// 100 - максимальное значение.
 	/// </summary>
 	public int PerPage { get; init; } = 100;
 

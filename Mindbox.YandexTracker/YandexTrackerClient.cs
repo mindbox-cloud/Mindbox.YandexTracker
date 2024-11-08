@@ -21,7 +21,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 {
 	private const string TotalPageHeaderName = "X-Total-Pages";
 
-	private static readonly PaginationSettings _defaultPaginationSettings = new();
+	/// <summary>
+	/// Представляет настройки пагинации по умолчанию, которые применяются в случаях,
+	/// когда параметры пагинации не были переданы в текущем запросе и не указаны в конфигурации.
+	/// </summary>
+	public static readonly PaginationSettings DefaultPaginationSettings = new();
 
 	private readonly IOptionsMonitor<YandexTrackerClientOptions> _options;
 	private readonly HttpClient _httpClient;
@@ -443,7 +447,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None);
 		}
 
-		var pagination = paginationSettings ?? _options.CurrentValue.DefaultPaginationSettings ?? _defaultPaginationSettings;
+		var pagination = paginationSettings ?? _options.CurrentValue.DefaultPaginationSettings ?? DefaultPaginationSettings;
 
 		var page = 1;
 		parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
@@ -763,7 +767,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		var paginationSettings = customPaginationSettings
 								 ?? _options.CurrentValue.DefaultPaginationSettings
-								 ?? _defaultPaginationSettings;
+								 ?? DefaultPaginationSettings;
 
 		var pageNumber = paginationSettings.StartPage - 1;
 		var totalPageCount = 1;

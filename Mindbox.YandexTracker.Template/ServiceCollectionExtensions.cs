@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
 		{
 			return services
 				.AddMemoryCache()
-				.AddScoped<IYandexTrackerClient, YandexTrackerClientCachingDecorator>(sp =>
+				.AddTransient<IYandexTrackerClient, YandexTrackerClientCachingDecorator>(sp =>
 					new YandexTrackerClientCachingDecorator(
 						sp.GetRequiredService<YandexTrackerClient>(),
 						sp.GetRequiredService<IMemoryCache>(),
@@ -40,7 +40,8 @@ public static class ServiceCollectionExtensions
 		}
 		else
 		{
-			return services.AddHttpClient<YandexTrackerClient>((sp, client) => configureClient?.Invoke(sp, client));
+			return services.AddHttpClient<IYandexTrackerClient, YandexTrackerClient>(
+				(sp, client) => configureClient?.Invoke(sp, client));
 		}
 	}
 }

@@ -1,11 +1,11 @@
 // Copyright 2024 Mindbox Ltd
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,11 +21,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Mindbox.YandexTracker.JsonConverters;
 
@@ -96,7 +96,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		QueueExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -140,7 +140,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		IssueExpandData? expand = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -164,7 +164,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -249,7 +249,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(query);
+		ArgumentException.ThrowIfNullOrEmpty(query);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -320,7 +320,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
 
 		var parameters = new Dictionary<string, string>();
 
@@ -344,7 +344,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		bool? addAuthorToFollowers = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
 		ArgumentNullException.ThrowIfNull(request);
 
 		var parameters = new Dictionary<string, string>();
@@ -368,7 +368,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<GetAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
@@ -384,7 +384,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string? newFileName = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
 		ArgumentNullException.ThrowIfNull(fileStream);
 
 		var parameters = new Dictionary<string, string>();
@@ -429,7 +429,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<string>(
 			$"queues/{queueKey}/tags",
@@ -527,7 +527,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueFieldsResponse>(
 			$"queues/{queueKey}/localFields",
@@ -624,7 +624,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		CreateQueueLocalFieldRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
 		ArgumentNullException.ThrowIfNull(request);
 
 		return await ExecuteYandexTrackerApiRequestAsync<CreateQueueLocalFieldResponse>(
@@ -663,7 +663,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	/// <inheritdoc />
 	public async Task DeleteQueueAsync(string queueKey, CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"queues/{queueKey}",
@@ -678,7 +678,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		int commentId,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"issues/{issueKey}/comments/{commentId}",
@@ -690,8 +690,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	/// <inheritdoc />
 	public async Task DeleteAttachmentAsync(string issueKey, string attachmentKey, CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
-		ArgumentException.ThrowIfNullOrWhiteSpace(attachmentKey);
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
+		ArgumentException.ThrowIfNullOrEmpty(attachmentKey);
 
 		await ExecuteYandexTrackerApiRequestAsync(
 			$"issues/{issueKey}/attachments/{attachmentKey}",
@@ -756,7 +756,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		var requestUri = new Uri(baseAddress, effectivePath);
 		if (parameters is not null)
 		{
-			requestUri = new Uri(QueryHelpers.AddQueryString(requestUri.ToString(), parameters!));
+			requestUri = new Uri(AddQueryString(requestUri.ToString(), parameters!));
 		}
 
 		using var request = new HttpRequestMessage(method, requestUri);
@@ -877,6 +877,46 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			parameters,
 			headers,
 			cancellationToken);
+	}
+
+	private static string AddQueryString(
+		string uri,
+		IEnumerable<KeyValuePair<string, string?>> queryString)
+	{
+		ArgumentNullException.ThrowIfNull(uri);
+		ArgumentNullException.ThrowIfNull(queryString);
+
+		var anchorIndex = uri.IndexOf('#', StringComparison.Ordinal);
+		var uriToBeAppended = uri.AsSpan();
+		var anchorText = ReadOnlySpan<char>.Empty;
+		// If there is an anchor, then the query string must be inserted before its first occurrence.
+		if (anchorIndex != -1)
+		{
+			anchorText = uriToBeAppended.Slice(anchorIndex);
+			uriToBeAppended = uriToBeAppended.Slice(0, anchorIndex);
+		}
+
+		var queryIndex = uriToBeAppended.IndexOf('?');
+		var hasQuery = queryIndex != -1;
+
+		var sb = new StringBuilder();
+		sb.Append(uriToBeAppended);
+		foreach (var parameter in queryString)
+		{
+			if (parameter.Value == null)
+			{
+				continue;
+			}
+
+			sb.Append(hasQuery ? '&' : '?');
+			sb.Append(UrlEncoder.Default.Encode(parameter.Key));
+			sb.Append('=');
+			sb.Append(UrlEncoder.Default.Encode(parameter.Value));
+			hasQuery = true;
+		}
+
+		sb.Append(anchorText);
+		return sb.ToString();
 	}
 
 	public void Dispose()

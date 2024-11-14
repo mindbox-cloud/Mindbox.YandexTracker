@@ -145,7 +145,10 @@ dotnet_diagnostic.IDE0130.severity = none
 # IDE0220 'foreach' statement implicitly converts 'object' to '{1}'. Add an explicit cast to make intent clearer, as it may fail at runtime
 dotnet_diagnostic.IDE0220.severity = none
 
-# JSON002 Enable json support 
+# IDE0220 Use range operator
+dotnet_diagnostic.IDE0057.severity = none
+
+# IDE0057 Enable json support 
 dotnet_diagnostic.JSON002.severity = none
 
 # Naming convention - Private and internal fields should start with _ and be camelCased

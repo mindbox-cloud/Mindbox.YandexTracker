@@ -54,5 +54,5 @@ public sealed record CreateIssueRequest : CustomFieldsRequest
 	public string? Assignee { get; init; }
 
 	public IReadOnlyCollection<string>? Tags { get; init; }
-	public IReadOnlyCollection<string>? ChecklistItems { get; init; }
+	public IReadOnlyCollection<CreateChecklistRequest>? ChecklistItems { get; init; }
 }

@@ -1,8 +1,3 @@
-// Copyright 2024 Mindbox Ltd
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -12,13 +7,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 namespace Mindbox.YandexTracker;
 
-public sealed record CheckListItemDto
+public record CreateChecklistRequest
 {
-	public required string Id { get; init; }
-	public string? Text { get; init; }
-	public string? TextHtml { get; init; }
+	public required string Text { get; init; }
 	public bool Checked { get; init; }
-	public ChecklistItemType ChecklistItemType { get; set; }
+	public string? Assignee { get; init; }
+	public ChecklistDeadlineDto? Deadline { get; init; }
 }

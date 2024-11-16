@@ -1,11 +1,11 @@
 // Copyright 2024 Mindbox Ltd
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -97,10 +97,26 @@ public interface IYandexTrackerClient : IDisposable
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Создает новую задачу.
+	/// </summary>
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/create-issue"/>
 	/// </remarks>
 	Task<CreateIssueResponse> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Импортирует новую задачу в Трекер.
+	/// </summary>
+	/// <remarks>
+	/// ВАЖНО: Должен вызываться только от администратора системы.
+	/// В отличие от <see cref="CreateIssueAsync"/>, позволяет:
+	/// - указать дату создания тикета и пользователя, который создал тикет;
+	/// - последнюю дату изменения тикета и пользователя, который последний раз изменял тикет;
+	/// - дату и время проставления резолюции и пользователя, который проставил резолюцию.
+	///  <see href="https://yandex.cloud/ru/docs/tracker/concepts/import/import-ticket"/>
+	/// </remarks>
+	Task<ImportIssueResponse> ImportIssueAsync(ImportIssueRequest request, CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/get-components"/>

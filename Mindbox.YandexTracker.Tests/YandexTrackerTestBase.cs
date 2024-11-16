@@ -14,6 +14,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -46,10 +47,10 @@ public abstract class YandexTrackerTestBase
 			.AddEnvironmentVariables()
 			.Build();
 
-		SetupServices(serviceCollection, configuration);
+		ConfigureServices(serviceCollection, configuration);
 
 		ServiceProvider = serviceCollection.BuildServiceProvider();
-		YandexTrackerClient = GetRequiredService<IYandexTrackerClient>();
+		YandexTrackerClient = ServiceProvider.GetRequiredService<IYandexTrackerClient>();
 
 		// узнаем инфу о пользователи, от имени которого выполняем запрос
 		var userInfo = await YandexTrackerClient.GetMyselfAsync();
@@ -74,6 +75,9 @@ public abstract class YandexTrackerTestBase
 
 	private static async Task CreateTestQueueAsync()
 	{
+		var resolutions = await YandexTrackerClient.GetResolutionsAsync();
+		var resolutionKeys = resolutions.Values.Select(x => x.Key).ToList();
+
 		await YandexTrackerClient.CreateQueueAsync(new CreateQueueRequest
 		{
 			Key = TestQueueKey,
@@ -86,7 +90,7 @@ public abstract class YandexTrackerTestBase
 				{
 					IssueType = "task",
 					Workflow = "developmentPresetWorkflow",
-					Resolutions = ["wontFix"]
+					Resolutions = resolutionKeys
 				}
 			]
 		});
@@ -106,7 +110,7 @@ public abstract class YandexTrackerTestBase
 		TestProjectShortId = project.ShortId;
 	}
 
-	private static void SetupServices(IServiceCollection services, IConfigurationRoot configuration)
+	private static void ConfigureServices(IServiceCollection services, IConfigurationRoot configuration)
 	{
 		services.Configure<YandexTrackerClientOptions>(configuration.GetSection("YandexTrackerOptions"));
 		services.AddYandexTrackerClient(enableCaching: false)
@@ -123,6 +127,8 @@ public abstract class YandexTrackerTestBase
 						.HandleResult(response =>
 						{
 							int statusCode = (int)response.StatusCode;
+							// 400 и 404 в тестах могут возникать, если API трекера не успело создать сущность, а мы ее
+							// уже пытаемся получить. Поэтому чтобы тесты не флакали, поставим такое условие на retry.
 							return statusCode is >= 500 or 429 or 404 or 400;
 						})
 				});
@@ -130,7 +136,4 @@ public abstract class YandexTrackerTestBase
 				builder.AddTimeout(TimeSpan.FromSeconds(5));
 			});
 	}
-
-	protected static T GetRequiredService<T>() where T : notnull
-		=> ServiceProvider.GetRequiredService<T>();
 }

@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,6 +65,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var tags = new[] { "tag1", "tag2" };
 		var summary = GetUniqueName();
 
+		var issueTypes = await YandexTrackerClient.GetIssueTypesAsync();
+		var issueTypeKey = issueTypes.Values.First(x => x.Key == "task").Id;
+
 		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
 		{
 			Queue = TestQueueKey,
@@ -75,7 +79,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Author = CurrentUserLogin,
 			Priority = Priority.Trivial,
 			Start = dateTimeOnlyStart,
-			Type = "task"
+			Type = issueTypeKey
 		});
 
 		// Act
@@ -155,6 +159,74 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	public async Task ImportIssueAsync_CustomFields_ShouldImportIssueWithCustomFields()
+	{
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
+		var resolutions = await YandexTrackerClient.GetResolutionsAsync();
+		var expectedResolution = resolutions.Values[0];
+
+		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new CreateQueueLocalFieldRequest
+		{
+			Id = "customFieldsForImpor",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customFieldsForImport",
+				Ru = "Кастомное поле для импорта"
+			},
+			Type = QueueLocalFieldType.StringFieldType
+		});
+
+		await Task.Delay(TimeSpan.FromSeconds(2)); // Чтобы поле точно создалось в трекере
+
+		var createdAt = new DateTime(2021, 10, 10, 10, 10, 10);
+		var resolvedAt = createdAt.AddMinutes(5);
+		var updatedAt = createdAt.AddMinutes(10);
+		var importIssueRequest = new ImportIssueRequest
+		{
+			Queue = TestQueueKey,
+			Summary = GetUniqueName(),
+			Project = TestProjectShortId,
+			StoryPoints = 1.5,
+
+			CreatedBy = CurrentUserId,
+			CreatedAt = createdAt,
+
+			UpdatedAt = updatedAt,
+			UpdatedBy = CurrentUserId,
+
+			ResolvedAt = resolvedAt,
+			ResolvedBy = CurrentUserLogin,
+			Resolution = expectedResolution.Id,
+		};
+
+		importIssueRequest.SetCustomField<string>(customField.Id, "field1");
+
+		var importedIssue = await YandexTrackerClient.ImportIssueAsync(importIssueRequest);
+
+		var issue = await YandexTrackerClient.GetIssueAsync(importedIssue.Key);
+
+		Assert.IsNotNull(issue);
+		Assert.AreEqual(createdAt, issue.CreatedAt);
+		Assert.IsNotNull(issue.CreatedBy);
+		Assert.AreEqual(CurrentUserId, issue.CreatedBy.Id);
+		Assert.AreEqual(updatedAt, issue.UpdatedAt);
+		Assert.IsNotNull(issue.UpdatedBy);
+		Assert.AreEqual(CurrentUserId, issue.UpdatedBy.Id);
+		Assert.AreEqual(resolvedAt, issue.ResolvedAt);
+		Assert.IsNotNull(issue.ResolvedBy);
+		Assert.AreEqual(CurrentUserId, issue.ResolvedBy.Id);
+		Assert.IsNotNull(issue.Resolution);
+		Assert.AreEqual(expectedResolution.Id.ToString(CultureInfo.InvariantCulture), issue.Resolution!.Id);
+		Assert.IsNull(issue.Author);
+		Assert.IsNull(issue.Parent);
+		Assert.IsTrue(issue.Sprint.Count == 0);
+		Assert.AreEqual(importIssueRequest.StoryPoints, issue.StoryPoints);
+
+		Assert.AreEqual("field1", issue.GetCustomField<string>(customField.Id));
+	}
+
+	[TestMethod]
 	public async Task CreateLocalFieldInQueueAsync_ValidRequest_ShouldCreatedLocalField()
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
@@ -162,7 +234,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var localField = new CreateQueueLocalFieldRequest
 		{
 			Id = "someId",
-			Name = new QueueLocalFieldName()
+			Name = new QueueLocalFieldName
 			{
 				En = "eng222",
 				Ru = "ru222"

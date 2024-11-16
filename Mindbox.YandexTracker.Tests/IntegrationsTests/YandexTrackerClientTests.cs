@@ -141,6 +141,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		{
 			Queue = TestQueueKey,
 			Summary = GetUniqueName(),
+			Project = TestProjectShortId
 		};
 
 		issue.SetCustomField<string>(customField.Id, "field1");

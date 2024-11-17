@@ -91,4 +91,6 @@ public record GetIssueResponse : CustomFieldsResponse
 	public bool Favorite { get; init; }
 
 	public DateTime? LastCommentUpdatedAt { get; init; }
+
+	public IReadOnlyCollection<FieldInfo> Attachments { get; init; } = [];
 }

@@ -159,6 +159,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	[Ignore("Методы должны вызываться только администратором Яндекс.Трекера. В CI/CD используется обычный пользователь")]
 	public async Task FullImportIssueFlow()
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];

@@ -641,7 +641,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			response.Pages > page
 			&& (pagination.MaxPageRequestCount is null || page < pagination.MaxPageRequestCount));
 
-		return new YandexTrackerCollectionResponse<ProjectInfo>()
+		return new YandexTrackerCollectionResponse<ProjectInfo>
 		{
 			FetchedPages = page,
 			TotalPages = response.Pages,

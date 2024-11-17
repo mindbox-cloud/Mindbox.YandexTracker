@@ -100,7 +100,7 @@ public abstract class YandexTrackerTestBase
 	{
 		var project = await YandexTrackerClient.CreateProjectAsync(
 			ProjectEntityType.Project,
-			new CreateProjectRequest()
+			new CreateProjectRequest
 			{
 				Fields = new ProjectFieldsDto
 				{

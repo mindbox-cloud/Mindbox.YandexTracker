@@ -17,6 +17,9 @@ using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
+/// <summary>
+/// Запрос на создание новой задачи.
+/// </summary>
 public record CreateIssueRequest : CustomFieldsRequest
 {
 	/// <summary>

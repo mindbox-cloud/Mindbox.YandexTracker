@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace Mindbox.YandexTracker;
 
-public sealed record GetIssueResponse : CustomFieldsResponse
+public record GetIssueResponse : CustomFieldsResponse
 {
 	public required string Id { get; init; }
 

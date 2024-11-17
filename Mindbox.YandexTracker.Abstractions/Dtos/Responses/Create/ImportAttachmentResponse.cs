@@ -12,27 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Mindbox.YandexTracker;
 
-public record CreateAttachmentResponse
+/// <summary>
+/// Ответ на запрос импорта вложения к задаче или комментарию.
+/// </summary>
+public record ImportAttachmentResponse : CreateAttachmentResponse
 {
-	public required string Id { get; init; }
-
-	public required string Name { get; init; }
-
-	public required string Content { get; init; }
-
-	public string? Thumbnail { get; init; }
-
-	public required UserShortInfoDto CreatedBy { get; init; }
-
-	public DateTime CreatedAt { get; init; }
-
-	public string Mimetype { get; init; } = null!;
-
-	public int Size { get; init; }
-
-	public AttachmentMetadataDto? Metadata { get; init; }
 }

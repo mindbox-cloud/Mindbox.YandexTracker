@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,6 +65,9 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var tags = new[] { "tag1", "tag2" };
 		var summary = GetUniqueName();
 
+		var issueTypes = await YandexTrackerClient.GetIssueTypesAsync();
+		var issueTypeKey = issueTypes.Values.First(x => x.Key == "task").Id;
+
 		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
 		{
 			Queue = TestQueueKey,
@@ -75,7 +79,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Author = CurrentUserLogin,
 			Priority = Priority.Trivial,
 			Start = dateTimeOnlyStart,
-			Type = "task"
+			Type = issueTypeKey
 		});
 
 		// Act
@@ -135,12 +139,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Type = QueueLocalFieldType.StringFieldType
 		});
 
-		await Task.Delay(TimeSpan.FromSeconds(1)); // Чтобы поле точно создалось в трекере
+		await Task.Delay(TimeSpan.FromSeconds(2)); // Чтобы поле точно создалось в трекере
 
 		var issue = new CreateIssueRequest
 		{
 			Queue = TestQueueKey,
 			Summary = GetUniqueName(),
+			Project = TestProjectShortId
 		};
 
 		issue.SetCustomField<string>(customField.Id, "field1");
@@ -154,6 +159,139 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	[Ignore("Методы должны вызываться только администратором Яндекс.Трекера. В CI/CD используется обычный пользователь")]
+	public async Task FullImportIssueFlow()
+	{
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
+		var resolutions = await YandexTrackerClient.GetResolutionsAsync();
+		var expectedResolution = resolutions.Values[0];
+
+		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new CreateQueueLocalFieldRequest
+		{
+			Id = "customFieldsForImport",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customFieldsForImport",
+				Ru = "Кастомное поле для импорта"
+			},
+			Type = QueueLocalFieldType.StringFieldType
+		});
+
+		await Task.Delay(TimeSpan.FromSeconds(2)); // Чтобы поле точно создалось в трекере
+
+		// импортируем задачу
+		var issueCreatedAt = new DateTime(2021, 10, 10, 10, 10, 10);
+		var issueResolvedAt = issueCreatedAt.AddMinutes(5);
+		var issueUpdatedAt = issueCreatedAt.AddMinutes(10);
+
+		var importIssueRequest = new ImportIssueRequest
+		{
+			Queue = TestQueueKey,
+			Summary = GetUniqueName(),
+			Project = TestProjectShortId,
+			StoryPoints = 1.5,
+
+			CreatedBy = CurrentUserId,
+			CreatedAt = issueCreatedAt,
+
+			UpdatedAt = issueUpdatedAt,
+			UpdatedBy = CurrentUserId,
+
+			ResolvedAt = issueResolvedAt,
+			ResolvedBy = CurrentUserLogin,
+			Resolution = expectedResolution.Id
+		};
+		importIssueRequest.SetCustomField<string>(customField.Id, "field1");
+
+		var importedIssue = await YandexTrackerClient.ImportIssueAsync(importIssueRequest);
+
+		var createdAttachmentIds = new List<string>();
+		try
+		{
+			// импортируем комментарий
+			var commentCreatedAt = new DateTime(2021, 10, 10, 10, 10, 12);
+			var commentUpdatedAt = issueCreatedAt.AddMinutes(2);
+			var importCommentRequest = new ImportCommentRequest
+			{
+				CreatedAt = commentCreatedAt,
+				CreatedBy = CurrentUserId,
+				UpdatedAt = commentUpdatedAt,
+				UpdatedBy = CurrentUserId,
+				Text = "Comment text"
+			};
+			var importCommentResponse = await YandexTrackerClient.ImportCommentAsync(importedIssue.Key, importCommentRequest);
+
+			// загрузим вложения
+
+			await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
+			await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
+
+			var issueAttachmentResponse = await YandexTrackerClient.ImportAttachmentToIssueAsync(
+				importedIssue.Key,
+				imageFile,
+				imageFile.Name,
+				issueCreatedAt,
+				CurrentUserId);
+			createdAttachmentIds.Add(issueAttachmentResponse.Id);
+			var commentAttachmentResponse = await YandexTrackerClient.ImportAttachmentToIssueCommentAsync(
+				importedIssue.Key,
+				importCommentResponse.Id.ToString(CultureInfo.InvariantCulture),
+				txtFile,
+				txtFile.Name,
+				commentCreatedAt,
+				CurrentUserId);
+			createdAttachmentIds.Add(commentAttachmentResponse.Id);
+
+			await Task.Delay(TimeSpan.FromSeconds(5)); // Чтобы Трекер все успел обработать
+
+			// получим issue с комментами и проверим
+			var issue = await YandexTrackerClient.GetIssueAsync(importedIssue.Key, IssueExpandData.Attachments);
+			var comments = await YandexTrackerClient.GetCommentsAsync(importedIssue.Key, CommentExpandData.All);
+
+			Assert.IsNotNull(issue);
+			Assert.AreEqual(issueCreatedAt, issue.CreatedAt);
+			Assert.IsNotNull(issue.CreatedBy);
+			Assert.AreEqual(CurrentUserId, issue.CreatedBy.Id);
+			Assert.AreEqual(issueUpdatedAt, issue.UpdatedAt);
+			Assert.IsNotNull(issue.UpdatedBy);
+			Assert.AreEqual(CurrentUserId, issue.UpdatedBy.Id);
+			Assert.AreEqual(issueResolvedAt, issue.ResolvedAt);
+			Assert.IsNotNull(issue.ResolvedBy);
+			Assert.AreEqual(CurrentUserId, issue.ResolvedBy.Id);
+			Assert.IsNotNull(issue.Resolution);
+			Assert.AreEqual(expectedResolution.Id.ToString(CultureInfo.InvariantCulture), issue.Resolution!.Id);
+			Assert.IsNull(issue.Author);
+			Assert.IsNull(issue.Parent);
+			Assert.IsTrue(issue.Sprint.Count == 0);
+			Assert.AreEqual(importIssueRequest.StoryPoints, issue.StoryPoints);
+
+			Assert.AreEqual("field1", issue.GetCustomField<string>(customField.Id));
+
+			Assert.IsTrue(issue.Attachments.Any(x => x.Id == issueAttachmentResponse.Id));
+
+			var actualComment = comments.Values.SingleOrDefault();
+			Assert.IsNotNull(actualComment);
+			Assert.AreEqual(importCommentResponse.Id, actualComment.Id);
+			Assert.AreEqual(commentCreatedAt, actualComment.CreatedAt);
+			Assert.AreEqual(CurrentUserId, actualComment.CreatedBy.Id);
+			Assert.AreEqual(commentUpdatedAt, actualComment.UpdatedAt);
+			Assert.AreEqual(CurrentUserId, actualComment.UpdatedBy.Id);
+			Assert.AreEqual(importCommentRequest.Text, actualComment.Text);
+
+			Assert.IsTrue(actualComment.Attachments.Any(x => x.Id == commentAttachmentResponse.Id));
+		}
+		finally
+		{
+			foreach (var attachmentId in createdAttachmentIds)
+			{
+				await SafeExecutor.ExecuteAsync(async () =>
+					await YandexTrackerClient.DeleteAttachmentAsync(importedIssue.Key, attachmentId));
+			}
+		}
+	}
+
+	[TestMethod]
 	public async Task CreateLocalFieldInQueueAsync_ValidRequest_ShouldCreatedLocalField()
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
@@ -161,7 +299,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var localField = new CreateQueueLocalFieldRequest
 		{
 			Id = "someId",
-			Name = new QueueLocalFieldName()
+			Name = new QueueLocalFieldName
 			{
 				En = "eng222",
 				Ru = "ru222"
@@ -309,13 +447,13 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	public async Task GetComponentsAsync_ResponseIsNotNullAndNotEmpty()
 	{
 		var component1 = await YandexTrackerClient.CreateComponentAsync(
-			new CreateComponentRequest()
+			new CreateComponentRequest
 			{
 				Name = GetUniqueName(),
 				Queue = TestQueueKey
 			});
 		var component2 = await YandexTrackerClient.CreateComponentAsync(
-			new CreateComponentRequest()
+			new CreateComponentRequest
 			{
 				Name = GetUniqueName(),
 				Queue = TestQueueKey
@@ -369,38 +507,53 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task GetAttachmentsAsync_IssueKey_ResponseIsNotNullAndNotEmpty()
+	public async Task AttachmentsApiTest()
 	{
-		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
+		CreateAttachmentResponse? imageAttachment = null;
+		CreateAttachmentResponse? textAttachment = null;
+		string issueKey = null!;
+		try
 		{
-			Queue = TestQueueKey,
-			Summary = GetUniqueName()
-		});
+			var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
+			{
+				Queue = TestQueueKey,
+				Summary = GetUniqueName()
+			});
+			issueKey = issue.Key;
 
-		await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
-		await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
+			await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
+			await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
 
-		var imageAttachment = await YandexTrackerClient.CreateAttachmentAsync(
-			issue.Key,
-			imageFile);
+			imageAttachment = await YandexTrackerClient.CreateAttachmentAsync(
+				issue.Key,
+				imageFile);
 
-		var textAttachment = await YandexTrackerClient.CreateAttachmentAsync(
-			issue.Key,
-			txtFile);
+			textAttachment = await YandexTrackerClient.CreateAttachmentAsync(
+				issue.Key,
+				txtFile);
 
-		await Task.Delay(1000); // Чтобы вложения точно создались в трекере
+			await Task.Delay(3000); // Чтобы вложения точно создались в трекере
 
-		CreateAttachmentResponse[] expectedAttachments = [imageAttachment, textAttachment];
+			CreateAttachmentResponse[] expectedAttachments = [imageAttachment, textAttachment];
 
-		var attachments = await YandexTrackerClient.GetAttachmentsAsync(issue.Key);
+			var attachments = await YandexTrackerClient.GetAttachmentsAsync(issue.Key);
 
-		var deleteImageAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, imageAttachment.Id);
-		var deleteTxtAttachmentTask = YandexTrackerClient.DeleteAttachmentAsync(issue.Key, textAttachment.Id);
-
-		await Task.WhenAll(deleteImageAttachmentTask, deleteTxtAttachmentTask);
-
-		Assert.IsNotNull(attachments);
-		Assert.AreEqual(expectedAttachments.Length, attachments.Values.Count);
+			Assert.IsNotNull(attachments);
+			Assert.AreEqual(expectedAttachments.Length, attachments.Values.Count);
+		}
+		finally
+		{
+			if (imageAttachment != null)
+			{
+				await SafeExecutor.ExecuteAsync(async () =>
+					await YandexTrackerClient.DeleteAttachmentAsync(issueKey, imageAttachment.Id));
+			}
+			if (textAttachment != null)
+			{
+				await SafeExecutor.ExecuteAsync(async () =>
+					await YandexTrackerClient.DeleteAttachmentAsync(issueKey, textAttachment.Id));
+			}
+		}
 	}
 
 	[TestMethod]
@@ -454,7 +607,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		// Arrange
 		var summary = GetUniqueName();
 
-		var currentUserShortInfo = new UserShortInfoDto()
+		var currentUserShortInfo = new UserShortInfoDto
 		{
 			Display = CurrentUserLogin,
 			Id = CurrentUserId
@@ -466,52 +619,48 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 		var dateOnlyNow = DateOnly.FromDateTime(nowUtc);
 		var dateOnlyEnd = DateOnly.FromDateTime(nowUtc.AddDays(3));
 
-		var project1 = await YandexTrackerClient.CreateProjectAsync(
-			ProjectEntityType.Project,
-			new CreateProjectRequest
-			{
-				Fields = new ProjectFieldsDto()
-				{
-					Summary = summary,
-					Author = currentUserShortInfo.Id,
-					Followers = [currentUserShortInfo.Id],
-					Clients = [currentUserShortInfo.Id],
-					Lead = currentUserShortInfo.Id,
-					Description = "DESC",
-					Tags = tags,
-					Start = dateOnlyNow,
-					End = dateOnlyEnd,
-					TeamAccess = false,
-					TeamUsers = [currentUserShortInfo.Id],
-					EntityStatus = ProjectEntityStatus.InProgress
-				}
-			});
-
-		var project2 = await YandexTrackerClient.CreateProjectAsync(
-			ProjectEntityType.Project,
-			new CreateProjectRequest()
-			{
-				Fields = new ProjectFieldsDto()
-				{
-					Summary = GetUniqueName()
-				}
-			});
-
-		await Task.Delay(1000); // Чтобы проекты точно создались в трекере
-
-		var requestProject = new GetProjectsRequest()
+		CreateProjectResponse? project = null;
+		try
 		{
-			Filter = new ProjectFieldsDto()
-			{
-				Summary = summary
-			}
-		};
+			project = await YandexTrackerClient.CreateProjectAsync(
+				ProjectEntityType.Project,
+				new CreateProjectRequest
+				{
+					Fields = new ProjectFieldsDto
+					{
+						Summary = summary,
+						Author = currentUserShortInfo.Id,
+						Followers = [currentUserShortInfo.Id],
+						Clients = [currentUserShortInfo.Id],
+						Lead = currentUserShortInfo.Id,
+						Description = "DESC",
+						Tags = tags,
+						Start = dateOnlyNow,
+						End = dateOnlyEnd,
+						TeamAccess = false,
+						TeamUsers = [currentUserShortInfo.Id],
+						EntityStatus = ProjectEntityStatus.InProgress
+					}
+				});
 
-		// Act
-		var projects = await YandexTrackerClient.GetProjectsAsync(
-			ProjectEntityType.Project,
-			requestProject,
-			returnedFields:
+
+			await Task.Delay(1000); // Чтобы проекты точно создались в трекере
+
+			var requestProject = new GetProjectsRequest
+			{
+				Filter = new ProjectFieldsDto
+				{
+					Summary = summary
+				}
+			};
+
+			var assertedProjectShortId = project.ShortId;
+
+			// Act
+			var projects = await YandexTrackerClient.GetProjectsAsync(
+				ProjectEntityType.Project,
+				requestProject,
+				returnedFields:
 				ProjectFieldData.Summary | ProjectFieldData.Description | ProjectFieldData.Author
 				| ProjectFieldData.Lead | ProjectFieldData.TeamUsers | ProjectFieldData.Clients
 				| ProjectFieldData.Followers | ProjectFieldData.Start | ProjectFieldData.End
@@ -519,33 +668,42 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 				| ProjectFieldData.TeamAccess | ProjectFieldData.Quarter | ProjectFieldData.EntityStatus
 				| ProjectFieldData.IssueQueues);
 
-		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project1.ShortId, true);
-		await YandexTrackerClient.DeleteProjectAsync(ProjectEntityType.Project, project2.ShortId, true);
+			// Assert
+			Assert.IsNotNull(projects);
 
-		// Assert
-		Assert.IsNotNull(projects);
-
-		var actualProject = projects.Values.FirstOrDefault(x => x.ShortId == project1.ShortId);
-		Assert.IsNotNull(actualProject);
-		Assert.AreEqual(summary, actualProject.Fields!.Summary);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Author!.Id);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Lead!.Id);
-		Assert.AreEqual(1, actualProject.Fields!.Followers!.Count);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Followers!.First().Id);
-		Assert.AreEqual(1, actualProject.Fields!.Clients!.Count);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Clients!.First().Id);
-		Assert.AreEqual("DESC", actualProject.Fields!.Description);
-		Assert.AreEqual(2, actualProject.Fields!.Tags!.Count);
-		CollectionAssert.AreEquivalent(tags, actualProject.Fields!.Tags.ToArray());
-		Assert.AreEqual(ProjectEntityType.Project, actualProject.EntityType);
-		Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Fields!.EntityStatus);
-		Assert.AreEqual(dateOnlyNow, actualProject.Fields!.Start);
-		Assert.AreEqual(dateOnlyEnd, actualProject.Fields!.End);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
-		Assert.IsNull(actualProject.Fields!.TeamAccess);
-		Assert.AreEqual(1, actualProject.Fields!.TeamUsers!.Count);
-		Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.TeamUsers!.First().Id);
-		Assert.AreEqual(2, actualProject.Fields!.Quarter!.Count);
+			var actualProject = projects.Values.FirstOrDefault(x => x.ShortId == assertedProjectShortId);
+			Assert.IsNotNull(actualProject);
+			Assert.AreEqual(summary, actualProject.Fields!.Summary);
+			Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Author!.Id);
+			Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Lead!.Id);
+			Assert.AreEqual(1, actualProject.Fields!.Followers!.Count);
+			Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Followers!.First().Id);
+			Assert.AreEqual(1, actualProject.Fields!.Clients!.Count);
+			Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.Clients!.First().Id);
+			Assert.AreEqual("DESC", actualProject.Fields!.Description);
+			Assert.AreEqual(2, actualProject.Fields!.Tags!.Count);
+			CollectionAssert.AreEquivalent(tags, actualProject.Fields!.Tags.ToArray());
+			Assert.AreEqual(ProjectEntityType.Project, actualProject.EntityType);
+			Assert.AreEqual(ProjectEntityStatus.InProgress, actualProject.Fields!.EntityStatus);
+			Assert.AreEqual(dateOnlyNow, actualProject.Fields!.Start);
+			Assert.AreEqual(dateOnlyEnd, actualProject.Fields!.End);
+			Assert.AreEqual(currentUserShortInfo.Id, actualProject.CreatedBy.Id);
+			Assert.IsNull(actualProject.Fields!.TeamAccess);
+			Assert.AreEqual(1, actualProject.Fields!.TeamUsers!.Count);
+			Assert.AreEqual(currentUserShortInfo.Id, actualProject.Fields!.TeamUsers!.First().Id);
+			Assert.AreEqual(2, actualProject.Fields!.Quarter!.Count);
+		}
+		finally
+		{
+			if (project != null)
+			{
+				await SafeExecutor.ExecuteAsync(
+					async() => await YandexTrackerClient.DeleteProjectAsync(
+						ProjectEntityType.Project,
+						project.ShortId,
+						true));
+			}
+		}
 	}
 
 	[TestMethod]

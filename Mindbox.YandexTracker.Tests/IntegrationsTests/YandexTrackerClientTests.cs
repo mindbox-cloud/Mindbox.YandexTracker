@@ -514,6 +514,51 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	public async Task ImportComment_WithTempAttachments()
+	{
+		var issue = await YandexTrackerClient.CreateIssueAsync(new CreateIssueRequest
+		{
+			Queue = TestQueueKey,
+			Summary = GetUniqueName()
+		});
+
+		await using var imageFile = File.OpenRead(Path.Combine("TestFiles", "pepe.png"));
+		await using var txtFile = File.OpenRead(Path.Combine("TestFiles", "importantInformation.txt"));
+
+		var imageAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(imageFile, "pepe.png");
+		var textAttachment = await YandexTrackerClient.CreateTemporaryAttachmentAsync(txtFile, "info.txt");
+
+		var createdAt = new DateTime(2024, 10, 10, 10, 10, 10);
+		var updatedAt = createdAt.AddMinutes(10);
+		await YandexTrackerClient.ImportCommentAsync(issue.Key, new ImportCommentRequest
+		{
+			CreatedBy = CurrentUserId,
+			CreatedAt = createdAt,
+			UpdatedBy = CurrentUserId,
+			UpdatedAt = updatedAt,
+			Text = "This comment has image",
+		});
+
+		await YandexTrackerClient.ImportCommentAsync(issue.Key, new ImportCommentRequest
+		{
+			CreatedBy = CurrentUserId,
+			CreatedAt = createdAt,
+			UpdatedBy = CurrentUserId,
+			UpdatedAt = updatedAt,
+			Text = "This comment has file",
+		});
+
+		await Task.Delay(1000); // Чтобы комментарии точно создались в трекере
+
+		var comments = (await YandexTrackerClient.GetCommentsAsync(issue.Key, CommentExpandData.Attachments)).Values;
+
+		Assert.IsNotNull(comments);
+		Assert.AreEqual(2, comments.Count);
+		Assert.AreEqual(imageAttachment.Id, comments[0].Attachments.First().Id);
+		Assert.AreEqual(textAttachment.Id, comments[^1].Attachments.First().Id);
+	}
+
+	[TestMethod]
 	public async Task GetTagsAsync_ResponseIsNotNull()
 	{
 		var response = await YandexTrackerClient.GetTagsAsync(TestQueueKey);

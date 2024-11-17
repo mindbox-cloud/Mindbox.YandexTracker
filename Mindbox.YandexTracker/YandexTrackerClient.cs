@@ -350,7 +350,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	/// <inheritdoc />
-	public async Task<CreateCommentResponse> CreateCommentAsync(
+	public Task<CreateCommentResponse> CreateCommentAsync(
 		string issueKey,
 		CreateCommentRequest request,
 		bool? addAuthorToFollowers = null,
@@ -359,18 +359,37 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 		ArgumentNullException.ThrowIfNull(request);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
-		if (addAuthorToFollowers is not null)
+		if (addAuthorToFollowers.HasValue)
 		{
-			parameters["isAddToFollowers"] = addAuthorToFollowers.ToString()!;
+			parameters = new Dictionary<string, string>
+			{
+				["isAddToFollowers"] = addAuthorToFollowers.Value.ToString()
+			};
 		}
 
-		return await ExecuteYandexTrackerApiRequestAsync<CreateCommentResponse>(
+		return ExecuteYandexTrackerApiRequestAsync<CreateCommentResponse>(
 			$"issues/{issueKey}/comments",
 			HttpMethod.Post,
 			payload: request,
 			parameters: parameters,
+			cancellationToken: cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public Task<ImportCommentResponse> ImportCommentAsync(
+		string issueKey,
+		ImportCommentRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentNullException.ThrowIfNull(request);
+
+		return ExecuteYandexTrackerApiRequestAsync<ImportCommentResponse>(
+			$"issues/{issueKey}/comments/_import",
+			HttpMethod.Post,
+			payload: request,
 			cancellationToken: cancellationToken);
 	}
 
@@ -410,6 +429,72 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 		return await ExecuteYandexTrackerApiRequestAsync<CreateAttachmentResponse>(
 			$"issues/{issueKey}/attachments",
+			HttpMethod.Post,
+			payload: form,
+			parameters: parameters,
+			cancellationToken: cancellationToken);
+	}
+
+	public async Task<ImportAttachmentResponse> ImportAttachmentToIssueAsync(
+		string issueKey,
+		Stream fileStream,
+		string newFileName,
+		DateTime createdAt,
+		string createdBy,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey, nameof(issueKey));
+		ArgumentNullException.ThrowIfNull(fileStream, nameof(fileStream));
+		ArgumentException.ThrowIfNullOrWhiteSpace(newFileName, nameof(newFileName));
+		ArgumentException.ThrowIfNullOrWhiteSpace(createdBy, nameof(createdBy));
+
+		var parameters = new Dictionary<string, string>
+		{
+			["filename"] = newFileName,
+			["createdAt"] = createdAt.ToString(YandexTrackerConstants.DateTimeFormat, CultureInfo.InvariantCulture),
+			["createdBy"] = createdBy,
+		};
+
+		using var form = new MultipartFormDataContent();
+		using var fileContent = new StreamContent(fileStream);
+		form.Add(fileContent, "file", newFileName);
+
+		return await ExecuteYandexTrackerApiRequestAsync<ImportAttachmentResponse>(
+			$"issues/{issueKey}/attachments/_import",
+			HttpMethod.Post,
+			payload: form,
+			parameters: parameters,
+			cancellationToken: cancellationToken);
+	}
+
+	public async Task<ImportAttachmentResponse> ImportAttachmentToIssueCommentAsync(
+		string issueKey,
+		string commentId,
+		Stream fileStream,
+		string newFileName,
+		DateTime createdAt,
+		string createdBy,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey, nameof(issueKey));
+		ArgumentException.ThrowIfNullOrWhiteSpace(commentId, nameof(commentId));
+		ArgumentNullException.ThrowIfNull(fileStream, nameof(fileStream));
+		ArgumentException.ThrowIfNullOrWhiteSpace(newFileName, nameof(newFileName));
+		ArgumentException.ThrowIfNullOrWhiteSpace(createdBy, nameof(createdBy));
+
+		var parameters = new Dictionary<string, string>
+		{
+			["filename"] = newFileName,
+			["createdAt"] = createdAt.ToString(YandexTrackerConstants.DateTimeFormat, CultureInfo.InvariantCulture),
+			["createdBy"] = createdBy,
+		};
+
+		using var form = new MultipartFormDataContent();
+		using var fileContent = new StreamContent(fileStream);
+		form.Add(fileContent, "file", newFileName);
+
+		return await ExecuteYandexTrackerApiRequestAsync<ImportAttachmentResponse>(
+			$"issues/{issueKey}/comments/{commentId}/attachments/_import",
 			HttpMethod.Post,
 			payload: form,
 			parameters: parameters,

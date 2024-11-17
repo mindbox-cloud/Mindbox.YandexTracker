@@ -98,11 +98,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not QueueExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(QueueExpandData.All, QueueExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(QueueExpandData.All, QueueExpandData.None)
+			};
 		}
 
 		return ExecuteYandexTrackerApiRequestAsync<GetQueuesResponse>(
@@ -119,11 +122,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null && (QueuesExpandData)expand != QueuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(null, QueuesExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(null, QueuesExpandData.None)
+			};
 		}
 
 		return ExecuteYandexTrackerCollectionRequestAsync<GetQueuesResponse>(
@@ -142,11 +148,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not IssueExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssueExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(null, IssueExpandData.None)
+			};
 		}
 
 		return ExecuteYandexTrackerApiRequestAsync<GetIssueResponse>(
@@ -166,11 +175,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(queueKey);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None)
+			};
 		}
 
 		var request = new GetIssuesFromQueueRequest
@@ -196,11 +208,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentNullException.ThrowIfNull(issueKeys);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None)
+			};
 		}
 
 		var request = new GetIssuesFromKeysRequest
@@ -226,11 +241,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentNullException.ThrowIfNull(request);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None)
+			};
 		}
 
 		return ExecuteYandexTrackerCollectionRequestAsync<GetIssueResponse>(
@@ -251,11 +269,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not IssuesExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(null, IssuesExpandData.None)
+			};
 		}
 
 		var request = new GetIssuesByQueryRequest
@@ -292,7 +313,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ArgumentNullException.ThrowIfNull(request);
 
 		return ExecuteYandexTrackerApiRequestAsync<ImportIssueResponse>(
-			"issues/_import ",
+			"issues/_import",
 			HttpMethod.Post,
 			payload: request,
 			cancellationToken: cancellationToken);
@@ -334,11 +355,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (expand is not null and not CommentExpandData.None)
 		{
-			parameters["expand"] = expand.Value.ToYandexQueryString(CommentExpandData.All, CommentExpandData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["expand"] = expand.Value.ToYandexQueryString(CommentExpandData.All, CommentExpandData.None)
+			};
 		}
 
 		return ExecuteYandexTrackerCollectionRequestAsync<GetCommentsResponse>(
@@ -418,10 +442,15 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
 		ArgumentNullException.ThrowIfNull(fileStream);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (newFileName is not null)
-			parameters["filename"] = newFileName;
+		{
+			parameters = new Dictionary<string, string>
+			{
+				["filename"] = newFileName
+			};
+		}
 
 		using var form = new MultipartFormDataContent();
 		using var fileContent = new StreamContent(fileStream);
@@ -544,12 +573,14 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	{
 		ArgumentNullException.ThrowIfNull(request);
 
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
-		if (returnedFields is not null
-			and not ProjectFieldData.None)
+		if (returnedFields is not null and not ProjectFieldData.None)
 		{
-			parameters["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None);
+			parameters = new Dictionary<string, string>
+			{
+				["fields"] = returnedFields.Value.ToYandexQueryString(null, ProjectFieldData.None)
+			};
 		}
 
 		return ExecuteYandexTrackerApiRequestAsync<CreateProjectResponse>(
@@ -804,10 +835,15 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		bool? deleteWithBoard = null,
 		CancellationToken cancellationToken = default)
 	{
-		var parameters = new Dictionary<string, string>();
+		Dictionary<string, string>? parameters = null;
 
 		if (deleteWithBoard is not null)
-			parameters["withBoard"] = deleteWithBoard.ToString()!;
+		{
+			parameters = new Dictionary<string, string>
+			{
+				["withBoard"] = deleteWithBoard.ToString()!
+			};
+		}
 
 		return ExecuteYandexTrackerApiRequestAsync(
 			$"entities/{entityType.ToCamelCase()}/{projectShortId}",

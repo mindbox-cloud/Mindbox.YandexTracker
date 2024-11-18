@@ -16,23 +16,14 @@ using System;
 
 namespace Mindbox.YandexTracker;
 
-public record CreateAttachmentResponse
+/// <summary>
+/// Ответ на запрос импорта задачи <see cref="ImportIssueRequest"/>.
+/// </summary>
+public record ImportIssueResponse : CreateIssueResponse
 {
-	public required string Id { get; init; }
+	public DateTime? ResolvedAt { get; init; }
 
-	public required string Name { get; init; }
+	public UserShortInfoDto? ResolvedBy { get; init; }
 
-	public required string Content { get; init; }
-
-	public string? Thumbnail { get; init; }
-
-	public required UserShortInfoDto CreatedBy { get; init; }
-
-	public DateTime CreatedAt { get; init; }
-
-	public string Mimetype { get; init; } = null!;
-
-	public int Size { get; init; }
-
-	public AttachmentMetadataDto? Metadata { get; init; }
+	public FieldInfo? Resolution { get; init; }
 }

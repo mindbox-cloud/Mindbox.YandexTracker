@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -36,6 +37,44 @@ public sealed class YandexTrackerClientCachingDecorator(
 		CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.CreateAttachmentAsync(issueKey, fileStream, newFileName, cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public Task<ImportAttachmentResponse> ImportAttachmentToIssueAsync(
+		string issueKey,
+		Stream fileStream,
+		string newFileName,
+		DateTime createdAt,
+		string createdBy,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.ImportAttachmentToIssueAsync(
+			issueKey,
+			fileStream,
+			newFileName,
+			createdAt,
+			createdBy,
+			cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public Task<ImportAttachmentResponse> ImportAttachmentToIssueCommentAsync(
+		string issueKey,
+		string commentId,
+		Stream fileStream,
+		string newFileName,
+		DateTime createdAt,
+		string createdBy,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.ImportAttachmentToIssueCommentAsync(
+			issueKey,
+			commentId,
+			fileStream,
+			newFileName,
+			createdAt,
+			createdBy,
+			cancellationToken);
 	}
 
 	/// <inheritdoc />
@@ -67,10 +106,24 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.GetIssueChangelogAsync(issueKey, fieldKey, type, paginationSettings, cancellationToken);
 	}
 
+	public Task<ImportCommentResponse> ImportCommentAsync(
+		string issueKey,
+		ImportCommentRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.ImportCommentAsync(issueKey, request, cancellationToken);
+	}
+
 	/// <inheritdoc />
 	public Task<CreateIssueResponse> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.CreateIssueAsync(request, cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public Task<ImportIssueResponse> ImportIssueAsync(ImportIssueRequest request, CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.ImportIssueAsync(request, cancellationToken);
 	}
 
 	/// <inheritdoc />

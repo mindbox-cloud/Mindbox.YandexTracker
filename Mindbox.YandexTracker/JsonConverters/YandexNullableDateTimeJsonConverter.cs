@@ -1,11 +1,11 @@
 // Copyright 2024 Mindbox Ltd
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,6 @@ namespace Mindbox.YandexTracker.JsonConverters;
 /// </summary>
 internal class YandexNullableDateTimeJsonConverter : JsonConverter<DateTime?>
 {
-	private const string DateFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz"; // Adjust this to match your JSON date format
-
 	public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
 		if (reader.TokenType != JsonTokenType.String) throw new JsonException("Expected date string");
@@ -35,7 +33,7 @@ internal class YandexNullableDateTimeJsonConverter : JsonConverter<DateTime?>
 
 		if (DateTime.TryParseExact(
 				dateString,
-				DateFormat,
+				YandexTrackerConstants.DateTimeFormat,
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.None, out DateTime date))
 		{
@@ -47,6 +45,6 @@ internal class YandexNullableDateTimeJsonConverter : JsonConverter<DateTime?>
 
 	public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
 	{
-		writer.WriteStringValue(value?.ToString(DateFormat, CultureInfo.InvariantCulture));
+		writer.WriteStringValue(value?.ToString(YandexTrackerConstants.DateTimeFormat, CultureInfo.InvariantCulture));
 	}
 }

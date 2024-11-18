@@ -97,6 +97,9 @@ public interface IYandexTrackerClient : IDisposable
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Создает новую задачу.
+	/// </summary>
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/issues/get-changelog"/>
 	/// </remarks>
@@ -111,6 +114,19 @@ public interface IYandexTrackerClient : IDisposable
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/create-issue"/>
 	/// </remarks>
 	Task<CreateIssueResponse> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Импортирует новую задачу в Трекер.
+	/// </summary>
+	/// <remarks>
+	/// ВАЖНО: Должен вызываться только от администратора системы.
+	/// В отличие от <see cref="CreateIssueAsync"/>, позволяет:
+	/// - указать дату создания тикета и пользователя, который создал тикет;
+	/// - последнюю дату изменения тикета и пользователя, который последний раз изменял тикет;
+	/// - дату и время проставления резолюции и пользователя, который проставил резолюцию.
+	///  <see href="https://yandex.cloud/ru/docs/tracker/concepts/import/import-ticket"/>
+	/// </remarks>
+	Task<ImportIssueResponse> ImportIssueAsync(ImportIssueRequest request, CancellationToken cancellationToken = default);
 
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/get-components"/>
@@ -136,7 +152,7 @@ public interface IYandexTrackerClient : IDisposable
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Создает комментарий
+	/// Создает комментарий к задаче.
 	/// </summary>
 	/// <param name="issueKey">Ключ задачи</param>
 	/// <param name="request">Запрос</param>
@@ -151,6 +167,21 @@ public interface IYandexTrackerClient : IDisposable
 		string issueKey,
 		CreateCommentRequest request,
 		bool? addAuthorToFollowers = null,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Импортирует комментарий в задачу.
+	/// </summary>
+	/// <param name="issueKey">Ключ задачи</param>
+	/// <param name="request">Запрос</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/import/import-comments"/>
+	/// </remarks>
+	Task<ImportCommentResponse> ImportCommentAsync(
+		string issueKey,
+		ImportCommentRequest request,
 		CancellationToken cancellationToken = default);
 
 	/// <remarks>
@@ -178,6 +209,42 @@ public interface IYandexTrackerClient : IDisposable
 		string? newFileName = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Импортирует вложение в задачу.
+	/// </summary>
+	/// <remarks>
+	/// В отличие от <see cref="CreateAttachmentAsync"/> или <see cref="CreateTemporaryAttachmentAsync"/>,
+	/// позволяет указать дату создания вложения и пользователя, который создал вложение.
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/import/import-attachments"/>
+	/// </remarks>
+	Task<ImportAttachmentResponse> ImportAttachmentToIssueAsync(
+		string issueKey,
+		Stream fileStream,
+		string newFileName,
+		DateTime createdAt,
+		string createdBy,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Импортирует вложение в комментарий задачи.
+	/// </summary>
+	/// <remarks>
+	/// В отличие от <see cref="CreateAttachmentAsync"/> или <see cref="CreateTemporaryAttachmentAsync"/>,
+	/// позволяет указать дату создания вложения и пользователя, который создал вложение.
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/import/import-attachments"/>
+	/// </remarks>
+	Task<ImportAttachmentResponse> ImportAttachmentToIssueCommentAsync(
+		string issueKey,
+		string commentId,
+		Stream fileStream,
+		string newFileName,
+		DateTime createdAt,
+		string createdBy,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Создает временное вложение, которое потом должно быть прикреплено к задаче, комментарию или сущности (проект/портфель).
+	/// </summary>
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/issues/temp-attachment"/>
 	/// </remarks>

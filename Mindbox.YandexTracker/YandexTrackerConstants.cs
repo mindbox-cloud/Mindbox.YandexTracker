@@ -12,27 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 namespace Mindbox.YandexTracker;
 
-public record CreateAttachmentResponse
+public static class YandexTrackerConstants
 {
-	public required string Id { get; init; }
-
-	public required string Name { get; init; }
-
-	public required string Content { get; init; }
-
-	public string? Thumbnail { get; init; }
-
-	public required UserShortInfoDto CreatedBy { get; init; }
-
-	public DateTime CreatedAt { get; init; }
-
-	public string Mimetype { get; init; } = null!;
-
-	public int Size { get; init; }
-
-	public AttachmentMetadataDto? Metadata { get; init; }
+	/// <summary>
+	/// Формат даты и времени, который принимает API Яндекс.Трекера.
+	/// </summary>
+	public static readonly string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
 }

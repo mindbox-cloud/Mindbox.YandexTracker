@@ -166,7 +166,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_localFields_{queueKey}";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_localFields_{queueKey}_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -185,7 +185,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_globalFields";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_globalFields_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -239,7 +239,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_components";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_components_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -307,7 +307,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_issueStatuses";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_issueStatuses_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -335,7 +335,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_localFieldCategories";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_localFieldCategories_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -354,7 +354,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_issueTypes";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_issueTypes_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -377,7 +377,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		CancellationToken cancellationToken = default)
 	{
 		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_projects_{entityType}_{request.GetHashCode()}_{returnedFields}_" +
-			$"{request.Input}_{request.OrderBy}_{request.OrderAsc}_{request.RootOnly}";
+			$"{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -422,7 +422,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_queues_{expand}";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_queues_{expand}_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -441,7 +441,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_resolutions";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_resolutions_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -461,7 +461,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_tags_{queueKey}";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_tags_{queueKey}_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,
@@ -497,7 +497,7 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
-		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_users";
+		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_users_{paginationSettings?.GetHashCode()}";
 
 		return cache.GetOrCreateAsync(
 			cacheKey,

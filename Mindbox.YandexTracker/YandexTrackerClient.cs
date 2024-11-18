@@ -22,12 +22,10 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using Mindbox.YandexTracker.JsonConverters;
 
 namespace Mindbox.YandexTracker;
 
@@ -44,7 +42,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 
 	private readonly IOptionsMonitor<YandexTrackerClientOptions> _options;
 	private readonly HttpClient _httpClient;
-	private readonly JsonSerializerOptions _jsonOptions;
 
 	public YandexTrackerClient(
 		IOptionsMonitor<YandexTrackerClientOptions> options,
@@ -56,24 +53,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		_options = options;
 		_httpClient = httpClient;
 		ConfigureHttpClient(_httpClient, _options.CurrentValue);
-
-		_jsonOptions = new JsonSerializerOptions
-		{
-			Converters =
-			{
-				// у этиъ 2 enum'ов не camelCase, а какая-то своя фигня в Трекере
-				// (например, "ru.yandex.startrek.core.fields.UserFieldType" или snake_case)
-				new EnumWithEnumMemberAttributeJsonConverter<QueueLocalFieldType>(),
-				new EnumWithEnumMemberAttributeJsonConverter<ProjectEntityStatus>(),
-				// а остальные enum'ы - camelCase
-				new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase),
-				new YandexDateTimeJsonConverter(),
-				new YandexNullableDateTimeJsonConverter()
-			},
-			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			WriteIndented = true
-		};
 	}
 
 	private static void ConfigureHttpClient(
@@ -871,7 +850,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken);
 
 		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-		return JsonSerializer.Deserialize<TResult>(resultContent, _jsonOptions)!;
+		return JsonSerializer.Deserialize<TResult>(resultContent, YandexTrackerConstants.YandexTrackerJsonSerializerOptions)!;
 	}
 
 	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
@@ -902,7 +881,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			}
 			else
 			{
-				var json = JsonSerializer.Serialize(payload, _jsonOptions);
+				var json = JsonSerializer.Serialize(payload, YandexTrackerConstants.YandexTrackerJsonSerializerOptions);
 				request.Content = new StringContent(
 					json,
 					Encoding.UTF8,
@@ -973,7 +952,9 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				cancellationToken);
 
 			var resultContent = await response.Content.ReadAsStringAsync(cancellationToken);
-			var dataChunk = JsonSerializer.Deserialize<List<TResult>>(resultContent, _jsonOptions)!;
+			var dataChunk = JsonSerializer.Deserialize<List<TResult>>(
+				resultContent,
+				YandexTrackerConstants.YandexTrackerJsonSerializerOptions)!;
 
 			result.AddRange(dataChunk);
 

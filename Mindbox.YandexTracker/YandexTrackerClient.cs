@@ -307,7 +307,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		if (fieldKey is not null)
 			parameters["field"] = fieldKey;
 		if (type is not null)
-			parameters["type"] = type.Value.ToCamelCase();
+			parameters["type"] = type.Value.ToString();
 
 		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueChangelogResponse>(
 			$"issues/{issueKey}/changelog",

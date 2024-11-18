@@ -272,6 +272,30 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
+	public async Task<YandexTrackerCollectionResponse<GetIssueChangelogResponse>> GetIssueChangelogAsync(
+		string issueKey,
+		string? fieldKey = null,
+		IssueChangeType? type = null,
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
+
+		var parameters = new Dictionary<string, string>();
+
+		if (fieldKey is not null)
+			parameters["field"] = fieldKey;
+		if (type is not null)
+			parameters["type"] = type.Value.ToCamelCase();
+
+		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueChangelogResponse>(
+			$"issues/{issueKey}/changelog",
+			HttpMethod.Get,
+			parameters: parameters,
+			customPaginationSettings: paginationSettings,
+			cancellationToken: cancellationToken);
+	}
+
 	/// <inheritdoc />
 	public async Task<CreateIssueResponse> CreateIssueAsync(
 		CreateIssueRequest request,

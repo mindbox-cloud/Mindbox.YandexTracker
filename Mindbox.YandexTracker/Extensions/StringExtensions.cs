@@ -1,11 +1,11 @@
 // Copyright 2024 Mindbox Ltd
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,18 +21,13 @@ namespace Mindbox.YandexTracker;
 
 internal static class StringExtensions
 {
-	public static string? TrimAndMakeNullIfEmpty(this string value)
-	{
-		return !string.IsNullOrWhiteSpace(value) ? value.Trim() : null;
-	}
-
 	/// <summary>
-	/// Преобразует название типа проекта в строку в camelCase нотации.
+	/// Преобразует enum в строку в camelCase нотации.
 	/// </summary>
 	/// <remarks>
 	/// Потому что в API Яндекс.Трекера требует camelCase нотации и чувствителен к регистру.
 	/// </remarks>
-	public static string ToCamelCase(this ProjectEntityType value)
+	internal static string ToCamelCase(this Enum value)
 	{
 		return value.ToString().ToCamelCase();
 	}
@@ -75,7 +70,7 @@ internal static class StringExtensions
 	/// Потому что API Яндекс.Трекера требует camelCase нотацию и чувствителен к регистру.
 	/// Не учитывает разделители слов (пробелы, и прочее).
 	/// </remarks>
-	private static string ToCamelCase(this string str)
+	internal static string ToCamelCase(this string str)
 	{
 		if (string.IsNullOrEmpty(str)) { return str; }
 

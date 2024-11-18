@@ -431,7 +431,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		ImportCommentRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentNullException.ThrowIfNull(issueKey);
 		ArgumentNullException.ThrowIfNull(request);
 
 		return ExecuteYandexTrackerApiRequestAsync<ImportCommentResponse>(
@@ -496,10 +496,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string createdBy,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
+		ArgumentNullException.ThrowIfNull(issueKey);
 		ArgumentNullException.ThrowIfNull(fileStream);
-		ArgumentException.ThrowIfNullOrWhiteSpace(newFileName);
-		ArgumentException.ThrowIfNullOrWhiteSpace(createdBy);
+		ArgumentNullException.ThrowIfNull(newFileName);
+		ArgumentNullException.ThrowIfNull(createdBy);
 
 		var parameters = new Dictionary<string, string>
 		{
@@ -529,11 +529,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		string createdBy,
 		CancellationToken cancellationToken = default)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(issueKey);
-		ArgumentException.ThrowIfNullOrWhiteSpace(commentId);
+		ArgumentNullException.ThrowIfNull(issueKey);
+		ArgumentNullException.ThrowIfNull(commentId);
 		ArgumentNullException.ThrowIfNull(fileStream);
-		ArgumentException.ThrowIfNullOrWhiteSpace(newFileName);
-		ArgumentException.ThrowIfNullOrWhiteSpace(createdBy);
+		ArgumentNullException.ThrowIfNull(newFileName);
+		ArgumentNullException.ThrowIfNull(createdBy);
 
 		var parameters = new Dictionary<string, string>
 		{

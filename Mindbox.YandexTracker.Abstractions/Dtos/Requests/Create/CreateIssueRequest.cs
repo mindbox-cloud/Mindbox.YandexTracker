@@ -111,14 +111,6 @@ public record CreateIssueRequest : CustomFieldsRequest
 
 	public IReadOnlyCollection<string>? AttachmentIds { get; init; }
 
-	public IReadOnlyCollection<string>? Sprint { get; init; }
-
-	public Priority? Priority { get; init; }
-
-	public string? Assignee { get; init; }
-
-	public IReadOnlyCollection<string>? Tags { get; init; }
-
 	public IReadOnlyCollection<CreateChecklistRequest>? ChecklistItems { get; init; }
 
 	/// <summary>

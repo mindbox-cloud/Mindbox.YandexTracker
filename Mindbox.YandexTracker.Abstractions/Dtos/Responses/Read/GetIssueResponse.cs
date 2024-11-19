@@ -78,6 +78,8 @@ public record GetIssueResponse : CustomFieldsResponse
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 
+	public IReadOnlyCollection<CheckListItemDto> ChecklistItems { get; init; } = [];
+
 	public IReadOnlyCollection<UserShortInfoDto> Access { get; init; } = [];
 
 	public int? PossibleSpam { get; init; }

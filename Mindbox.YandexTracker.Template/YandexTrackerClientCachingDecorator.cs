@@ -96,6 +96,16 @@ public sealed class YandexTrackerClientCachingDecorator(
 		return yandexTrackerClient.CreateCommentAsync(issueKey, request, addAuthorToFollowers, cancellationToken);
 	}
 
+	public Task<YandexTrackerCollectionResponse<GetIssueChangelogResponse>> GetIssueChangelogAsync(
+		string issueKey,
+		string? fieldKey = null,
+		IssueChangeType? type = null,
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.GetIssueChangelogAsync(issueKey, fieldKey, type, paginationSettings, cancellationToken);
+	}
+
 	public Task<ImportCommentResponse> ImportCommentAsync(
 		string issueKey,
 		ImportCommentRequest request,

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+using System;
+
 namespace Mindbox.YandexTracker;
 
-public sealed record CheckListItemDto
+public record ChecklistDeadlineDto
 {
-	public required string Id { get; init; }
-	public string? Text { get; init; }
-	public string? TextHtml { get; init; }
-	public bool Checked { get; init; }
-	public ChecklistItemType ChecklistItemType { get; set; }
+	public required DateTime Date { get; set; }
+	public string? DeadlineType { get; set; }
 }

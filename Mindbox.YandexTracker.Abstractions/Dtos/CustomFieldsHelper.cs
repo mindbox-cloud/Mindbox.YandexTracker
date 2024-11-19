@@ -25,7 +25,7 @@ internal static class CustomFieldsHelper
 		string customFieldId,
 		out T? customField)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+		ArgumentException.ThrowIfNullOrEmpty(customFieldId);
 
 		customField = default;
 		if (fields.TryGetValue(customFieldId, out var value))
@@ -49,7 +49,7 @@ internal static class CustomFieldsHelper
 
 	public static void SetCustomField<T>(IDictionary<string, JsonElement> fields, string customFieldId, T value)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(customFieldId);
+		ArgumentException.ThrowIfNullOrEmpty(customFieldId);
 
 		fields[customFieldId] = JsonSerializer.SerializeToElement(
 			value,

@@ -111,6 +111,8 @@ public record CreateIssueRequest : CustomFieldsRequest
 
 	public IReadOnlyCollection<string>? AttachmentIds { get; init; }
 
+	public IReadOnlyCollection<CreateChecklistRequest>? ChecklistItems { get; init; }
+
 	/// <summary>
 	/// Идентификаторы или логины наблюдателей задачи.
 	/// </summary>

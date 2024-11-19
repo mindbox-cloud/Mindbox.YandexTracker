@@ -97,6 +97,16 @@ public interface IYandexTrackerClient : IDisposable
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
+	/// <remarks>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/issues/get-changelog"/>
+	/// </remarks>
+	Task<YandexTrackerCollectionResponse<GetIssueChangelogResponse>> GetIssueChangelogAsync(
+		string issueKey,
+		string? fieldKey = null,
+		IssueChangeType? type = null,
+		PaginationSettings? paginationSettings = null,
+		CancellationToken cancellationToken = default);
+
 	/// <summary>
 	/// Создает новую задачу.
 	/// </summary>

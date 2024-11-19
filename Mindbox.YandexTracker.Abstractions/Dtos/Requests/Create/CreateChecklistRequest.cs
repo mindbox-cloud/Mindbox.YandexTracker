@@ -14,11 +14,10 @@
 
 namespace Mindbox.YandexTracker;
 
-public sealed record CheckListItemDto
+public record CreateChecklistRequest
 {
-	public required string Id { get; init; }
-	public string? Text { get; init; }
-	public string? TextHtml { get; init; }
+	public required string Text { get; init; }
 	public bool Checked { get; init; }
-	public ChecklistItemType ChecklistItemType { get; set; }
+	public string? Assignee { get; init; }
+	public ChecklistDeadlineDto? Deadline { get; init; }
 }

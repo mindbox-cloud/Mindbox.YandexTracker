@@ -127,16 +127,95 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
 
-		var customField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, new CreateQueueLocalFieldRequest
+		var customStringField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
 		{
-			Id = "customFields",
+			Id = "customStringField",
 			Category = firstCategory.Id,
 			Name = new QueueLocalFieldName
 			{
-				En = "customFields",
-				Ru = "Кастомное поле"
+				En = "customStringField",
+				Ru = "customStringField"
 			},
 			Type = QueueLocalFieldType.StringFieldType
+		});
+		var customFloatField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customFloatField",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customFloatField",
+				Ru = "customFloatField"
+			},
+			Type = QueueLocalFieldType.FloatFieldType
+		});
+		var customIntField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customIntField",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customIntField",
+				Ru = "customIntField"
+			},
+			Type = QueueLocalFieldType.IntegerFieldType
+		});
+		var customDateTimeField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customDateTimeField",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customDateField",
+				Ru = "customDateField"
+			},
+			Type = QueueLocalFieldType.DateTimeFieldType
+		});
+
+		var expectedCustomSelect = "option1";
+		var customSelectField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customSelectField",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customSelectField",
+				Ru = "customSelectField"
+			},
+			Type = QueueLocalFieldType.StringFieldType,
+			OptionsProvider = new OptionsProviderInfoDto
+			{
+				Type = "FixedListOptionsProvider",
+				Values =
+				[
+					expectedCustomSelect,
+					"option 2"
+				]
+			}
+		});
+		var customMultiSelectField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customMultiSelectField",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customMultiSelectField",
+				Ru = "customMultiSelectField"
+			},
+			Type = QueueLocalFieldType.StringFieldType,
+			Container = true
 		});
 
 		await Task.Delay(TimeSpan.FromSeconds(2)); // Чтобы поле точно создалось в трекере
@@ -148,14 +227,37 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Project = TestProjectShortId
 		};
 
-		issue.SetCustomField<string>(customField.Id, "field1");
+		var expectedCustomString = "field1";
+		var expectedCustomFloat = 10.0;
+		var expectedCustomInt = 15;
+		var expectedCustomDateTime = new DateTime(2021, 10, 10, 10, 10, 0);
+		var expectedCustomMultiSelect = new List<string> {
+			"option1",
+			"option2"
+		};
+
+		issue.SetCustomField(customStringField.Id, expectedCustomString);
+		issue.SetCustomField(customFloatField.Id, expectedCustomFloat);
+		issue.SetCustomField(customIntField.Id, expectedCustomInt);
+		issue.SetCustomField(customDateTimeField.Id, expectedCustomDateTime);
+		issue.SetCustomField(customSelectField.Id, expectedCustomSelect);
+		issue.SetCustomField(customMultiSelectField.Id, expectedCustomMultiSelect);
 
 		var createdIssue = await YandexTrackerClient.CreateIssueAsync(issue);
 
 		var response = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
 
 		Assert.IsNotNull(response);
-		Assert.AreEqual("field1", response.GetCustomField<string>(customField.Id));
+		Assert.AreEqual(expectedCustomString, response.GetCustomField<string>(customStringField.Id));
+		Assert.AreEqual(expectedCustomFloat, response.GetCustomField<double>(customFloatField.Id));
+		Assert.AreEqual(expectedCustomInt, response.GetCustomField<int>(customIntField.Id));
+		Assert.AreEqual(expectedCustomDateTime.Ticks, response.GetCustomField<DateTime>(customDateTimeField.Id).Ticks);
+		Assert.AreEqual(expectedCustomSelect, response.GetCustomField<string>(customSelectField.Id));
+		var actualCustomMultiSelectValue = response.GetCustomField<List<string>>(customMultiSelectField.Id);
+		Assert.AreEqual(actualCustomMultiSelectValue.Count, expectedCustomMultiSelect.Count);
+		Assert.AreEqual(actualCustomMultiSelectValue.Count, 2);
+		Assert.AreEqual(actualCustomMultiSelectValue[0], expectedCustomMultiSelect[0]);
+		Assert.AreEqual(actualCustomMultiSelectValue[1], expectedCustomMultiSelect[1]);
 	}
 
 	[TestMethod]
@@ -298,11 +400,11 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 
 		var localField = new CreateQueueLocalFieldRequest
 		{
-			Id = "someId",
+			Id = "some_Id3",
 			Name = new QueueLocalFieldName
 			{
-				En = "eng222",
-				Ru = "ru222"
+				En = "английское название",
+				Ru = "русское название"
 			},
 			Category = firstCategory.Id,
 			Type = QueueLocalFieldType.DateFieldType

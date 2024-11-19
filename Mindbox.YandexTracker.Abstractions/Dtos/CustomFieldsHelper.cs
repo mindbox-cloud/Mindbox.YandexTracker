@@ -33,7 +33,7 @@ internal static class CustomFieldsHelper
 			if (value.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined)
 				return false;
 
-			customField = value.Deserialize<T>();
+			customField = value.Deserialize<T>(YandexTrackerConstants.YandexTrackerJsonSerializerOptions);
 			return true;
 		}
 
@@ -51,6 +51,8 @@ internal static class CustomFieldsHelper
 	{
 		ArgumentException.ThrowIfNullOrEmpty(customFieldId);
 
-		fields[customFieldId] = JsonSerializer.SerializeToElement(value);
+		fields[customFieldId] = JsonSerializer.SerializeToElement(
+			value,
+			YandexTrackerConstants.YandexTrackerJsonSerializerOptions);
 	}
 }

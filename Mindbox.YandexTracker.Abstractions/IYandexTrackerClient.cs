@@ -97,9 +97,6 @@ public interface IYandexTrackerClient : IDisposable
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Создает новую задачу.
-	/// </summary>
 	/// <remarks>
 	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/issues/get-changelog"/>
 	/// </remarks>
@@ -110,6 +107,9 @@ public interface IYandexTrackerClient : IDisposable
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Создает новую задачу.
+	/// </summary>
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/create-issue"/>
 	/// </remarks>

@@ -1036,6 +1036,10 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken);
 	}
 
+#pragma warning disable Mindbox1000
+	// Copy pasted from
+	// https://github.com/dotnet/aspnetcore/blob/6359c76dfb4038bfd76bb4c327d472e8b1b8a450/src/Http/WebUtilities/src/QueryHelpers.cs#L76
+#pragma warning restore Mindbox1000
 	private static string AddQueryString(
 		string uri,
 		IEnumerable<KeyValuePair<string, string?>> queryString)

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace Mindbox.YandexTracker;
 
@@ -25,8 +25,8 @@ public sealed record CommentsDto
 public sealed record FieldChangeDto
 {
 	public required FieldInfo Field { get; init; }
-	public JsonNode? From { get; init; }
-	public JsonNode? To { get; init; }
+	public JsonElement? From { get; init; }
+	public JsonElement? To { get; init; }
 }
 
 public sealed record ExecutedTriggersDto

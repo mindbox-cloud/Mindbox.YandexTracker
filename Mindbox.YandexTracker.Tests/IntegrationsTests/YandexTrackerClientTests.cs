@@ -739,7 +739,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 						Tags = tags,
 						Start = dateOnlyNow,
 						End = dateOnlyEnd,
-						TeamAccess = false,
+						TeamAccess = true,
 						TeamUsers = [currentUserShortInfo.Id],
 						EntityStatus = ProjectEntityStatus.InProgress
 					}

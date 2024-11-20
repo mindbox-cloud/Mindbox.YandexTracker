@@ -23,7 +23,7 @@ public sealed record GetProjectsResponse
 
 	public int Pages { get; init; }
 
-	public required IReadOnlyCollection<ProjectInfo> Values { get; init; } = [];
+	public IReadOnlyCollection<ProjectInfo> Values { get; init; } = [];
 
 	public string? OrderBy { get; init; }
 }

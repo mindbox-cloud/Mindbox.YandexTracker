@@ -43,7 +43,7 @@ public record CreateIssueRequest : CustomFieldsRequest
 	/// <summary>
 	/// Дедлайн.
 	/// </summary>
-	public DateOnly? DueDate { get; init; }
+	public DateOnly? Deadline { get; init; }
 
 	/// <summary>
 	/// Описание задачи.

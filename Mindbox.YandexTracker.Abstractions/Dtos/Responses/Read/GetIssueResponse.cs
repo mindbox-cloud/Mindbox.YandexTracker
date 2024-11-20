@@ -74,7 +74,7 @@ public record GetIssueResponse : CustomFieldsResponse
 
 	public DateOnly? End { get; set; }
 
-	public DateOnly? DueDate { get; set; }
+	public DateOnly? Deadline { get; set; }
 
 	public IReadOnlyCollection<string> Tags { get; init; } = [];
 

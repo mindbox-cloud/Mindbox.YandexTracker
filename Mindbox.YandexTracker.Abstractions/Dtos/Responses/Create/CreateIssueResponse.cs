@@ -60,7 +60,7 @@ public record CreateIssueResponse : CustomFieldsResponse
 
 	public DateOnly? End { get; init; }
 
-	public DateOnly? DueDate { get; init; }
+	public DateOnly? Deadline { get; init; }
 
 	public double? StoryPoints { get; init; }
 

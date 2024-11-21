@@ -121,6 +121,15 @@ public sealed class YandexTrackerClientCachingDecorator(
 	}
 
 	/// <inheritdoc />
+	public Task<UpdateIssueResponse> UpdateIssueAsync(
+		string issueKey,
+		UpdateIssueRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.UpdateIssueAsync(issueKey, request, cancellationToken);
+	}
+
+	/// <inheritdoc />
 	public Task<ImportIssueResponse> ImportIssueAsync(ImportIssueRequest request, CancellationToken cancellationToken = default)
 	{
 		return yandexTrackerClient.ImportIssueAsync(request, cancellationToken);

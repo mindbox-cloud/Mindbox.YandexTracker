@@ -272,7 +272,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			cancellationToken: cancellationToken);
 	}
 
-	public async Task<YandexTrackerCollectionResponse<GetIssueChangelogResponse>> GetIssueChangelogAsync(
+	public Task<YandexTrackerCollectionResponse<GetIssueChangelogResponse>> GetIssueChangelogAsync(
 		string issueKey,
 		string? fieldKey = null,
 		IssueChangeType? type = null,
@@ -288,7 +288,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		if (type is not null)
 			parameters["type"] = type.Value.ToString();
 
-		return await ExecuteYandexTrackerCollectionRequestAsync<GetIssueChangelogResponse>(
+		return ExecuteYandexTrackerCollectionRequestAsync<GetIssueChangelogResponse>(
 			$"issues/{issueKey}/changelog",
 			HttpMethod.Get,
 			parameters: parameters,
@@ -306,6 +306,22 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return ExecuteYandexTrackerApiRequestAsync<CreateIssueResponse>(
 			"issues",
 			HttpMethod.Post,
+			payload: request,
+			cancellationToken: cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public Task<UpdateIssueResponse> UpdateIssueAsync(
+		string issueKey,
+		UpdateIssueRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrEmpty(issueKey);
+		ArgumentNullException.ThrowIfNull(request);
+
+		return ExecuteYandexTrackerApiRequestAsync<UpdateIssueResponse>(
+			$"issues/{issueKey}",
+			HttpMethod.Patch,
 			payload: request,
 			cancellationToken: cancellationToken);
 	}

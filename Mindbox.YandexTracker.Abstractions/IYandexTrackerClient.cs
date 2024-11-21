@@ -116,6 +116,17 @@ public interface IYandexTrackerClient : IDisposable
 	Task<CreateIssueResponse> CreateIssueAsync(CreateIssueRequest request, CancellationToken cancellationToken = default);
 
 	/// <summary>
+	/// Обновляет существующую задачу.
+	/// </summary>
+	/// <remarks>
+	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/patch-issue"/>
+	/// </remarks>
+	Task<UpdateIssueResponse> UpdateIssueAsync(
+		string issueKey,
+		UpdateIssueRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
 	/// Импортирует новую задачу в Трекер.
 	/// </summary>
 	/// <remarks>

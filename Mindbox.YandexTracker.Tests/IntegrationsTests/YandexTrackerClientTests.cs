@@ -261,6 +261,79 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
+	public async Task UpdateIssueAsync_CustomFields_ShouldUpdateIssueWithCustomFields()
+	{
+		// Arrange
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
+
+		var customStringField = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customUpdatedStringField",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customStringField",
+				Ru = "customStringField"
+			},
+			Type = QueueLocalFieldType.StringFieldType
+		});
+		var customString2Field = await YandexTrackerClient.CreateLocalFieldInQueueAsync(
+			TestQueueKey,
+			new CreateQueueLocalFieldRequest
+		{
+			Id = "customUpdatedString2Field",
+			Category = firstCategory.Id,
+			Name = new QueueLocalFieldName
+			{
+				En = "customString2Field",
+				Ru = "customString2Field"
+			},
+			Type = QueueLocalFieldType.StringFieldType
+		});
+
+		await Task.Delay(TimeSpan.FromSeconds(2)); // Чтобы поле точно создалось в трекере
+
+		var issue = new CreateIssueRequest
+		{
+			Queue = TestQueueKey,
+			Summary = GetUniqueName(),
+			Description = "Old descritpion",
+		};
+		var expectedCustom2String = "field2_unchanged";
+
+		issue.SetCustomField(customStringField.Id, "field1_unchanged");
+		issue.SetCustomField(customString2Field.Id, expectedCustom2String);
+
+		var createdIssue = await YandexTrackerClient.CreateIssueAsync(issue);
+
+		// Act
+		var updateIssueRequest = new UpdateIssueRequest
+		{
+			Summary = "New summary",
+			Project = TestProjectShortId
+		};
+		var expectedCustomString = "field1_changed";
+		updateIssueRequest.SetCustomField(customStringField.Id, expectedCustomString);
+
+
+		await YandexTrackerClient.UpdateIssueAsync(
+			createdIssue.Key,
+			updateIssueRequest);
+
+		// Assert
+		var updatedIssue = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
+
+		Assert.IsNotNull(updatedIssue);
+		Assert.AreEqual(expectedCustomString, updatedIssue.GetCustomField<string>(customStringField.Id));
+		Assert.AreEqual(expectedCustom2String, updatedIssue.GetCustomField<string>(customString2Field.Id));
+		Assert.AreEqual(updateIssueRequest.Summary, updatedIssue.Summary);
+		Assert.AreEqual(createdIssue.Description, updatedIssue.Description);
+		Assert.AreEqual(updateIssueRequest.Project?.ToString(CultureInfo.InvariantCulture), updatedIssue.Project?.Id);
+	}
+
+	[TestMethod]
 	[Ignore("Методы должны вызываться только администратором Яндекс.Трекера. В CI/CD используется обычный пользователь")]
 	public async Task FullImportIssueFlow()
 	{

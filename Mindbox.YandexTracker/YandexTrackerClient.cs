@@ -339,6 +339,34 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	/// <inheritdoc />
+	public Task<IssuesBulkUpdateResponse> BulkUpdateIssuesAsync(
+		IssuesBulkUpdateRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentNullException.ThrowIfNull(request);
+
+		return ExecuteYandexTrackerApiRequestAsync<IssuesBulkUpdateResponse>(
+			"bulkchange/_update",
+			HttpMethod.Post,
+			payload: request,
+			cancellationToken: cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public Task<BulkChangeStatusResponse> GetBulkChangeStatusAsync(
+		string bulkChangeId,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrEmpty(bulkChangeId);
+
+		return ExecuteYandexTrackerApiRequestAsync<BulkChangeStatusResponse>(
+			$"bulkchange/{bulkChangeId}",
+			HttpMethod.Get,
+			payload: null,
+			cancellationToken: cancellationToken);
+	}
+
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetComponentResponse>> GetComponentsAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
@@ -346,7 +374,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		return ExecuteYandexTrackerCollectionRequestAsync<GetComponentResponse>(
 			"components",
 			HttpMethod.Get,
-			payload: null!,
+			payload: null,
 			customPaginationSettings: paginationSettings,
 			cancellationToken: cancellationToken);
 	}

@@ -15,6 +15,17 @@
 namespace Mindbox.YandexTracker;
 
 /// <summary>
-/// Ответ за запрос изменения задачи <see cref="UpdateIssueRequest"/>.
+/// Статус выполнения пакетной операции.
 /// </summary>
-public record class UpdateIssueResponse : CreateIssueResponse;
+public record BulkChangeStatusResponse : BulkChangeResponseBase
+{
+	/// <summary>
+	/// Количество задач, которые должны быть отредактированы.
+	/// </summary>
+	public int TotalIssues { get; init; }
+
+	/// <summary>
+	/// Количество задач, для которых пакетная операция завершилась успешно.
+	/// </summary>
+	public int TotalCompletedIssues { get; init; }
+}

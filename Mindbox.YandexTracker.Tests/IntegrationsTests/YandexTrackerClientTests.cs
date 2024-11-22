@@ -123,7 +123,7 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task CreateIssueAsync_CustomFields_ShouldCreatedIssueWithCustomFields()
+	public async Task CreateIssueAsync_WithCustomFields_ShouldCreatedIssueWithCustomFields()
 	{
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
 
@@ -261,7 +261,50 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 	}
 
 	[TestMethod]
-	public async Task UpdateIssueAsync_CustomFields_ShouldUpdateIssueWithCustomFields()
+	public async Task BulkUpdateIssueAsync_WithCustomFields_ShouldUpdateIssueWithCustomFields()
+	{
+		// Arrange
+		var issue = new CreateIssueRequest
+		{
+			Queue = TestQueueKey,
+			Summary = GetUniqueName(),
+		};
+		var createdIssue = await YandexTrackerClient.CreateIssueAsync(issue);
+
+		// Act
+
+		var updatesIssuesValues = new IssuesBulkUpdateValues();
+		updatesIssuesValues.SetValue("project", TestProjectShortId);
+		var updateIssueRequest = new IssuesBulkUpdateRequest
+		{
+			Issues = [createdIssue.Key],
+			Values = updatesIssuesValues
+		};
+
+		var bulkUpdateResponse = await YandexTrackerClient.BulkUpdateIssuesAsync(updateIssueRequest);
+
+		bool isBulkOperationRunning;
+		var failCheckAfter = DateTime.UtcNow.AddMinutes(1);
+		do
+		{
+			var bulkChangeStatus = await YandexTrackerClient.GetBulkChangeStatusAsync(bulkUpdateResponse.Id);
+
+			isBulkOperationRunning = bulkChangeStatus.Status is "RUNNING" or "CREATED";
+
+			Assert.IsTrue(DateTime.UtcNow <= failCheckAfter, "Bulk operation is running too long");
+
+		} while (isBulkOperationRunning);
+
+		// Assert
+		var updatedIssue = await YandexTrackerClient.GetIssueAsync(createdIssue.Key);
+
+		Assert.IsNotNull(updatedIssue);
+		Assert.AreEqual(createdIssue.Description, updatedIssue.Description);
+		Assert.AreEqual(TestProjectShortId.ToString(CultureInfo.InvariantCulture), updatedIssue.Project?.Id);
+	}
+
+	[TestMethod]
+	public async Task UpdateIssuesAsync_WithCustomFields_ShouldUpdateIssueWithCustomFields()
 	{
 		// Arrange
 		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];

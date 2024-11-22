@@ -139,6 +139,24 @@ public interface IYandexTrackerClient : IDisposable
 	/// </remarks>
 	Task<ImportIssueResponse> ImportIssueAsync(ImportIssueRequest request, CancellationToken cancellationToken = default);
 
+	/// <summary>
+	/// Создает запрос на массовое редактирование задач.
+	/// </summary>
+	/// <remarks>
+	/// Само редактирование выполняется в фоне.
+	/// <see chref="https://yandex.cloud/ru/docs/tracker/concepts/bulkchange/bulk-update-issues"/>
+	/// </remarks>
+	Task<IssuesBulkUpdateResponse> BulkUpdateIssuesAsync(
+		IssuesBulkUpdateRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Проверяет статус выполнения запроса на массовое редактирование задач.
+	/// </summary>
+	Task<BulkChangeStatusResponse> GetBulkChangeStatusAsync(
+		string bulkChangeId,
+		CancellationToken cancellationToken = default);
+
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/get-components"/>
 	/// </remarks>

@@ -136,6 +136,23 @@ public sealed class YandexTrackerClientCachingDecorator(
 	}
 
 	/// <inheritdoc />
+	public Task<IssuesBulkUpdateResponse> BulkUpdateIssuesAsync(
+		IssuesBulkUpdateRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.BulkUpdateIssuesAsync(request, cancellationToken);
+
+	}
+
+	/// <inheritdoc />
+	public Task<BulkChangeStatusResponse> GetBulkChangeStatusAsync(
+		string bulkChangeId,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.GetBulkChangeStatusAsync(bulkChangeId, cancellationToken);
+	}
+
+	/// <inheritdoc />
 	public Task<CreateProjectResponse> CreateProjectAsync(
 		ProjectEntityType entityType,
 		CreateProjectRequest request,
@@ -395,6 +412,8 @@ public sealed class YandexTrackerClientCachingDecorator(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)
 	{
+		ArgumentNullException.ThrowIfNull(request);
+
 		var cacheKey = $"{options.CurrentValue.CacheKeyPrefix}_projects_{entityType}_{request.GetHashCode()}_{returnedFields}_" +
 			$"{paginationSettings?.GetHashCode()}";
 

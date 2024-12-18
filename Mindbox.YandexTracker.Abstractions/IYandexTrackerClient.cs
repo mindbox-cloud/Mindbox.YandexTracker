@@ -118,12 +118,17 @@ public interface IYandexTrackerClient : IDisposable
 	/// <summary>
 	/// Обновляет существующую задачу.
 	/// </summary>
+	/// <param name="issueKey">Ключ задачи</param>
+	/// <param name="request">Данные для обновления.</param>
+	/// <param name="sendNotifications">Нужно ли отправлять уведомления об изменениях.</param>
+	/// <param name="cancellationToken">Токен отмены.</param>
 	/// <remarks>
 	/// <see href="https://yandex.ru/support/tracker/ru/concepts/issues/patch-issue"/>
 	/// </remarks>
 	Task<UpdateIssueResponse> UpdateIssueAsync(
 		string issueKey,
 		UpdateIssueRequest request,
+		bool sendNotifications = true,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>

@@ -13,8 +13,8 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionMajor>7</VersionMajor>
-    <VersionMinor>4</VersionMinor>
+    <VersionMajor>8</VersionMajor>
+    <VersionMinor>0</VersionMinor>
     <BuildNumber>$(BuildNumber)</BuildNumber>
     <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
     <PackageVersion>$(VersionMajor).$(VersionMinor).$(BuildNumber)$(VersionTag)</PackageVersion>

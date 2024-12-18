@@ -314,6 +314,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	public Task<UpdateIssueResponse> UpdateIssueAsync(
 		string issueKey,
 		UpdateIssueRequest request,
+		bool sendNotifications = true,
 		CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrEmpty(issueKey);
@@ -323,6 +324,11 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			$"issues/{issueKey}",
 			HttpMethod.Patch,
 			payload: request,
+			parameters: new Dictionary<string, string>
+			{
+				{ "notify", sendNotifications.ToString().ToCamelCase() },
+				{ "notifyAuthor", sendNotifications.ToString().ToCamelCase() }
+			},
 			cancellationToken: cancellationToken);
 	}
 
@@ -992,9 +998,12 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		{
 			errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
 		}
-		catch
+		catch (Exception e)
 		{
-			errorMessage = "Unknown error";
+			throw new YandexTrackerException(
+				$"Request was not successful: {response.StatusCode} : Unknown error",
+				response.StatusCode,
+				e);
 		}
 
 		throw new YandexTrackerException(

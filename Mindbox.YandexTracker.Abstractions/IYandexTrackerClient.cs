@@ -407,6 +407,21 @@ public interface IYandexTrackerClient : IDisposable
 		CreateQueueLocalFieldRequest request,
 		CancellationToken cancellationToken = default);
 
+
+	/// <summary>
+	/// <see href="https://yandex.cloud/ru/docs/tracker/concepts/queues/update-local-field" />
+	/// </summary>
+	/// <param name="queueKey">Ключ очереди</param>
+	/// <param name="fieldKey">Ключ поля</param>
+	/// <param name="request">Запрос</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns></returns>
+	Task<UpdateQueueLocalFieldResponse> UpdateLocalFieldInQueueAsync(
+		string queueKey,
+		string fieldKey,
+		UpdateQueueLocalFieldRequest request,
+		CancellationToken cancellationToken = default);
+
 	/// <summary>
 	/// Возможные категории для поля
 	/// </summary>

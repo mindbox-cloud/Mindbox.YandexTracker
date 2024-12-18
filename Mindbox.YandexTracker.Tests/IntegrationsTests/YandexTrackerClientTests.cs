@@ -526,12 +526,74 @@ public class YandexTrackerClientTests : YandexTrackerTestBase
 			Type = QueueLocalFieldType.DateFieldType
 		};
 
-		await Task.Delay(1000); // Чтобы поле точно создалось в трекере
-
 		var response = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, localField);
 
 		Assert.IsNotNull(response);
 		Assert.IsTrue(response.Id.EndsWith(localField.Id, StringComparison.InvariantCulture));
+	}
+
+	[TestMethod]
+	public async Task UpdateLocalFieldInQueueAsync_ValidRequest_UpdateCreatedLocalField()
+	{
+		const string optionsProviderType = "FixedListOptionsProvider";
+
+		var firstCategory = (await YandexTrackerClient.GetFieldCategoriesAsync()).Values[0];
+
+		var optionValues = new List<string>
+		{
+			"1",
+			"2"
+		};
+		var localField = new CreateQueueLocalFieldRequest
+		{
+			Id = "some_Id4",
+			Name = new QueueLocalFieldName
+			{
+				En = "английское название",
+				Ru = "русское название"
+			},
+			Category = firstCategory.Id,
+			Type = QueueLocalFieldType.StringFieldType,
+			OptionsProvider = new OptionsProviderInfoDto
+			{
+
+				Type = optionsProviderType,
+				Values = optionValues
+			}
+		};
+
+		var createResponse = await YandexTrackerClient.CreateLocalFieldInQueueAsync(TestQueueKey, localField);
+		Assert.IsNotNull(createResponse);
+
+		await Task.Delay(1000); // Чтобы поле точно создалось в трекере
+
+		optionValues.Add("3");
+
+		var updateRequest = new UpdateQueueLocalFieldRequest
+		{
+			OptionsProvider = new OptionsProviderInfoDto
+			{
+				Type = optionsProviderType,
+				Values = optionValues
+			}
+		};
+		var updateResponse = await YandexTrackerClient.UpdateLocalFieldInQueueAsync(
+			TestQueueKey,
+			createResponse.Key,
+			updateRequest);
+
+		Assert.IsNotNull(updateResponse);
+		Assert.IsTrue(updateResponse.Id.EndsWith(localField.Id, StringComparison.InvariantCulture));
+		Assert.IsNotNull(updateResponse.OptionsProvider);
+		Assert.AreEqual(optionValues.Count, updateResponse.OptionsProvider.Values.Count);
+
+		var expectedOptionValues = optionValues.OrderBy(x => x).ToList();
+		var actualOptionValues = updateResponse.OptionsProvider.Values.OrderBy(x => x).ToList();
+
+		for (var i = 0; i < optionValues.Count; i++)
+		{
+			Assert.AreEqual(expectedOptionValues[i], actualOptionValues[i]);
+		}
 	}
 
 	[TestMethod]

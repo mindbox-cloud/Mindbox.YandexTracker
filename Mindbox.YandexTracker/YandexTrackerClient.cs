@@ -810,6 +810,24 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 	}
 
 	/// <inheritdoc />
+	public Task<UpdateQueueLocalFieldResponse> UpdateLocalFieldInQueueAsync(
+		string queueKey,
+		string fieldKey,
+		UpdateQueueLocalFieldRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		ArgumentException.ThrowIfNullOrEmpty(queueKey);
+		ArgumentException.ThrowIfNullOrEmpty(fieldKey);
+		ArgumentNullException.ThrowIfNull(request);
+
+		return ExecuteYandexTrackerApiRequestAsync<UpdateQueueLocalFieldResponse>(
+			$"queues/{queueKey}/localFields/{fieldKey}",
+			HttpMethod.Patch,
+			payload: request,
+			cancellationToken: cancellationToken);
+	}
+
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)

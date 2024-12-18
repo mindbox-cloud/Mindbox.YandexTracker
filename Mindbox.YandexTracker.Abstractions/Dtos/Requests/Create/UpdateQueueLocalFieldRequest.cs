@@ -14,15 +14,11 @@
 
 namespace Mindbox.YandexTracker;
 
-public sealed record CreateQueueLocalFieldRequest
+public sealed record UpdateQueueLocalFieldRequest
 {
-	public required string Id { get; init; }
+	public QueueLocalFieldName? Name { get; init; }
 
-	public required QueueLocalFieldName Name { get; init; }
-
-	public required string Category { get; init; }
-
-	public QueueLocalFieldType Type { get; init; }
+	public string? Category { get; init; }
 
 	public OptionsProviderInfoDto? OptionsProvider { get; init; }
 

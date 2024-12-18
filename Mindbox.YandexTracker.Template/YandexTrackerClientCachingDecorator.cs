@@ -367,6 +367,20 @@ public sealed class YandexTrackerClientCachingDecorator(
 	}
 
 	/// <inheritdoc />
+	public Task<UpdateQueueLocalFieldResponse> UpdateLocalFieldInQueueAsync(
+		string queueKey,
+		string fieldKey,
+		UpdateQueueLocalFieldRequest request,
+		CancellationToken cancellationToken = default)
+	{
+		return yandexTrackerClient.UpdateLocalFieldInQueueAsync(
+			queueKey,
+			fieldKey,
+			request,
+			cancellationToken);
+	}
+
+	/// <inheritdoc />
 	public Task<YandexTrackerCollectionResponse<GetFieldCategoriesResponse>> GetFieldCategoriesAsync(
 		PaginationSettings? paginationSettings = null,
 		CancellationToken cancellationToken = default)

@@ -32,7 +32,7 @@ public record CreateQueueLocalFieldResponse
 
 	public bool Options { get; init; }
 
-	public required OptionsProviderInfoDto OptionsProvider { get; init; }
+	public OptionsProviderInfoDto? OptionsProvider { get; init; }
 
 	public bool Suggest { get; init; }
 

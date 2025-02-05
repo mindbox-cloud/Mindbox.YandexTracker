@@ -62,13 +62,13 @@ public record CustomFieldsResponse
 	/// Необходимо передавать id кастомного поля, из-за того, что локальные поля очереди будут иметь префикс в своем
 	/// названии, которое будет совпадать с id
 	/// </remarks>
-	public bool TryGetCustomField<T>(string customFieldId, out T? value)
+	public virtual bool TryGetCustomField<T>(string customFieldId, out T? value)
 	{
 		ArgumentException.ThrowIfNullOrEmpty(customFieldId);
 		return CustomFieldsHelper.TryGetCustomField(Fields, customFieldId, out value);
 	}
 
-	public T GetCustomField<T>(string customFieldId)
+	public virtual T GetCustomField<T>(string customFieldId)
 	{
 		ArgumentException.ThrowIfNullOrEmpty(customFieldId);
 		return CustomFieldsHelper.GetCustomField<T>(Fields, customFieldId);

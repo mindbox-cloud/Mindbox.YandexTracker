@@ -20,7 +20,7 @@ namespace Mindbox.YandexTracker.Tests;
 [TestClass]
 public class CustomFieldResponseTests
 {
-	private const string CustomFieldKey = "additionalAssignee";
+	private const string CustomFieldKey = "someAwesomeCustomFieldKey";
 
 	private readonly UserShortInfoDto _userInfo = new()
 	{

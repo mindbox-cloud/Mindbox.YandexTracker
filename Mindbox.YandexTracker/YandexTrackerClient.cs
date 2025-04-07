@@ -689,7 +689,6 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			projects.AddRange(response.Values);
 			page++;
 			parameters["page"] = page.ToString(CultureInfo.InvariantCulture);
-
 		} while (
 			response.Pages > page
 			&& (pagination.MaxPageRequestCount is null || page < pagination.MaxPageRequestCount));
@@ -941,8 +940,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			headers,
 			cancellationToken);
 
-		var resultContent = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-		return JsonSerializer.Deserialize<TResult>(resultContent, YandexTrackerConstants.YandexTrackerJsonSerializerOptions)!;
+		return (await httpResponse
+			.DeserializeYandexTrackerResponseContentAsync<TResult>(cancellationToken))!;
 	}
 
 	private async Task<HttpResponseMessage> ExecuteYandexTrackerApiRawRequestAsync(
@@ -1021,8 +1020,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 		CancellationToken cancellationToken = default)
 	{
 		var paginationSettings = customPaginationSettings
-								 ?? _options.CurrentValue.DefaultPaginationSettings
-								 ?? DefaultPaginationSettings;
+		                         ?? _options.CurrentValue.DefaultPaginationSettings
+		                         ?? DefaultPaginationSettings;
 
 		var pageNumber = paginationSettings.StartPage - 1;
 		var totalPageCount = 1;
@@ -1046,10 +1045,8 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 				headers,
 				cancellationToken);
 
-			var resultContent = await response.Content.ReadAsStringAsync(cancellationToken);
-			var dataChunk = JsonSerializer.Deserialize<List<TResult>>(
-				resultContent,
-				YandexTrackerConstants.YandexTrackerJsonSerializerOptions)!;
+			var dataChunk =
+				(await response.DeserializeYandexTrackerResponseContentAsync<List<TResult>>(cancellationToken))!;
 
 			result.AddRange(dataChunk);
 
@@ -1057,8 +1054,7 @@ public sealed class YandexTrackerClient : IYandexTrackerClient
 			{
 				totalPageCount = Convert.ToInt32(headerValue.First(), CultureInfo.InvariantCulture);
 			}
-		}
-		while (
+		} while (
 			pageNumber < totalPageCount
 			&& (paginationSettings.MaxPageRequestCount is null || pageNumber < paginationSettings.MaxPageRequestCount));
 
